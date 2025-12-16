@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+   themes: light --default
+}
+
+
+.edito-nav-section {
+    @apply w-full flex flex-col gap-2;
+}
+
+.editor .title {
+    @apply text-sm text-slate-800;
+}
+
+.editor .sub-title {
+    @apply text-xs text-slate-400;
+}

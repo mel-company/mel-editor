@@ -1,0 +1,1 @@
+export const fontList = ["Arial", "Times New Roman", "Courier New"]
