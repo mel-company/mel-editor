@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/css";
 
