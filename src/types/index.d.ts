@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export type StoreType = {
   logo: FileType;
   name: string;
@@ -41,7 +43,7 @@ export type SectionType = {
     id: string;
     title: string;
     description?: string;
-    component?: any;
+    component?: ReactNode;
     thumbnail?: {
       url: string;
     };

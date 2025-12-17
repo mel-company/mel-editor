@@ -6,7 +6,7 @@ const HeroSection1 = ({
   description: string;
 }) => {
   return (
-    <header className="container min-h-screen flex items-center justify-center">
+    <header className="container min-h-screen flex flex-col items-center justify-center">
       <h1 className="text-4xl font-bold">{title}</h1>
       <p className="text-xl">{description}</p>
     </header>
@@ -20,7 +20,7 @@ const HeroSection2 = ({
 }: {
   title: string;
   description: string;
-  photos: string[];
+  photos: any[];
 }) => {
   return (
     <header className="container min-h-screen flex flex-col md:flex-row items-center justify-center">
@@ -30,7 +30,7 @@ const HeroSection2 = ({
       </div>
       <div className="w-full px-16 md:w-1/4 overflow-hidden rounded-lg">
         <img
-          src={photos[0]}
+          src={photos?.[0]?.url}
           className="w-full h-full object-cover"
           alt="photo"
         />
