@@ -21,6 +21,9 @@ export const categories_sections = [
     id: "1",
     title: "Categories",
     component: CategoriesSection,
+    thumbnail: {
+      url: "https://cdn.shopify.com/s/files/1/0817/7988/4088/articles/fashion-ecommerce.jpg?v=1738095976",
+    },
     categories: [
       {
         id: "1",

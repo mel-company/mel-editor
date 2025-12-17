@@ -1,7 +1,7 @@
 export const mockTemplate = {
-  id: "",
-  title: "",
-  description: "",
+  id: "cklsmvdlkvmds",
+  title: "Template 1",
+  description: "Template 1 description",
   thumbnail: {
     url: "",
   },
@@ -9,55 +9,38 @@ export const mockTemplate = {
   sections: [
     {
       id: "0",
-      type: "Navigation",
-      name: "Navigation",
+      section_id: "1",
+      type: "navigation",
+      editable: false,
     },
     {
       id: "1",
-      name: "Hero",
-      description: "Hero Section",
-      photos: [
-        {
-          url: "",
-        },
-      ],
-      thumbnail: {
-        url: "",
-      },
-
+      section_id: "1",
+      type: "hero",
       view_all_link: "",
       editable: true,
     },
     {
       id: "2",
-      name: "Categories",
-      description: "Categories Grid",
-      categories: [],
-      thumbnail: {
-        url: "",
-      },
-
+      section_id: "1",
+      type: "categories",
       view_all_link: "",
       editable: true,
     },
     {
       id: "3",
-      name: "New Products",
-      description: "New Products Carousel",
-      products: [],
-      thumbnail: {
-        url: "",
-      },
-
+      section_id: "1",
+      type: "recentProducts",
       view_all_link: "",
       editable: true,
     },
     {
       id: "4",
-      name: "Footer",
-      description: "Footer Section",
+      section_id: "1",
+      type: "footer",
       links: [],
-      editable: true,
+
+      editable: false,
     },
   ],
 };

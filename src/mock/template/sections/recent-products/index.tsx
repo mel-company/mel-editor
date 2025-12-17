@@ -69,6 +69,9 @@ export const recent_products_sections = [
     id: "1",
     title: "Recent Products",
     component: RecentProducts,
+    thumbnail: {
+      url: "https://cdn.dribbble.com/userupload/43792476/file/original-2dc4c0056ba1870f72cc179f989655b4.jpg?resize=400x0",
+    },
     content: {
       title: "Recent Products",
     },
@@ -78,6 +81,9 @@ export const recent_products_sections = [
   {
     id: "2",
     title: "Recent Products",
+    thumbnail: {
+      url: "https://cdn.dribbble.com/userupload/43792476/file/original-2dc4c0056ba1870f72cc179f989655b4.jpg?resize=400x0",
+    },
     component: RecentProductsCarousel,
     content: {
       title: "Recent Products",

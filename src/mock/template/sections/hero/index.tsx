@@ -44,6 +44,9 @@ export const hero_sections = [
     id: "1",
     title: "Hero",
     component: HeroSection1,
+    thumbnail: {
+      url: "https://cdn.dribbble.com/userupload/17671963/file/original-3adc590720f59beeb44b8fa8876e4837.jpg?crop=107x0-2529x1816&format=webp&resize=400x300&vertical=center",
+    },
     content: {
       title: "Hero Section",
       description: "Hero Section",
@@ -52,10 +55,14 @@ export const hero_sections = [
   {
     id: "2",
     title: "Hero",
+    thumbnail: {
+      url: "https://cdn.dribbble.com/userupload/17671963/file/original-3adc590720f59beeb44b8fa8876e4837.jpg?crop=107x0-2529x1816&format=webp&resize=400x300&vertical=center",
+    },
     component: HeroSection2,
     photos: [
-      "https://via.placeholder.com/150",
-      "https://via.placeholder.com/150",
+      {
+        url: "https://img.freepik.com/free-photo/smiley-man-posing-grey-wall_23-2148448892.jpg?semt=ais_hybrid&w=740&q=80",
+      },
     ],
     content: {
       title: "Hero Section",
