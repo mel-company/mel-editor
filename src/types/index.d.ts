@@ -6,7 +6,7 @@ export type StoreType = {
 
 export type FileType = {
   id?: string;
-  name: string;
+  name?: string;
   url?: string;
   base64Content?: string;
 };
@@ -32,11 +32,25 @@ export type SectionPropsType = {
 
 export type SectionType = {
   id: string;
-  title: string;
-  description: string;
-  photos: FileType[];
-  content: SectionPropsType[];
-  products: ProductType[];
+  section_id: string;
+  type: string;
+  editable: boolean;
+  view_all_link?: string;
+  links?: any[];
+  options?: {
+    id: string;
+    title: string;
+    description?: string;
+    component?: any;
+    thumbnail?: {
+      url: string;
+    };
+    photos?: any;
+    content?: any;
+    products?: ProductType[];
+    categories?: CategoryType[];
+    view_all_link?: string;
+  }[];
 };
 
 export type CategoryType = {
