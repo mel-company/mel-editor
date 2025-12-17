@@ -1,7 +1,7 @@
 import { FileType } from "../../../../types";
 import { ShoppingCart } from "lucide-react";
 
-const Navigation1 = ({ logo }: { logo: FileType }) => {
+export const Navigation1 = ({ logo }: { logo: FileType }) => {
   return (
     <nav className="w-full border-b border-slate-100 py-8 flex items-center justify-between">
       <img src={logo?.url} alt="logo" />

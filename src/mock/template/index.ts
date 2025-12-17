@@ -1,7 +1,13 @@
+import { categories_sections } from "./sections/categories";
+import { hero_sections } from "./sections/hero";
+import { navigation_sections } from "./sections/navigation";
+import { recent_products_sections } from "./sections/recent-products";
+
 export const mockTemplate = {
   id: "cklsmvdlkvmds",
   title: "Template 1",
   description: "Template 1 description",
+
   thumbnail: {
     url: "",
   },
@@ -12,6 +18,7 @@ export const mockTemplate = {
       section_id: "1",
       type: "navigation",
       editable: false,
+      options: navigation_sections,
     },
     {
       id: "1",
@@ -19,12 +26,14 @@ export const mockTemplate = {
       type: "hero",
       view_all_link: "",
       editable: true,
+      options: hero_sections,
     },
     {
       id: "2",
       section_id: "1",
       type: "categories",
       view_all_link: "",
+      options: categories_sections,
       editable: true,
     },
     {
@@ -32,6 +41,7 @@ export const mockTemplate = {
       section_id: "1",
       type: "recentProducts",
       view_all_link: "",
+      options: recent_products_sections,
       editable: true,
     },
     {
@@ -39,7 +49,6 @@ export const mockTemplate = {
       section_id: "1",
       type: "footer",
       links: [],
-
       editable: false,
     },
   ],
