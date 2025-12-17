@@ -5,6 +5,8 @@ export const SectionPropsComponent = (props: any) => {
   switch (props.type) {
     case "text":
       return <TextInput {...props} />;
+    case "textarea":
+      return <TextInput {...props} lg />;
     case "file":
       return <FileUploadBar {...props} />;
     default:

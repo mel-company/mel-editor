@@ -8,7 +8,7 @@ const EditorThemeFonts = () => {
     body: fontList[0],
   });
   return (
-    <div className="edito-nav-section">
+    <div className="editor-nav-section">
       <h3 className="title">{"الخطوط"}</h3>
       <h4 className="sub-title">{"العنوان"}</h4>
       <SelectList

@@ -4,7 +4,7 @@
 }
 
 
-.edito-nav-section {
+.editor-nav-section {
     @apply w-full flex flex-col gap-2;
 }
 

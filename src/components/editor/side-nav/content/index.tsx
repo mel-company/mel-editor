@@ -1,9 +1,12 @@
 import React from "react";
+import EditorSectionDetails from "./section-details";
+import Divider from "../../../ui/divider";
 
 const ContentSide = () => {
   return (
     <div className="flex flex-col gap-4 h-full">
-      <h3 className="title">{"المحتوى"}</h3>
+      <EditorSectionDetails sectionId={"1"} />
+      <Divider />
     </div>
   );
 };
