@@ -1,20 +1,20 @@
 import { useSectionStore } from "../../store/editor/section";
 import { FileType, ProductType } from "../../types";
 
-const useSectionDetails = ({ id = "1" }: { id: string }) => {
-  const { sections, setSection } = useSectionStore();
+const useSectionDetails = () => {
+  const { sections, setSection, activeSectionId } = useSectionStore();
 
-  const section = sections?.find((section) => section.id === id);
+  const section = sections?.find((section) => section.id === activeSectionId);
 
   const handleTextChange = (value: string, name: string) => {
     if (!section) return;
-    const newProps = section.props.map((item) => {
+    const newProps = section.content.map((item) => {
       if (item.name === name) {
         return { ...item, value };
       }
       return item;
     });
-    setSection({ ...section, props: newProps });
+    setSection({ ...section, content: newProps });
   };
 
   const handleUploadImage = (file: FileType, index: number) => {

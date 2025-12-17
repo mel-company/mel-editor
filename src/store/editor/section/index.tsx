@@ -4,6 +4,8 @@ import { SectionType } from "../../../types";
 
 type Store = {
   sections: SectionType[];
+  activeSectionId: string;
+  setActiveSectionId: (id: string) => void;
   setSections: (sections: SectionType[]) => void;
   setSection: (section: SectionType) => void;
 };
@@ -12,7 +14,9 @@ export const useSectionStore = create<Store>()(
   persist(
     (set) => ({
       sections: [],
-      setSections: (sections) => set((state) => ({ sections })),
+      activeSectionId: "",
+      setActiveSectionId: (id) => set(() => ({ activeSectionId: id })),
+      setSections: (sections) => set(() => ({ sections })),
       setSection: (section) =>
         set((state) => ({
           sections: state.sections.map((s) =>

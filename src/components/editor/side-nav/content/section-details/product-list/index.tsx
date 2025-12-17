@@ -1,8 +1,8 @@
 import { ImageIcon } from "lucide-react";
 import useSectionDetails from "../../../../../../hooks/editor-section-details";
 
-const EditorProductList = ({ sectionId }: { sectionId: string }) => {
-  const { section } = useSectionDetails({ id: sectionId });
+const EditorProductList = () => {
+  const { section } = useSectionDetails();
 
   return (
     <div className="flex flex-col gap-2">

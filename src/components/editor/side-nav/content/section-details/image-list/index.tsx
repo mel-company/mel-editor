@@ -1,11 +1,8 @@
 import useSectionDetails from "../../../../../../hooks/editor-section-details";
-import { useSectionStore } from "../../../../../../store/editor/section";
 import FileUploadListItem from "../../../../../ui/file-upload/item";
 
-const SectionImageList = ({ sectionId }: { sectionId: string }) => {
-  const { handleUploadImage } = useSectionDetails({ id: sectionId });
-  const { sections } = useSectionStore();
-  const section = sections?.find((section) => section.id === sectionId);
+const SectionImageList = () => {
+  const { handleUploadImage, section } = useSectionDetails();
 
   if (!section?.photos?.length) return null;
 

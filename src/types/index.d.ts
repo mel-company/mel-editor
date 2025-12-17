@@ -35,6 +35,6 @@ export type SectionType = {
   title: string,
   description: string,
   photos: FileType[],
-  props: SectionPropsType[],
+  content: SectionPropsType[],
   products: ProductType[],
 };
