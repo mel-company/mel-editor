@@ -17,6 +17,8 @@ import { ListChevronsUpDown } from "lucide-react";
 import { useSectionStore } from "../../../../../store/editor/section";
 import { SectionType } from "../../../../../types";
 import classNames from "classnames";
+import NewSectionBtn from "./new-section-btn";
+import { useId } from "react";
 
 const EditorSectionList = () => {
   const { sections, setSections } = useSectionStore();
@@ -55,12 +57,14 @@ const EditorSectionList = () => {
           strategy={verticalListSortingStrategy}
         >
           <div className="w-full h-full gap-2 flex flex-col">
-            {sections.map((section) => (
-              <SectionItem key={section.id} section={section} />
-            ))}
+            {sections.map((section, index) => {
+              const id = useId();
+              return <SectionItem key={id} section={section} />;
+            })}
           </div>
         </SortableContext>
       </DndContext>
+      <NewSectionBtn />
     </div>
   );
 };

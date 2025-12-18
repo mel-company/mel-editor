@@ -1,9 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { SectionType } from "../../../types";
+import { mockTemplate } from "../../../mock/template";
 
 type Store = {
   sections: SectionType[];
+  all_sections: SectionType[];
   activeSectionId: string;
   setActiveSectionId: (id: string) => void;
   setSections: (sections: SectionType[]) => void;
@@ -14,6 +16,7 @@ export const useSectionStore = create<Store>()(
   persist(
     (set) => ({
       sections: [],
+      all_sections: mockTemplate.sections,
       activeSectionId: "",
       setActiveSectionId: (id) => set(() => ({ activeSectionId: id })),
       setSections: (sections) => set(() => ({ sections })),
