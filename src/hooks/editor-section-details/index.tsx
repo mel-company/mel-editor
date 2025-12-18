@@ -2,9 +2,18 @@ import { useSectionStore } from "../../store/editor/section";
 import { FileType, SectionOptionType } from "../../types";
 
 const useSectionDetails = () => {
-  const { sections, setSection, activeSectionId } = useSectionStore();
+  const { sections, setSection, activeSectionId, setSections } =
+    useSectionStore();
 
   const section = sections?.find((section) => section.id === activeSectionId);
+
+  const removeSection = () => {
+    if (!section) return;
+    const newSections = sections?.filter(
+      (section) => section.id !== activeSectionId
+    );
+    setSections(newSections);
+  };
 
   const updateSectionOptions = (option: Partial<SectionOptionType>) => {
     if (!section) return;
@@ -78,6 +87,8 @@ const useSectionDetails = () => {
     // handleToggleProduct,
     section,
     sections,
+    setSections,
+    removeSection,
   };
 };
 

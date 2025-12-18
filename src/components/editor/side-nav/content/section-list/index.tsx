@@ -16,6 +16,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { ListChevronsUpDown } from "lucide-react";
 import { useSectionStore } from "../../../../../store/editor/section";
 import { SectionType } from "../../../../../types";
+import classNames from "classnames";
 
 const EditorSectionList = () => {
   const { sections, setSections } = useSectionStore();
@@ -42,25 +43,32 @@ const EditorSectionList = () => {
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext items={sections} strategy={verticalListSortingStrategy}>
-        <div className="w-full h-full gap-2 flex flex-col">
-          {sections.map((section) => (
-            <SectionItem key={section.id} section={section} />
-          ))}
-        </div>
-      </SortableContext>
-    </DndContext>
+    <div className="editor-nav-section">
+      <h3 className="title">{"الاقسام"}</h3>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={sections}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="w-full h-full gap-2 flex flex-col">
+            {sections.map((section) => (
+              <SectionItem key={section.id} section={section} />
+            ))}
+          </div>
+        </SortableContext>
+      </DndContext>
+    </div>
   );
 };
 
 export default EditorSectionList;
 
 const SectionItem = ({ section }: { section: SectionType }) => {
+  const { activeSectionId, setActiveSectionId } = useSectionStore();
   const {
     attributes,
     listeners,
@@ -84,19 +92,25 @@ const SectionItem = ({ section }: { section: SectionType }) => {
     <div
       ref={setNodeRef}
       style={style}
-      className={`w-full group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative ${
-        isDragging ? "shadow-lg cursor-grabbing" : ""
-      }`}
+      onClick={() => setActiveSectionId(section.id)}
+      className={classNames(
+        `w-full group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${
+          isDragging ? "shadow-lg" : ""
+        }`,
+        {
+          "border-s-4 border-blue-500": activeSectionId === section.id,
+        }
+      )}
     >
       <div
         {...attributes}
         {...listeners}
-        className="p-1.5 bg-white hover:ring hover:ring-slate-200 transition-all text-slate-400 rounded-md cursor-grab active:cursor-grabbing touch-none"
+        className="p-1.5 bg-white hover:ring hover:ring-slate-200 transition-all text-slate-400 rounded-md cursor-col-resize touch-none"
       >
         <ListChevronsUpDown size={16} />
       </div>
       <span className="text-xs select-none">{option?.title}</span>
-      <div className="absolute delay-150 pointer-events-none top-0 end-0 rounded-xl -translate-x-full overflow-hidden bg-slate-100 opacity-0 group-hover:opacity-100 transition-all duration-300">
+      <div className="absolute delay-150 pointer-events-none top-1/2 end-0 rounded-xl -translate-x-full -translate-y-1/2 overflow-hidden bg-slate-100 opacity-0 group-hover:opacity-100 transition-all duration-300">
         <img className="w-32" src={option?.thumbnail?.url} alt="" />
       </div>
     </div>

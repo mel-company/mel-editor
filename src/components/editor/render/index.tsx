@@ -13,7 +13,14 @@ const RenderTemplate = () => {
   }, [template.sections]);
 
   return (
-    <div className="w-full h-full flex items-center justify-center">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          setActiveSectionId("");
+        }
+      }}
+      className="w-full h-full flex items-center justify-center cursor-default"
+    >
       <div className="w-full h-full  max-h-[90vh] max-w-11/12 overflow-y-auto overflow-x-hidden bg-white rounded-2xl">
         {sections.map((section) => (
           <div

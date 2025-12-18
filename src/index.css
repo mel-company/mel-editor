@@ -4,6 +4,10 @@
 }
 
 
+body {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+
 .editor-nav-section {
     @apply w-full flex flex-col gap-2;
 }
