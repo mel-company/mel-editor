@@ -72,9 +72,15 @@ export const recent_products_sections = [
     thumbnail: {
       url: "https://cdn.dribbble.com/userupload/43792476/file/original-2dc4c0056ba1870f72cc179f989655b4.jpg?resize=400x0",
     },
-    content: {
-      title: "Recent Products",
-    },
+    content: [
+      {
+        id: "title",
+        label: "Title",
+        name: "title",
+        type: "text",
+        value: "Recent Products",
+      },
+    ],
     products: [],
     view_all_link: "",
   },
@@ -85,9 +91,15 @@ export const recent_products_sections = [
       url: "https://cdn.dribbble.com/userupload/43792476/file/original-2dc4c0056ba1870f72cc179f989655b4.jpg?resize=400x0",
     },
     component: RecentProductsCarousel,
-    content: {
-      title: "Recent Products",
-    },
+    content: [
+      {
+        id: "title",
+        label: "Title",
+        name: "title",
+        type: "text",
+        value: "Recent Products",
+      },
+    ],
     products: [],
     view_all_link: "",
   },

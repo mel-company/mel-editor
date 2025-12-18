@@ -1,58 +1,81 @@
 import { useSectionStore } from "../../store/editor/section";
-import { FileType, ProductType } from "../../types";
+import { FileType, SectionOptionType } from "../../types";
 
 const useSectionDetails = () => {
   const { sections, setSection, activeSectionId } = useSectionStore();
 
   const section = sections?.find((section) => section.id === activeSectionId);
 
+  const updateSectionOptions = (option: Partial<SectionOptionType>) => {
+    if (!section) return;
+    const newOptions = section.options?.map((item) => {
+      if (item.id === section.section_id) {
+        return { ...item, ...option };
+      }
+      return item;
+    });
+    setSection({ ...section, options: newOptions });
+  };
+
   const handleTextChange = (value: string, name: string) => {
     if (!section) return;
-    const newProps = section.content.map((item) => {
-      if (item.name === name) {
-        return { ...item, value };
-      }
-      return item;
-    });
-    setSection({ ...section, content: newProps });
-  };
-
-  const handleUploadImage = (file: FileType, index: number) => {
-    if (!section) return;
-    const newPhotos = section.photos.map((item) => {
-      if (item.name === "image") {
-        return { ...item, ...file };
-      }
-      return item;
-    });
-    setSection({ ...section, photos: newPhotos });
-  };
-
-  const handleToggleProduct = ({ product }: { product: ProductType }) => {
-    if (!section) return;
-    const find = section?.products?.find((item) => item.id === product.id);
-
-    const newProducts = section?.products?.filter(
-      (item) => item.id !== product.id
+    const activeOption = section.options?.find(
+      (item) => item.id === section.section_id
     );
 
-    if (!find)
-      return setSection({
-        ...section,
-        products: [...newProducts, product],
+    if (!activeOption) return;
+
+    if (Array.isArray(activeOption.content)) {
+      const newContent = activeOption.content.map((item: any) => {
+        if (item.name === name) {
+          return { ...item, value };
+        }
+        return item;
       });
-    else {
-      setSection({
-        ...section,
-        products: newProducts,
+      updateSectionOptions({ content: newContent });
+    } else {
+      // Fallback for object-based content (if any remains)
+      updateSectionOptions({
+        content: {
+          ...activeOption.content,
+          [name]: value,
+        },
       });
     }
   };
 
+  const handleUploadImage = (file: FileType, index: number) => {
+    if (!section) return;
+
+    const newOptions = section?.options?.map((item) => {
+      if (item.id === section.section_id) {
+        return { ...item, photos: { ...item.photos, [index]: file } };
+      }
+      return item;
+    });
+
+    setSection({ ...section, options: newOptions });
+  };
+
+  // const handleToggleProduct = ({ product }: { product: ProductType }) => {
+  //   if (!section) return;
+  //   const find = section?.options?.find((item) => item.id === product.id);
+
+  //   const newOptions = section?.options?.map((item) => {
+  //     if (item.id === section.section_id) {
+  //       return {
+  //         ...item,
+  //         products: { ...item.products, product: { ...product } },
+  //       };
+  //     }
+  //     return item;
+  //   });
+  // };
+
   return {
     handleTextChange,
     handleUploadImage,
-    handleToggleProduct,
+    // handleToggleProduct,
     section,
     sections,
   };

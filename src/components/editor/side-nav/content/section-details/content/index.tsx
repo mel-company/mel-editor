@@ -2,7 +2,7 @@ import useSectionDetails from "../../../../../../hooks/editor-section-details";
 import { SectionPropsComponent } from "../../section-props";
 
 const SectionContent = () => {
-  const { handleTextChange, section } = useSectionDetails();
+  const { section } = useSectionDetails();
 
   const content = section?.options?.find(
     (s) => s.id === section?.section_id
@@ -10,14 +10,8 @@ const SectionContent = () => {
 
   return (
     <>
-      {content?.map((item) => {
-        return (
-          <SectionPropsComponent
-            key={item.id}
-            onChange={handleTextChange}
-            {...item}
-          />
-        );
+      {content?.map((item: { name: string; value: string; id: string }) => {
+        return <SectionPropsComponent key={item.id} {...item} />;
       })}
     </>
   );

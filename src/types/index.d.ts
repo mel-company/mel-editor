@@ -32,6 +32,20 @@ export type SectionPropsType = {
   value?: string;
 };
 
+export type SectionOptionType = {
+  id: string;
+  title: string;
+  description?: string;
+  component?: React.ComponentType<any> | ReactNode;
+  thumbnail?: {
+    url: string;
+  };
+  photos?: any;
+  content?: any;
+  products?: ProductType[];
+  categories?: CategoryType[];
+  view_all_link?: string;
+};
 export type SectionType = {
   id: string;
   section_id: string;
@@ -39,24 +53,21 @@ export type SectionType = {
   editable: boolean;
   view_all_link?: string;
   links?: any[];
-  options?: {
-    id: string;
-    title: string;
-    description?: string;
-    component?: ReactNode;
-    thumbnail?: {
-      url: string;
-    };
-    photos?: any;
-    content?: any;
-    products?: ProductType[];
-    categories?: CategoryType[];
-    view_all_link?: string;
-  }[];
+  options: SectionOptionType[];
 };
 
 export type CategoryType = {
   id: string;
   name: string;
   thumbnail: FileType;
+};
+
+export type TemplateType = {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: {
+    url: string;
+  };
+  sections: SectionType[];
 };

@@ -52,7 +52,15 @@ const Section = ({ section }: { section: SectionType }) => {
   let props = { ...restOptions };
 
   if (restOptions.content) {
-    props = { ...props, ...restOptions.content };
+    if (Array.isArray(restOptions.content)) {
+      const contentProps = restOptions.content.reduce((acc: any, item: any) => {
+        acc[item.name] = item.value;
+        return acc;
+      }, {});
+      props = { ...props, ...contentProps };
+    } else {
+      props = { ...props, ...restOptions.content };
+    }
   }
 
   if (restOptions.photos && !Array.isArray(restOptions.photos)) {

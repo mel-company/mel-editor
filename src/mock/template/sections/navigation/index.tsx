@@ -1,10 +1,10 @@
-import { FileType } from "../../../../types";
+import { FileType, SectionOptionType } from "../../../../types";
 import { ShoppingCart } from "lucide-react";
 
 export const Navigation1 = ({ logo }: { logo: FileType }) => {
   return (
     <nav className="w-full border-b border-slate-100 py-8 flex items-center justify-between">
-      <img src={logo?.url} alt="logo" />
+      <img className="h-8" src={logo?.url} alt="logo" />
       <button>
         <ShoppingCart />
       </button>
@@ -12,14 +12,14 @@ export const Navigation1 = ({ logo }: { logo: FileType }) => {
   );
 };
 
-export const navigation_sections = [
+export const navigation_sections: SectionOptionType[] = [
   {
     id: "1",
     title: "Navigation",
     component: Navigation1,
     photos: {
       logo: {
-        url: "https://via.placeholder.com/150",
+        url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Xiaomi_logo_%282021-%29.svg/1024px-Xiaomi_logo_%282021-%29.svg.png",
       },
     },
   },

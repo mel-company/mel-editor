@@ -1,9 +1,10 @@
+import { TemplateType } from "../../types";
 import { categories_sections } from "./sections/categories";
 import { hero_sections } from "./sections/hero";
 import { navigation_sections } from "./sections/navigation";
 import { recent_products_sections } from "./sections/recent-products";
 
-export const mockTemplate = {
+export const mockTemplate: TemplateType = {
   id: "cklsmvdlkvmds",
   title: "Template 1",
   description: "Template 1 description",
@@ -43,13 +44,6 @@ export const mockTemplate = {
       view_all_link: "",
       options: recent_products_sections,
       editable: true,
-    },
-    {
-      id: "4",
-      section_id: "1",
-      type: "footer",
-      links: [],
-      editable: false,
     },
   ],
 };
