@@ -3,6 +3,7 @@ import EditorProductList from "./product-list";
 import SectionContent from "./content";
 import ActiveSectionWrapper from "./active-wrapper";
 import DeleteSection from "./delete-section-btn";
+import SectionVariants from "./variants";
 
 const EditorSectionDetails = () => {
   return (
@@ -11,6 +12,7 @@ const EditorSectionDetails = () => {
         <h3 className="title">{"معلومات القسم"}</h3>
         <DeleteSection />
       </div>
+      <SectionVariants />
       <ActiveSectionWrapper>
         <SectionContent />
         <SectionImageList />

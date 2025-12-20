@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { SectionType } from "../../../types";
-import { mockTemplate } from "../../../mock/template";
 
 type Store = {
   sections: SectionType[];
@@ -27,6 +26,20 @@ export const useSectionStore = create<Store>()(
     }),
     {
       name: "editor-sections-storage",
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name);
+          return str ? JSON.parse(str) : null;
+        },
+        setItem: (name, value) => {
+          try {
+            localStorage.setItem(name, JSON.stringify(value));
+          } catch (e) {
+            console.error("Local storage is full, failed to save sections:", e);
+          }
+        },
+        removeItem: (name) => localStorage.removeItem(name),
+      },
     }
   )
 );

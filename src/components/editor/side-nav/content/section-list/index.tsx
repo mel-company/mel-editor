@@ -18,6 +18,7 @@ import { useSectionStore } from "../../../../../store/editor/section";
 import { SectionType } from "../../../../../types";
 import classNames from "classnames";
 import NewSectionBtn from "./new-section-btn";
+import Divider from "../../../../ui/divider";
 
 const EditorSectionList = () => {
   const { sections, setSections } = useSectionStore();
@@ -46,25 +47,30 @@ const EditorSectionList = () => {
   };
 
   return (
-    <div className="editor-nav-section">
-      <h3 className="title">{"الاقسام"}</h3>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={sections.map((section) => section.target_id)}
-          strategy={verticalListSortingStrategy}
+    <div className="h-full flex flex-col justify-end mb-4">
+      <div className="editor-nav-section">
+        <Divider />
+        <h3 className="title">{"الاقسام"}</h3>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
         >
-          <div className="w-full h-full gap-2 flex flex-col">
-            {sections.map((section, index) => {
-              return <SectionItem key={section?.target_id} section={section} />;
-            })}
-          </div>
-        </SortableContext>
-      </DndContext>
-      <NewSectionBtn />
+          <SortableContext
+            items={sections.map((section) => section.target_id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="w-full h-full gap-2 flex flex-col">
+              {sections.map((section, index) => {
+                return (
+                  <SectionItem key={section?.target_id} section={section} />
+                );
+              })}
+            </div>
+          </SortableContext>
+        </DndContext>
+        <NewSectionBtn />
+      </div>
     </div>
   );
 };
@@ -98,18 +104,19 @@ const SectionItem = ({ section }: { section: SectionType }) => {
       style={style}
       onClick={() => setActiveSectionId(section.target_id)}
       className={classNames(
-        `w-full group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${
+        `w-full border-e-8 transition-all group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${
           isDragging ? "shadow-lg" : ""
         }`,
         {
-          "border-s-4 border-blue-500": activeSectionId === section.target_id,
+          "border-slate-200": activeSectionId !== section.target_id,
+          "border-blue-500": activeSectionId === section.target_id,
         }
       )}
     >
       <div
         {...attributes}
         {...listeners}
-        className="p-1.5 bg-white hover:ring hover:ring-slate-200 transition-all text-slate-400 rounded-md cursor-col-resize touch-none"
+        className="p-1.5 bg-white transition-all text-slate-400 hover:text-slate-500 rounded-md cursor-col-resize touch-none"
       >
         <ListChevronsUpDown size={16} />
       </div>

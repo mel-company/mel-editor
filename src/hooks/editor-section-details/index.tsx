@@ -9,6 +9,10 @@ const useSectionDetails = () => {
     (section) => section.target_id === activeSectionId
   );
 
+  const option = section?.options?.find(
+    (option) => option.id === section.section_id
+  );
+
   const removeSection = () => {
     if (!section) return;
     const newSections = sections?.filter(
@@ -30,25 +34,22 @@ const useSectionDetails = () => {
 
   const handleTextChange = (value: string, name: string) => {
     if (!section) return;
-    const activeOption = section.options?.find(
-      (option) => option.id === section.section_id
-    );
 
-    if (!activeOption) return;
+    if (!option) return;
 
-    if (Array.isArray(activeOption.content)) {
-      const newContent = activeOption.content.map((item: any) => {
+    if (Array.isArray(option.content)) {
+      const newContent = option.content.map((item: any) => {
         if (item.name === name) {
           return { ...item, value };
         }
         return item;
       });
-      updateSectionOptions({ ...activeOption, content: newContent });
+      updateSectionOptions({ ...option, content: newContent });
     } else {
       // Fallback for object-based content (if any remains)
       updateSectionOptions({
         content: {
-          ...activeOption.content,
+          ...option.content,
           [name]: value,
         },
       });
@@ -58,14 +59,13 @@ const useSectionDetails = () => {
   const handleUploadImage = (file: FileType, index: number) => {
     if (!section) return;
 
-    const newOptions = section?.options?.map((option) => {
-      if (option.id === section.section_id) {
-        return { ...option, photos: { ...option.photos, [index]: file } };
-      }
-      return option;
-    });
+    const currentPhotos = Array.isArray(option?.photos)
+      ? [...option.photos]
+      : [];
+    // Ensure the array is large enough if index is out of bounds (though unlikely with UI)
+    currentPhotos[index] = file;
 
-    setSection({ ...section, options: newOptions });
+    updateSectionOptions({ photos: currentPhotos });
   };
 
   // const handleToggleProduct = ({ product }: { product: ProductType }) => {
@@ -89,8 +89,11 @@ const useSectionDetails = () => {
     // handleToggleProduct,
     section,
     sections,
+    setSection,
     setSections,
     removeSection,
+    option,
+    activeSectionId,
   };
 };
 

@@ -26,7 +26,7 @@ const EditoNavHeader = ({
           key={option.value}
           onClick={() => setSide(option.value)}
           className={classNames(
-            "w-full text-sm transition-all py-2.5 rounded-lg text-center font-medium",
+            "w-full text-sm transition-all py-2 rounded-lg text-center font-medium",
             {
               "bg-white text-blue-500": option.value === side,
               "bg-slate-50 text-slate-500": option.value !== side,

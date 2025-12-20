@@ -50,7 +50,7 @@ const FileUploadBar = ({ label, value, onChange }: FileUploadInputProps) => {
           <p className="text-xs text-red-500 mt-1">{fileState.error}</p>
         )}
       </div>
-      <div className="relative cursor-pointer py-2 px-2.5 hover:bg-blue-100 transition-colors active:bg-blue-100/80 bg-blue-100/80 text-sm rounded-lg flex items-center gap-1">
+      <div className="relative cursor-pointer py-2 px-2.5 hover:bg-blue-50/80 transition-colors active:bg-blue-50 bg-blue-50 text-sm rounded-lg flex items-center gap-1">
         <Upload size={14} className="text-blue-600" />
         <p className="text-xs font-medium text-blue-600">{label}</p>
         <input

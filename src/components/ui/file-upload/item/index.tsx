@@ -1,10 +1,10 @@
 import { FileType } from "../../../../types";
-import { Upload, Loader2, Image as ImageIcon } from "lucide-react";
+import { Loader2, Image as ImageIcon } from "lucide-react";
 import { useFileUpload } from "../../../../hooks/use-file-upload";
 import classNames from "classnames";
 
 interface FileUploadInputProps {
-  label: string;
+  label?: string;
   value: FileType;
   onChange: (file: FileType) => void;
 }
@@ -34,9 +34,9 @@ const FileUploadListItem = ({
         fileState.error ? "border-red-300 bg-red-50" : ""
       )}
     >
-      <p className="sub-title mx-1">{label}</p>
+      <p className="sub-title mx-1">{label || "اسم الملف"}</p>
       <div className="flex items-center gap-1.5 uppercase">
-        <p className="text-slate-800">{label}</p>
+        <p className="text-slate-800">{label || "اسم الملف"}</p>
         <div className="w-9 h-8 border border-slate-200 bg-slate-100 max-h-9 max-w-9 flex items-center justify-center aspect-square rounded-md overflow-hidden">
           {fileState.isLoading ? (
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />

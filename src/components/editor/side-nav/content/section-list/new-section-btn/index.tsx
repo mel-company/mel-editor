@@ -6,7 +6,9 @@ import { mockTemplate } from "../../../../../../mock/template";
 
 const NewSectionBtn = () => {
   const { setSections, sections } = useSectionStore();
-  const all_sections = mockTemplate.sections;
+  const all_sections = mockTemplate.sections?.filter(
+    (section) => section.editable
+  );
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -19,10 +21,11 @@ const NewSectionBtn = () => {
 
       <div
         className={classNames(
-          "absolute transition-all bg-white max-h-72 overflow-y-auto z-50 flex flex-col gap-1.5 shadow-lg shadow-slate-200 bottom-0 end-0bg-white rounded-lg p-2",
+          "absolute ease-in-out duration-150 transition-all max-h-72 overflow-y-auto z-50 flex flex-col gap-1.5 shadow-lg shadow-slate-200 bottom-0 end-2 bg-white rounded-lg p-2",
           {
-            "-translate-x-1/2 opacity-0 pointer-events-none": !open,
-            "-translate-x-full opacity-100": open,
+            "-translate-x-2/3 translate-y-2 opacity-0 scale-90 pointer-events-none":
+              !open,
+            "-translate-x-full translate-y-0 scale-100 opacity-100": open,
           }
         )}
       >

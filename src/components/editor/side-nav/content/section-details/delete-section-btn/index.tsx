@@ -4,13 +4,14 @@ import useSectionDetails from "../../../../../../hooks/editor-section-details";
 
 const DeleteSection = () => {
   const ref = React.useRef<HTMLDialogElement>(null);
-  const { removeSection } = useSectionDetails();
+  const { removeSection, section } = useSectionDetails();
 
   return (
     <>
       <button
-        onClick={() => ref.current?.showModal()}
-        className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 active:bg-slate-50 transition-colors cursor-pointer"
+        disabled={!section?.editable}
+        onClick={() => section?.editable && ref.current?.showModal()}
+        className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 disabled:hover:bg-slate-50 disabled:opacity-70 disabled:cursor-not-allowed active:bg-slate-50 transition-colors cursor-pointer"
       >
         <Trash2 size={16} strokeWidth={1} />
       </button>

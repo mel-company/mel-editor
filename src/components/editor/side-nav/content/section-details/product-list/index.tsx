@@ -1,15 +1,16 @@
 import { ImageIcon } from "lucide-react";
 import useSectionDetails from "../../../../../../hooks/editor-section-details";
+import { ProductType } from "../../../../../../types";
 
 const EditorProductList = () => {
-  const { section } = useSectionDetails();
+  const { option } = useSectionDetails();
 
-  if (!section?.products?.length) return null;
+  if (!option?.products?.length) return null;
 
   return (
     <div className="flex flex-col gap-2">
       <h3 className="sub-title">{"المنتجات"}</h3>
-      {section?.products?.map((product) => (
+      {option?.products?.map((product: ProductType) => (
         <div
           key={product.id}
           className="flex items-center gap-2 justify-between"
