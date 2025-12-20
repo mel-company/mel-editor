@@ -1,44 +1,23 @@
-import { useState } from "react";
-import { SectionPropsComponent } from "../section-props";
-
-const section = {
-  id: "1",
-  title: "",
-  description: "",
-  image: "",
-  props: [
-    { type: "text", label: "عنوان القسم", name: "title", value: "" },
-    { type: "text", label: "وصف القسم", name: "description", value: "" },
-    { type: "file", label: "صورة القسم", name: "image", value: "" },
-  ],
-};
+import SectionImageList from "./image-list";
+import EditorProductList from "./product-list";
+import SectionContent from "./content";
+import ActiveSectionWrapper from "./active-wrapper";
+import DeleteSection from "./delete-section-btn";
+import SectionVariants from "./variants";
 
 const EditorSectionDetails = () => {
-  const [data, setData] = useState(section.props);
-
-  const handleChange = (value: string, name: string) => {
-    setData((prev) => {
-      return prev.map((item) => {
-        if (item.name === name) {
-          return { ...item, value };
-        }
-        return item;
-      });
-    });
-  };
-
   return (
     <div className="editor-nav-section">
-      <h3 className="title">{"تفاصيل القسم"}</h3>
-      {data.map((item) => {
-        return (
-          <SectionPropsComponent
-            key={item.name}
-            onChange={handleChange}
-            {...item}
-          />
-        );
-      })}
+      <div className="flex items-center justify-between">
+        <h3 className="title">{"معلومات القسم"}</h3>
+        <DeleteSection />
+      </div>
+      <SectionVariants />
+      <ActiveSectionWrapper>
+        <SectionContent />
+        <SectionImageList />
+        <EditorProductList />
+      </ActiveSectionWrapper>
     </div>
   );
 };

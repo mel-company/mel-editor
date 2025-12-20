@@ -1,9 +1,11 @@
-import React from "react";
+import EditorSectionDetails from "./section-details";
+import EditorSectionList from "./section-list";
 
 const ContentSide = () => {
   return (
     <div className="flex flex-col gap-4 h-full">
-      <h3 className="title">{"المحتوى"}</h3>
+      <EditorSectionDetails />
+      <EditorSectionList />
     </div>
   );
 };

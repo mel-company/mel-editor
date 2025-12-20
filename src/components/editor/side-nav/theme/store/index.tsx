@@ -23,7 +23,7 @@ const EditorThemeStore = () => {
   };
 
   return (
-    <div className="edito-nav-section">
+    <div className="editor-nav-section">
       <FileUploadBar
         label="الشعار"
         value={data?.logo}

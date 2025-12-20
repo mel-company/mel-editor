@@ -10,7 +10,7 @@ const EditorThemeColors = () => {
     text: "#1D293D",
   });
   return (
-    <div className="edito-nav-section">
+    <div className="editor-nav-section">
       <ColorPickerBar
         label="الرئيسي"
         value={data.primary}
