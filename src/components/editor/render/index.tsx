@@ -9,7 +9,12 @@ const RenderTemplate = () => {
     useSectionStore();
 
   useEffect(() => {
-    setSections(template.sections);
+    setSections(
+      template.sections.map((section) => ({
+        ...section,
+        target_id: crypto.randomUUID(),
+      }))
+    );
   }, [template.sections]);
 
   return (
@@ -24,12 +29,12 @@ const RenderTemplate = () => {
       <div className="w-full h-full  max-h-[90vh] max-w-11/12 overflow-y-auto overflow-x-hidden bg-white rounded-2xl">
         {sections.map((section) => (
           <div
-            key={section.id}
-            onClick={() => setActiveSectionId(section.id)}
+            key={section.target_id}
+            onClick={() => setActiveSectionId(section.target_id)}
             className={`
               cursor-pointer transition-all duration-200
               ${
-                section.id === activeSectionId
+                section.target_id === activeSectionId
                   ? "outline-2 outline-blue-500"
                   : ""
               }

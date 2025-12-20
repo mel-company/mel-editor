@@ -54,6 +54,7 @@ export type SectionType = {
   view_all_link?: string;
   links?: any[];
   options: SectionOptionType[];
+  target_id: string;
 };
 
 export type CategoryType = {

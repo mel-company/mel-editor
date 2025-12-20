@@ -2,9 +2,11 @@ import classNames from "classnames";
 import { useSectionStore } from "../../../../../../store/editor/section";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { mockTemplate } from "../../../../../../mock/template";
 
 const NewSectionBtn = () => {
-  const { all_sections, setSections, sections } = useSectionStore();
+  const { setSections, sections } = useSectionStore();
+  const all_sections = mockTemplate.sections;
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -32,7 +34,10 @@ const NewSectionBtn = () => {
             <span>{section?.options[0]?.title}</span>
             <button
               onClick={() => {
-                setSections([...sections, section]);
+                setSections([
+                  ...sections,
+                  { ...section, target_id: crypto.randomUUID() },
+                ]);
                 setOpen(false);
               }}
               className="flex transition-shadow items-center cursor-pointer gap-0.5 text-blue-600 bg-white rounded-md px-2 py-1.5 hover:shadow-sm shadow-slate-200/60"

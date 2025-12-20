@@ -2,7 +2,6 @@ import SectionImageList from "./image-list";
 import EditorProductList from "./product-list";
 import SectionContent from "./content";
 import ActiveSectionWrapper from "./active-wrapper";
-import { Trash2 } from "lucide-react";
 import DeleteSection from "./delete-section-btn";
 
 const EditorSectionDetails = () => {

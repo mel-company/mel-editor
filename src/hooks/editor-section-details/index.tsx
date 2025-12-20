@@ -5,23 +5,25 @@ const useSectionDetails = () => {
   const { sections, setSection, activeSectionId, setSections } =
     useSectionStore();
 
-  const section = sections?.find((section) => section.id === activeSectionId);
+  const section = sections?.find(
+    (section) => section.target_id === activeSectionId
+  );
 
   const removeSection = () => {
     if (!section) return;
     const newSections = sections?.filter(
-      (section) => section.id !== activeSectionId
+      (section) => section.target_id !== activeSectionId
     );
     setSections(newSections);
   };
 
   const updateSectionOptions = (option: Partial<SectionOptionType>) => {
     if (!section) return;
-    const newOptions = section.options?.map((item) => {
-      if (item.id === section.section_id) {
-        return { ...item, ...option };
+    const newOptions = section.options?.map((op) => {
+      if (op.id === section.section_id) {
+        return { ...op, ...option };
       }
-      return item;
+      return op;
     });
     setSection({ ...section, options: newOptions });
   };
@@ -29,7 +31,7 @@ const useSectionDetails = () => {
   const handleTextChange = (value: string, name: string) => {
     if (!section) return;
     const activeOption = section.options?.find(
-      (item) => item.id === section.section_id
+      (option) => option.id === section.section_id
     );
 
     if (!activeOption) return;
@@ -41,7 +43,7 @@ const useSectionDetails = () => {
         }
         return item;
       });
-      updateSectionOptions({ content: newContent });
+      updateSectionOptions({ ...activeOption, content: newContent });
     } else {
       // Fallback for object-based content (if any remains)
       updateSectionOptions({
@@ -56,11 +58,11 @@ const useSectionDetails = () => {
   const handleUploadImage = (file: FileType, index: number) => {
     if (!section) return;
 
-    const newOptions = section?.options?.map((item) => {
-      if (item.id === section.section_id) {
-        return { ...item, photos: { ...item.photos, [index]: file } };
+    const newOptions = section?.options?.map((option) => {
+      if (option.id === section.section_id) {
+        return { ...option, photos: { ...option.photos, [index]: file } };
       }
-      return item;
+      return option;
     });
 
     setSection({ ...section, options: newOptions });

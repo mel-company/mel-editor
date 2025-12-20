@@ -5,7 +5,6 @@ import { mockTemplate } from "../../../mock/template";
 
 type Store = {
   sections: SectionType[];
-  all_sections: SectionType[];
   activeSectionId: string;
   setActiveSectionId: (id: string) => void;
   setSections: (sections: SectionType[]) => void;
@@ -16,14 +15,13 @@ export const useSectionStore = create<Store>()(
   persist(
     (set) => ({
       sections: [],
-      all_sections: mockTemplate.sections,
       activeSectionId: "",
       setActiveSectionId: (id) => set(() => ({ activeSectionId: id })),
       setSections: (sections) => set(() => ({ sections })),
       setSection: (section) =>
         set((state) => ({
           sections: state.sections.map((s) =>
-            s.id === section.id ? section : s
+            s.target_id === section.target_id ? section : s
           ),
         })),
     }),

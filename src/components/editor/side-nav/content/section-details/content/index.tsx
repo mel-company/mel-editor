@@ -5,7 +5,7 @@ const SectionContent = () => {
   const { section } = useSectionDetails();
 
   const content = section?.options?.find(
-    (s) => s.id === section?.section_id
+    (option) => option.id === section?.section_id
   )?.content;
 
   return (

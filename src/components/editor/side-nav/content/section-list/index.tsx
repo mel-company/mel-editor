@@ -18,7 +18,6 @@ import { useSectionStore } from "../../../../../store/editor/section";
 import { SectionType } from "../../../../../types";
 import classNames from "classnames";
 import NewSectionBtn from "./new-section-btn";
-import { useId } from "react";
 
 const EditorSectionList = () => {
   const { sections, setSections } = useSectionStore();
@@ -36,9 +35,11 @@ const EditorSectionList = () => {
 
     if (active.id !== over?.id) {
       const oldIndex = sections.findIndex(
-        (section) => section.id === active.id
+        (section) => section.target_id === active.id
       );
-      const newIndex = sections.findIndex((section) => section.id === over?.id);
+      const newIndex = sections.findIndex(
+        (section) => section.target_id === over?.id
+      );
 
       setSections(arrayMove(sections, oldIndex, newIndex));
     }
@@ -53,13 +54,12 @@ const EditorSectionList = () => {
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={sections}
+          items={sections.map((section) => section.target_id)}
           strategy={verticalListSortingStrategy}
         >
           <div className="w-full h-full gap-2 flex flex-col">
             {sections.map((section, index) => {
-              const id = useId();
-              return <SectionItem key={id} section={section} />;
+              return <SectionItem key={section?.target_id} section={section} />;
             })}
           </div>
         </SortableContext>
@@ -80,7 +80,7 @@ const SectionItem = ({ section }: { section: SectionType }) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: section.id });
+  } = useSortable({ id: section.target_id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -96,13 +96,13 @@ const SectionItem = ({ section }: { section: SectionType }) => {
     <div
       ref={setNodeRef}
       style={style}
-      onClick={() => setActiveSectionId(section.id)}
+      onClick={() => setActiveSectionId(section.target_id)}
       className={classNames(
         `w-full group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${
           isDragging ? "shadow-lg" : ""
         }`,
         {
-          "border-s-4 border-blue-500": activeSectionId === section.id,
+          "border-s-4 border-blue-500": activeSectionId === section.target_id,
         }
       )}
     >
