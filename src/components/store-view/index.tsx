@@ -93,7 +93,7 @@ const StoreView = ({
       {storeSettings.type !== "restaurant" && !hideFooter && (
         <Footer
           footer={storeSettings.footer || { text: "", links: [] }}
-          logo={storeSettings.footer?.logo || storeSettings.logo}
+          logo={storeSettings.logo}
         />
       )}
     </div>
@@ -109,37 +109,59 @@ const Footer = ({
   footer: { logo?: any; text?: string; links?: any[] };
   logo: any;
 }) => {
-  // Logo takes automatically from store logo
+  // Logo takes automatically from store logo (same as navbar)
   const logoUrl = logo?.base64Content || logo?.url;
 
   return (
-    <footer className="w-full bg-slate-50 border-t border-slate-200 p-8 mt-auto">
-      <div className="container mx-auto flex flex-col gap-4">
-        {logoUrl && (
-          <img
-            src={logoUrl}
-            alt="Logo"
-            className="h-8 w-auto"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-            }}
-          />
-        )}
-        {footer.text && <p className="text-sm text-slate-600">{footer.text}</p>}
-        {footer.links && footer.links.length > 0 && (
-          <nav className="flex gap-4 flex-wrap">
-            {footer.links.map((link) => (
-              <a
-                key={link.id}
-                href={link.url}
-                className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        )}
+    <footer className="w-full bg-slate-50 border-t border-slate-200 mt-auto">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="flex flex-col gap-4 sm:gap-6">
+          {/* Logo Section - Always show */}
+          <div>
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt="Logo"
+                className="h-8 sm:h-10 w-auto max-w-[200px]"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = "none";
+                }}
+              />
+            ) : (
+              <div className="h-8 sm:h-10 w-24 sm:w-32 bg-slate-200 rounded flex items-center justify-center">
+                <span className="text-slate-400 text-xs sm:text-sm">Logo</span>
+              </div>
+            )}
+          </div>
+
+          {/* Text Section */}
+          {footer?.text && (
+            <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
+              {footer.text}
+            </p>
+          )}
+
+          {/* Quick Links Section */}
+          {footer?.links && footer.links.length > 0 && (
+            <div>
+              <h3 className="text-xs sm:text-sm font-semibold text-slate-800 mb-2 sm:mb-3">
+                روابط سريعة
+              </h3>
+              <nav className="flex flex-wrap gap-2 sm:gap-3 md:gap-4">
+                {footer.links.map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.url}
+                    className="text-xs sm:text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </nav>
+            </div>
+          )}
+        </div>
       </div>
     </footer>
   );

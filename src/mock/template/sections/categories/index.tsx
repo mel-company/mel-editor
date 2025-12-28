@@ -13,8 +13,8 @@ const CategoriesSection = ({ categories }: { categories: CategoryType[] }) => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
         {categories.map((category, index) => {
           const imageUrl = category.thumbnail?.base64Content || category.thumbnail?.url || "";
           
@@ -39,7 +39,7 @@ const CategoriesSection = ({ categories }: { categories: CategoryType[] }) => {
                   </div>
                 )}
               </div>
-              <p className="text-center font-medium text-slate-900 group-hover:text-blue-600 transition-colors">
+              <p className="text-center text-xs sm:text-sm font-medium text-slate-900 group-hover:text-blue-600 transition-colors">
                 {category.name}
               </p>
             </div>

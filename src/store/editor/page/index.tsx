@@ -75,18 +75,45 @@ export const usePageStore = create<Store>()(
       currentPageId: "",
       setPages: (pages) => set(() => ({ pages })),
       setCurrentPageId: (id) => set(() => ({ currentPageId: id })),
-      addPage: (page) =>
+      addPage: (page) => {
         set((state) => {
           // Limit to maximum 4 pages
           if (state.pages.length >= 4) {
             console.warn("Maximum 4 pages allowed");
             return state;
           }
+          
+          // Auto-add navigation link for the new page
+          try {
+            const { useStoreSettingsStore } = require("../store-settings");
+            const storeSettings = useStoreSettingsStore.getState().storeSettings;
+            const currentLinks = storeSettings.header?.navigationLinks || [];
+            // Check if link already exists
+            const linkExists = currentLinks.some((link: any) => link.pageId === page.id);
+            if (!linkExists) {
+              const newLink = {
+                id: crypto.randomUUID(),
+                label: page.name,
+                url: `/${page.id}`,
+                pageId: page.id,
+              };
+              useStoreSettingsStore.getState().updateStoreSettings({
+                header: {
+                  ...storeSettings.header,
+                  navigationLinks: [...currentLinks, newLink],
+                },
+              });
+            }
+          } catch (error) {
+            console.error("Error adding navigation link:", error);
+          }
+          
           return {
             pages: [...state.pages, page],
             currentPageId: page.id,
           };
-        }),
+        });
+      },
       updatePage: (page) =>
         set((state) => ({
           pages: state.pages.map((p) => (p.id === page.id ? page : p)),

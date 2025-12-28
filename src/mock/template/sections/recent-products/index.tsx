@@ -84,18 +84,18 @@ const RecentProducts = ({
                   </span>
                 )}
               </div>
-              <div className="p-4 flex-1 flex flex-col">
-                <h3 className="font-semibold text-slate-900 mb-2 line-clamp-2">
+              <div className="p-3 sm:p-4 flex-1 flex flex-col">
+                <h3 className="text-sm sm:text-base font-semibold text-slate-900 mb-2 line-clamp-2">
                   {product.name}
                 </h3>
                 {product.description && (
-                  <p className="text-sm text-slate-600 mb-3 line-clamp-2 flex-1">
+                  <p className="text-xs sm:text-sm text-slate-600 mb-3 line-clamp-2 flex-1">
                     {product.description}
                   </p>
                 )}
-                <div className="flex items-center justify-between mt-auto">
-                  <div className="flex flex-col">
-                    <span className="text-lg font-bold text-green-600">
+                <div className="flex items-center justify-between mt-auto gap-2">
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <span className="text-base sm:text-lg font-bold text-green-600">
                       {finalPrice} ر.س
                     </span>
                     {product.discount > 0 && (
@@ -110,14 +110,14 @@ const RecentProducts = ({
                         e.stopPropagation();
                         addItem(product, 1);
                       }}
-                      className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      className="bg-blue-600 text-white p-1.5 sm:p-2 rounded-lg hover:bg-blue-700 transition-colors shrink-0"
                       title={
                         cartItem
                           ? `في السلة (${cartItem.quantity})`
                           : "أضف للسلة"
                       }
                     >
-                      <ShoppingCart className="w-4 h-4" />
+                      <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   )}
                 </div>
@@ -156,20 +156,20 @@ const RecentProductsCarousel = ({
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold">{content.title}</h2>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+        <h2 className="text-2xl sm:text-3xl font-bold">{content.title}</h2>
         {view_all_link && (
           <a
             href={view_all_link}
-            className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            className="text-sm sm:text-base text-blue-600 hover:text-blue-700 font-medium transition-colors whitespace-nowrap"
           >
             مشاهدة الكل →
           </a>
         )}
       </div>
-      <div className="overflow-x-auto pb-4">
-        <div className="flex gap-4 w-max">
+      <div className="overflow-x-auto pb-4 -mx-4 sm:mx-0 px-4 sm:px-0">
+        <div className="flex gap-3 sm:gap-4 w-max">
           {products.map((product, index) => {
             const imageUrl =
               product.thumbnail?.base64Content || product.thumbnail?.url || "";
@@ -213,18 +213,18 @@ const RecentProductsCarousel = ({
                     </span>
                   )}
                 </div>
-                <div className="p-4 flex-1 flex flex-col">
-                  <h3 className="font-semibold text-slate-900 mb-2 line-clamp-2">
+                <div className="p-3 sm:p-4 flex-1 flex flex-col">
+                  <h3 className="text-sm sm:text-base font-semibold text-slate-900 mb-2 line-clamp-2">
                     {product.name}
                   </h3>
                   {product.description && (
-                    <p className="text-sm text-slate-600 mb-3 line-clamp-2 flex-1">
+                    <p className="text-xs sm:text-sm text-slate-600 mb-3 line-clamp-2 flex-1">
                       {product.description}
                     </p>
                   )}
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex flex-col">
-                      <span className="text-lg font-bold text-green-600">
+                  <div className="flex items-center justify-between mt-auto gap-2">
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="text-base sm:text-lg font-bold text-green-600">
                         {finalPrice} ر.س
                       </span>
                       {product.discount > 0 && (
@@ -239,14 +239,14 @@ const RecentProductsCarousel = ({
                           e.stopPropagation();
                           addItem(product, 1);
                         }}
-                        className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="bg-blue-600 text-white p-1.5 sm:p-2 rounded-lg hover:bg-blue-700 transition-colors shrink-0"
                         title={
                           cartItem
                             ? `في السلة (${cartItem.quantity})`
                             : "أضف للسلة"
                         }
                       >
-                        <ShoppingCart className="w-4 h-4" />
+                        <ShoppingCart className="w-3 h-3 sm:w-4 sm:h-4" />
                       </button>
                     )}
                   </div>

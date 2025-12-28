@@ -79,7 +79,7 @@ const RenderTemplate = () => {
               cursor-pointer transition-all duration-200 relative
               ${
                 activeElementType === "navigation"
-                  ? "outline-2 outline-blue-500 outline -outline-offset-2"
+                  ? "outline-2 outline-blue-500 outline-outline-offset-2"
                   : ""
               }
             `}
@@ -157,7 +157,7 @@ const RenderTemplate = () => {
         {storeSettings.type !== "restaurant" && (
           <Footer
             footer={storeSettings.footer || { text: "", links: [] }}
-            logo={storeSettings.footer?.logo || storeSettings.logo}
+            logo={storeSettings.logo}
           />
         )}
       </div>

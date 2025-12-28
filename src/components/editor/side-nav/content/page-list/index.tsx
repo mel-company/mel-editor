@@ -33,23 +33,8 @@ const PageList = () => {
       type,
       sections: [],
     };
+    // addPage will automatically add navigation link
     addPage(newPage);
-
-    // Auto-add navigation link for the new page
-    const currentLinks = storeSettings.header?.navigationLinks || [];
-    const newLink = {
-      id: crypto.randomUUID(),
-      label: newPage.name,
-      url: `/${newPage.id}`,
-      pageId: newPage.id,
-    };
-    updateStoreSettings({
-      header: {
-        ...storeSettings.header,
-        navigationLinks: [...currentLinks, newLink],
-      },
-    });
-
     setOpen(false);
   };
 
