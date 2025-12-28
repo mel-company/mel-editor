@@ -1,26 +1,29 @@
-import { useState } from "react";
 import SelectList from "../../../../ui/select-list";
 import { fontList } from "../../../../../utils/fonts";
+import React from "react";
+import { useStoreSettingsStore } from "../../../../../store/editor/store-settings";
 
 const EditorThemeFonts = () => {
-  const [data, setData] = useState({
+  const { storeSettings, setFonts } = useStoreSettingsStore();
+  const fonts = storeSettings.fonts || {
     heading: fontList[0],
     body: fontList[0],
-  });
+  };
+
   return (
     <div className="editor-nav-section">
       <h3 className="title">{"الخطوط"}</h3>
       <h4 className="sub-title">{"العنوان"}</h4>
       <SelectList
         options={fontList}
-        selected={data.heading}
-        setSelected={(value: string) => setData({ ...data, heading: value })}
+        selected={fonts.heading}
+        setSelected={(value: string) => setFonts({ ...fonts, heading: value })}
       />
       <h4 className="sub-title">{"النصوص"}</h4>
       <SelectList
         options={fontList}
-        selected={data.body}
-        setSelected={(value: string) => setData({ ...data, body: value })}
+        selected={fonts.body}
+        setSelected={(value: string) => setFonts({ ...fonts, body: value })}
       />
     </div>
   );

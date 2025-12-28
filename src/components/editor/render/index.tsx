@@ -1,21 +1,48 @@
 import { useEffect } from "react";
-import { mockTemplate } from "../../../mock/template";
+import React from "react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Facebook,
+  Instagram,
+  Twitter,
+  Linkedin,
+} from "lucide-react";
 import { useSectionStore } from "../../../store/editor/section";
-import { SectionType } from "../../../types";
+import { usePageStore } from "../../../store/editor/page";
+import { useStoreSettingsStore } from "../../../store/editor/store-settings";
+import { SectionType, PageType } from "../../../types";
+import { Navigation1 } from "../../../mock/template/sections/navigation";
 
 const RenderTemplate = () => {
-  const template = mockTemplate;
-  const { sections, setSections, activeSectionId, setActiveSectionId } =
-    useSectionStore();
+  const {
+    activeSectionId,
+    activeElementType,
+    setActiveSectionId,
+    setActiveElementType,
+  } = useSectionStore();
+  const { pages, currentPageId, setCurrentPageId } = usePageStore();
+  const { storeSettings } = useStoreSettingsStore();
+  const currentPage = pages.find((p) => p.id === currentPageId);
+  // Get sections directly from currentPage - they're already stored there
+  // Filter out navigation sections as they're rendered separately as header
+  const sections =
+    currentPage?.sections.filter((s) => s.type !== "navigation") || [];
 
+  // Clear active section when page changes
   useEffect(() => {
-    setSections(
-      template.sections.map((section) => ({
-        ...section,
-        target_id: crypto.randomUUID(),
-      }))
-    );
-  }, [template.sections]);
+    setActiveSectionId(""); // Clear active section when switching pages
+    setActiveElementType(""); // Clear active element type
+  }, [currentPageId, setActiveSectionId, setActiveElementType]);
+
+  // Apply fonts and colors from store settings
+  const fonts = storeSettings.fonts || { heading: "Arial", body: "Arial" };
+  const colors = storeSettings.colors || {
+    primary: "#4272FF",
+    secondary: "#ACBA12",
+    text: "#1D293D",
+  };
 
   return (
     <div
@@ -26,58 +53,367 @@ const RenderTemplate = () => {
       }}
       className="w-full h-full flex items-center justify-center cursor-default"
     >
-      <div className="w-full h-full  max-h-[90vh] max-w-11/12 overflow-y-auto overflow-x-hidden bg-white rounded-2xl">
-        {sections.map((section) => (
+      <div
+        className="w-full h-full max-h-[90vh] max-w-11/12 overflow-y-auto overflow-x-hidden bg-white rounded-2xl flex flex-col"
+        style={
+          {
+            fontFamily: fonts.body,
+            color: colors.text,
+            "--heading-font": fonts.heading,
+            "--body-font": fonts.body,
+            "--primary-color": colors.primary,
+            "--secondary-color": colors.secondary,
+            "--text-color": colors.text,
+          } as React.CSSProperties
+        }
+      >
+        {/* Navigation Bar - Main Header (only for e-commerce) */}
+        {storeSettings.type !== "restaurant" && (
           <div
-            key={section.target_id}
-            onClick={() => setActiveSectionId(section.target_id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveElementType("navigation");
+              setActiveSectionId("");
+            }}
             className={`
-              cursor-pointer transition-all duration-200
+              cursor-pointer transition-all duration-200 relative
               ${
-                section.target_id === activeSectionId
-                  ? "outline-2 outline-blue-500"
+                activeElementType === "navigation"
+                  ? "outline-2 outline-blue-500 outline -outline-offset-2"
                   : ""
               }
             `}
+            style={{
+              backgroundColor: storeSettings.header?.styles?.backgroundColor,
+              color: storeSettings.header?.styles?.textColor,
+            }}
           >
-            <Section section={section} />
+            <Navigation1
+              logo={storeSettings.logo}
+              navigationLinks={storeSettings.header?.navigationLinks}
+              primaryColor={storeSettings.colors?.primary}
+              onLinkClick={(pageId) => {
+                if (pageId) {
+                  setCurrentPageId(pageId);
+                  // Scroll to top of page content
+                  setTimeout(() => {
+                    const pageContent = document.querySelector(
+                      "[data-page-content]"
+                    );
+                    if (pageContent) {
+                      pageContent.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                      });
+                    }
+                  }, 100);
+                }
+              }}
+            />
           </div>
-        ))}
+        )}
+
+        {/* Page Content */}
+        <div className="flex-1" data-page-content>
+          {sections.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">
+              لا توجد أقسام في هذه الصفحة
+            </div>
+          ) : (
+            sections.map((section) => {
+              const sectionStyles = section.styles || {};
+              return (
+                <div
+                  key={section.target_id}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveElementType("section");
+                    setActiveSectionId(section.target_id || "");
+                  }}
+                  className={`
+                    cursor-pointer transition-all duration-200
+                    ${
+                      section.target_id === activeSectionId &&
+                      activeElementType === "section"
+                        ? "outline-2 outline-blue-500 outline"
+                        : ""
+                    }
+                  `}
+                  style={{
+                    backgroundColor: sectionStyles.backgroundColor,
+                    color: sectionStyles.textColor,
+                    padding: sectionStyles.padding,
+                    margin: sectionStyles.margin,
+                  }}
+                >
+                  <Section section={section} />
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Footer (only for e-commerce) */}
+        {storeSettings.type !== "restaurant" && (
+          <Footer
+            footer={storeSettings.footer || { text: "", links: [] }}
+            logo={storeSettings.footer?.logo || storeSettings.logo}
+          />
+        )}
       </div>
     </div>
   );
 };
 
-export default RenderTemplate;
+const Footer = ({
+  footer,
+  logo,
+}: {
+  footer: { logo?: any; text?: string; links?: any[] };
+  logo: any;
+}) => {
+  // Prioritize base64Content over url, as blob URLs expire after page reload
+  // Logo takes automatically from store logo
+  const logoUrl = logo?.base64Content || logo?.url;
+
+  // Mock social media links for demonstration
+  const socialLinks = [
+    { icon: Facebook, href: "#", label: "فيسبوك" },
+    { icon: Instagram, href: "#", label: "انستغرام" },
+    { icon: Twitter, href: "#", label: "تويتر" },
+    { icon: Linkedin, href: "#", label: "لينكد إن" },
+  ];
+
+  return (
+    <footer
+      className="w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white mt-auto"
+      dir="rtl"
+    >
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          {/* Logo and Description Section */}
+          <div className="lg:col-span-2">
+            {logoUrl && (
+              <div className="mb-6">
+                <img
+                  src={logoUrl}
+                  alt="Logo"
+                  className="h-12 w-auto filter brightness-0 invert"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = "none";
+                  }}
+                />
+              </div>
+            )}
+            {footer.text && (
+              <p className="text-slate-300 leading-relaxed mb-6 max-w-md">
+                {footer.text}
+              </p>
+            )}
+
+            {/* Social Media Links */}
+            <div className="flex gap-3">
+              {socialLinks.map((social, index) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={index}
+                    href={social.href}
+                    className="group relative w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1"
+                    aria-label={social.label}
+                  >
+                    <Icon className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
+                    <div className="absolute inset-0 rounded-lg bg-blue-600 opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Quick Links Section */}
+          {footer.links && footer.links.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-white mb-4 relative inline-block">
+                روابط سريعة
+                <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-gradient-to-l from-blue-600 to-purple-600"></span>
+              </h3>
+              <nav className="flex flex-col gap-3">
+                {footer.links.map((link) => (
+                  <a
+                    key={link.id}
+                    href={link.url}
+                    className="group flex items-center gap-2 text-slate-300 hover:text-blue-400 transition-all duration-300"
+                  >
+                    <span className="w-0 h-0.5 bg-blue-400 group-hover:w-4 transition-all duration-300"></span>
+                    <span className="group-hover:translate-x-1 transition-transform duration-300">
+                      {link.label}
+                    </span>
+                  </a>
+                ))}
+              </nav>
+            </div>
+          )}
+
+          {/* Contact Information Section */}
+          <div>
+            <h3 className="text-lg font-bold text-white mb-4 relative inline-block">
+              تواصل معنا
+              <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-gradient-to-l from-blue-600 to-purple-600"></span>
+            </h3>
+            <div className="flex flex-col gap-4">
+              <a
+                href="mailto:info@example.com"
+                className="group flex items-center gap-3 text-slate-300 hover:text-blue-400 transition-colors"
+              >
+                <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <span className="text-sm">info@example.com</span>
+              </a>
+
+              <a
+                href="tel:+1234567890"
+                className="group flex items-center gap-3 text-slate-300 hover:text-blue-400 transition-colors"
+              >
+                <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <span className="text-sm" dir="ltr">
+                  +123 456 7890
+                </span>
+              </a>
+
+              <div className="group flex items-center gap-3 text-slate-300">
+                <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <span className="text-sm">
+                  الرياض، المملكة العربية السعودية
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-slate-700 my-8"></div>
+
+        {/* Bottom Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-slate-400 text-sm">
+            © {new Date().getFullYear()} جميع الحقوق محفوظة
+          </p>
+
+          <div className="flex gap-6 text-sm">
+            <a
+              href="#"
+              className="text-slate-400 hover:text-blue-400 transition-colors"
+            >
+              سياسة الخصوصية
+            </a>
+            <a
+              href="#"
+              className="text-slate-400 hover:text-blue-400 transition-colors"
+            >
+              الشروط والأحكام
+            </a>
+            <a
+              href="#"
+              className="text-slate-400 hover:text-blue-400 transition-colors"
+            >
+              سياسة الاسترجاع
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Decorative Bottom Gradient */}
+      <div className="h-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"></div>
+    </footer>
+  );
+};
 
 const Section = ({ section }: { section: SectionType }) => {
   const selected_options = section.options?.find(
     (option) => option.id === section.section_id
   );
-  const Component = selected_options?.component as any;
 
-  if (!Component) return null;
+  // Debug: check what's in selected_options
+  if (!selected_options) {
+    console.warn("Option not found:", {
+      section_id: section.section_id,
+      section_type: section.type,
+      options_count: section.options?.length,
+      options_ids: section.options?.map((o) => o.id),
+    });
+    return null;
+  }
+
+  const Component = selected_options.component as any;
+
+  if (!Component) {
+    console.warn("Section component not found:", {
+      section_id: section.section_id,
+      section_type: section.type,
+      selected_option: selected_options,
+      has_component: !!selected_options.component,
+      component_type: typeof selected_options.component,
+    });
+    return null;
+  }
 
   const { component: _Component, ...restOptions } = (selected_options ||
     {}) as any;
 
-  let props = { ...restOptions };
+  let props: any = {};
 
+  // Handle content (title, description, etc.)
   if (restOptions.content) {
     if (Array.isArray(restOptions.content)) {
       const contentProps = restOptions.content.reduce((acc: any, item: any) => {
         acc[item.name] = item.value;
         return acc;
       }, {});
-      props = { ...props, ...contentProps };
+      // For hero sections, pass title and description directly
+      if (section.type === "hero") {
+        props.title = contentProps.title;
+        props.description = contentProps.description;
+      } else {
+        props.content = contentProps;
+      }
     } else {
-      props = { ...props, ...restOptions.content };
+      // For hero sections, pass title and description directly
+      if (section.type === "hero") {
+        props.title = restOptions.content.title;
+        props.description = restOptions.content.description;
+      } else {
+        props.content = restOptions.content;
+      }
     }
   }
 
+  // Handle photos (logo, images, etc.)
   if (restOptions.photos && !Array.isArray(restOptions.photos)) {
     props = { ...props, ...restOptions.photos };
+  } else if (restOptions.photos) {
+    props.photos = restOptions.photos;
+  }
+
+  // Handle products, categories, and view_all_link
+  if (restOptions.products !== undefined) {
+    props.products = restOptions.products;
+  }
+  if (restOptions.categories !== undefined) {
+    props.categories = restOptions.categories;
+  }
+  if (restOptions.view_all_link !== undefined || section.view_all_link) {
+    props.view_all_link =
+      restOptions.view_all_link || section.view_all_link || "";
   }
 
   return <Component {...props} />;
 };
+
+export default RenderTemplate;

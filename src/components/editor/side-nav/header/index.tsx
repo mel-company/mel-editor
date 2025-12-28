@@ -1,41 +1,81 @@
 import classNames from "classnames";
 import React from "react";
+import { Eye, Home } from "lucide-react";
+import ExportButton from "./export-btn";
 
 const EditoNavHeader = ({
   side,
   setSide,
+  onNavigate,
+  isRestaurant = false,
 }: {
   side: string;
   setSide: React.Dispatch<React.SetStateAction<string>>;
+  onNavigate?: (view: "editor" | "store" | "dashboard") => void;
+  isRestaurant?: boolean;
 }) => {
-  const options = [
-    {
-      label: "الثيم",
-      value: "theme",
-    },
-    {
-      label: "المحتوى",
-      value: "content",
-    },
-  ];
+  const options = isRestaurant
+    ? [
+        {
+          label: "الثيم",
+          value: "theme",
+        },
+      ]
+    : [
+        {
+          label: "الثيم",
+          value: "theme",
+        },
+        {
+          label: "المحتوى",
+          value: "content",
+        },
+        {
+          label: "العناصر",
+          value: "elements",
+        },
+      ];
 
   return (
-    <div className="grid grid-cols-2 p-1 w-full bg-slate-50 rounded-xl relative">
-      {options.map((option) => (
+    <div className="flex flex-col gap-2">
+      <div
+        className={`grid p-1 w-full bg-slate-50 rounded-xl relative ${
+          isRestaurant ? "grid-cols-1" : "grid-cols-3"
+        }`}
+      >
+        {options.map((option) => (
+          <button
+            key={option.value}
+            onClick={() => setSide(option.value)}
+            className={classNames(
+              "w-full text-xs transition-all py-2 rounded-lg text-center font-medium",
+              {
+                "bg-white text-blue-500": option.value === side,
+                "bg-slate-50 text-slate-500": option.value !== side,
+              }
+            )}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <div className="flex gap-2">
         <button
-          key={option.value}
-          onClick={() => setSide(option.value)}
-          className={classNames(
-            "w-full text-sm transition-all py-2 rounded-lg text-center font-medium",
-            {
-              "bg-white text-blue-500": option.value === side,
-              "bg-slate-50 text-slate-500": option.value !== side,
-            }
-          )}
+          onClick={() => onNavigate?.("dashboard")}
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-xs font-medium"
         >
-          {option.label}
+          <Home className="w-4 h-4" />
+          <span>لوحة التحكم</span>
         </button>
-      ))}
+        <button
+          onClick={() => onNavigate?.("store")}
+          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-xs font-medium"
+        >
+          <Eye className="w-4 h-4" />
+          <span>عرض المتجر</span>
+        </button>
+      </div>
+      <ExportButton />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/css";
 
@@ -16,53 +16,66 @@ const ColorPickerBar = ({
   open: string;
   setOpen: (value: string) => void;
 }) => {
-  const [color, setColor] = useColor(value);
+  const [color, setColor] = useColor(value || "#000000");
 
+  // Update color when value prop changes from outside
   useEffect(() => {
+    if (value && color?.hex !== value) {
+      try {
+        setColor({ hex: value, rgb: undefined, hsv: undefined });
+      } catch (e) {
+        // Ignore errors
+      }
+    }
+  }, [value]);
+
+  // Notify parent when color changes
+  useEffect(() => {
+    if (!color?.hex) return;
+    
     const handler = setTimeout(() => {
-      onChange(color?.hex);
-    }, 300);
+      if (color.hex && color.hex !== value) {
+        onChange(color.hex);
+      }
+    }, 100);
 
     return () => {
       clearTimeout(handler);
     };
   }, [color?.hex]);
 
+  const isOpen = open === label;
+
   return (
-    <div className="flex gap-1 select-none p-1.5 rounded-lg w-full justify-baseline bg-slate-50 items-center relative">
-      <label
-        onClick={() => setOpen("")}
-        className="text-xs text-slate-500 w-full m-1"
-      >
-        {label}
-      </label>
-      <div
-        role="button"
-        onClick={() => setOpen(open === label ? "" : label)}
-        className="flex items-center gap-1 uppercase font-medium"
-      >
-        <p>{value}</p>
+    <div className="flex flex-col gap-2 select-none p-2 rounded-lg w-full bg-slate-50 relative">
+      <div className="flex items-center justify-between">
+        <label className="text-xs text-slate-600 font-medium">
+          {label}
+        </label>
         <div
-          className="w-6 h-5 rounded-md"
-          style={{ backgroundColor: value }}
-        />
+          role="button"
+          onClick={() => setOpen(isOpen ? "" : label)}
+          className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 px-2 py-1 rounded transition-colors"
+        >
+          <div
+            className="w-8 h-8 rounded border-2 border-slate-300"
+            style={{ backgroundColor: value || "#000000" }}
+          />
+          <p className="text-xs font-mono uppercase font-medium text-slate-700">
+            {value || "#000000"}
+          </p>
+        </div>
       </div>
-      <div
-        className={classNames(
-          "absolute top-0 start-4 z-50 transition-all -translate-y-1/2 -translate-x-full duration-150 ease-in-out",
-          {
-            "opacity-100 pointer-events-auto scale-80": open === label,
-            "opacity-0 pointer-events-none scale-50": open !== label,
-          }
-        )}
-      >
-        <ColorPicker
-          color={color}
-          onChange={setColor}
-          hideInput={["rgb", "hsv"]}
-          height={140}
-        />
-      </div>
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-lg shadow-xl border border-slate-200 p-2">
+          <ColorPicker
+            color={color}
+            onChange={setColor}
+            hideInput={["rgb", "hsv"]}
+            height={140}
+          />
+        </div>
+      )}
     </div>
   );
 };

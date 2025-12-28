@@ -17,11 +17,11 @@ import { ListChevronsUpDown } from "lucide-react";
 import { useSectionStore } from "../../../../../store/editor/section";
 import { SectionType } from "../../../../../types";
 import classNames from "classnames";
-import NewSectionBtn from "./new-section-btn";
 import Divider from "../../../../ui/divider";
 
 const EditorSectionList = () => {
-  const { sections, setSections } = useSectionStore();
+  const { getSections, setSections } = useSectionStore();
+  const sections = getSections();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -69,7 +69,6 @@ const EditorSectionList = () => {
             </div>
           </SortableContext>
         </DndContext>
-        <NewSectionBtn />
       </div>
     </div>
   );

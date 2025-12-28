@@ -19,3 +19,13 @@ body {
 .editor .sub-title {
     @apply text-xs text-slate-400;
 }
+
+/* Apply heading font to headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--heading-font, 'IBM Plex Sans Arabic', sans-serif);
+}
+
+/* Apply body font to body text */
+body, p, span, div {
+  font-family: var(--body-font, 'IBM Plex Sans Arabic', sans-serif);
+}

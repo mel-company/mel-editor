@@ -21,10 +21,11 @@ const FileUploadListItem = ({
     acceptedTypes: ["image/*"],
   });
 
+  // Use base64Content only, as blob URLs expire and can't be restored after page reload
   const displayImage =
-    fileState.file?.url ||
     fileState.file?.base64Content ||
-    (value?.url ? value.url : value?.base64Content);
+    value?.base64Content ||
+    value?.url; // Fallback to url only if base64 is not available
 
   return (
     <div
@@ -47,6 +48,11 @@ const FileUploadListItem = ({
                   src={displayImage}
                   alt="Preview"
                   className="h-full w-full object-cover"
+                  onError={(e) => {
+                    // Hide image if it fails to load (e.g., expired blob URL)
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
                 />
               ) : (
                 <ImageIcon strokeWidth={1.5} className="text-slate-500" />
