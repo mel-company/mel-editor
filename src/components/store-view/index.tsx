@@ -7,6 +7,7 @@ interface StoreViewProps {
   currentPageId: string;
   storeSettings: StoreType;
   onPageChange?: (pageId: string) => void;
+  hideFooter?: boolean;
 }
 
 const StoreView = ({
@@ -14,6 +15,7 @@ const StoreView = ({
   currentPageId,
   storeSettings,
   onPageChange,
+  hideFooter = false,
 }: StoreViewProps) => {
   const currentPage = pages.find((p) => p.id === currentPageId);
   // Filter out navigation sections as they're rendered separately as header
@@ -87,8 +89,8 @@ const StoreView = ({
         })}
       </main>
 
-      {/* Footer (only for e-commerce) */}
-      {storeSettings.type !== "restaurant" && (
+      {/* Footer (only for e-commerce, and not hidden) */}
+      {storeSettings.type !== "restaurant" && !hideFooter && (
         <Footer
           footer={storeSettings.footer || { text: "", links: [] }}
           logo={storeSettings.footer?.logo || storeSettings.logo}

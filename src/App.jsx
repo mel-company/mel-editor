@@ -17,8 +17,8 @@ function App() {
         <Route path="/" element={<TemplateSelector />} />
         <Route path="/editor" element={<EditorPage />} />
         <Route path="/store-view" element={<StoreViewPage />} />
+        <Route path="/store-view/cart" element={<StoreViewPage />} />
         <Route path="/product/:productId" element={<ProductDetailPage />} />
-        <Route path="/cart" element={<CartPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

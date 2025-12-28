@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { usePageStore } from "../../store/editor/page";
 import { useStoreSettingsStore } from "../../store/editor/store-settings";
 import StoreView from "../../components/store-view";
+import CartPage from "../cart";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 
 const StoreViewPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { pages, currentPageId, setCurrentPageId } = usePageStore();
   const { storeSettings } = useStoreSettingsStore();
   const [viewPageId, setViewPageId] = useState(currentPageId || pages[0]?.id);
+  const isCartPage = location.pathname === "/store-view/cart" || location.pathname === "/cart";
 
   useEffect(() => {
     // Set initial page if not set
-    if (!viewPageId && pages.length > 0) {
+    if (!viewPageId && pages.length > 0 && !isCartPage) {
       setViewPageId(pages[0].id);
     }
-  }, [pages, viewPageId]);
+  }, [pages, viewPageId, isCartPage]);
 
   const handlePageChange = (pageId: string) => {
     setViewPageId(pageId);
@@ -61,13 +64,20 @@ const StoreViewPage = () => {
         </div>
       </div>
 
-      {/* Store View */}
-      <StoreView
-        pages={pages}
-        currentPageId={viewPageId}
-        storeSettings={storeSettings}
-        onPageChange={handlePageChange}
-      />
+      {/* Store View or Cart Page */}
+      {isCartPage ? (
+        <div className="min-h-screen">
+          <CartPage />
+        </div>
+      ) : (
+        <StoreView
+          pages={pages}
+          currentPageId={viewPageId}
+          storeSettings={storeSettings}
+          onPageChange={handlePageChange}
+          hideFooter={false}
+        />
+      )}
     </div>
   );
 };
