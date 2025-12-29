@@ -35,8 +35,17 @@ const defaultStoreSettings: StoreType = {
   footer: {
     logo: {},
     text: "",
+    title: "عن المتجر",
+    description: "نقدم لكم أفضل المنتجات والخدمات مع ضمان الجودة والرضا",
+    contactInfo: {
+      email: "info@example.com",
+      phone: "+123 456 7890",
+      address: "الرياض، المملكة العربية السعودية",
+    },
     links: [],
     socialLinks: [],
+    showFooter: true, // Footer يظهر افتراضياً
+    footerVariant: "1", // نوع Footer الافتراضي
   },
 };
 

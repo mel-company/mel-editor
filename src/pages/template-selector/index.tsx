@@ -9,6 +9,7 @@ import { hero_sections } from "../../mock/template/sections/hero";
 import { menu_sections } from "../../mock/template/sections/menu";
 import { categories_sections } from "../../mock/template/sections/categories";
 import { recent_products_sections } from "../../mock/template/sections/recent-products";
+import { footer_sections } from "../../mock/template/sections/footer";
 import { mockProducts } from "../../mock/products";
 import { useNavigate } from "react-router-dom";
 
@@ -205,6 +206,8 @@ const TemplateSelector = () => {
             : recent_products_sections;
       } else if (type === "categories") {
         options = categories_sections;
+      } else if (type === "footer") {
+        options = footer_sections;
       }
 
       const selectedOption = options.find((opt) => opt.id === sectionId);

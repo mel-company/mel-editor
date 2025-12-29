@@ -3,6 +3,7 @@ import { categories_sections } from "./sections/categories";
 import { hero_sections } from "./sections/hero";
 import { navigation_sections } from "./sections/navigation";
 import { recent_products_sections } from "./sections/recent-products";
+import { footer_sections } from "./sections/footer";
 
 export const mockTemplate: TemplateType = {
   id: "cklsmvdlkvmds",
@@ -43,6 +44,14 @@ export const mockTemplate: TemplateType = {
       type: "recentProducts",
       view_all_link: "",
       options: recent_products_sections,
+      editable: true,
+    },
+    {
+      id: "4",
+      section_id: "1",
+      type: "footer",
+      view_all_link: "",
+      options: footer_sections,
       editable: true,
     },
   ],

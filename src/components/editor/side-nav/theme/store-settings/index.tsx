@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useStoreSettingsStore } from "../../../../../store/editor/store-settings";
 import { usePageStore } from "../../../../../store/editor/page";
 import FileUploadInput from "../../../../ui/file-upload";
 import TextInput from "../../../../ui/input";
 import SelectList from "../../../../ui/select-list";
 import Divider from "../../../../ui/divider";
+import ColorPickerBar from "../../../../ui/color-picker-bar";
 import { Plus, Trash2 } from "lucide-react";
 
 const EditorStoreSettings = () => {
@@ -114,15 +115,181 @@ const EditorStoreSettings = () => {
       <div>
         <h3 className="title">{"الفوتر"}</h3>
 
+        {/* Show/Hide Footer Toggle */}
         <div className="mt-3">
-          <p className="text-sm text-slate-600 mb-2">
-            الشعار يأخذ تلقائياً من شعار المتجر
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={storeSettings.footer?.showFooter !== false}
+              onChange={(e) => {
+                updateStoreSettings({
+                  footer: {
+                    ...storeSettings.footer,
+                    showFooter: e.target.checked,
+                  },
+                });
+              }}
+              className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 focus:ring-2"
+            />
+            <span className="text-sm font-medium text-slate-700">
+              إظهار الفوتر
+            </span>
+          </label>
+          <p className="text-xs text-slate-500 mt-1">
+            {storeSettings.footer?.showFooter !== false
+              ? "الفوتر سيظهر في جميع الصفحات"
+              : "الفوتر مخفي في جميع الصفحات"}
           </p>
         </div>
 
-        {/* Footer Links */}
-        <div className="mt-3">
-          <label className="sub-title mb-2 block">روابط سريعة</label>
+        {storeSettings.footer?.showFooter !== false && (
+          <>
+            <Divider />
+
+            {/* Footer Variant Selection */}
+            <div className="mt-3">
+              <label className="sub-title mb-2 block">نوع التصميم</label>
+              <SelectList
+                selected={
+                  storeSettings.footer?.footerVariant
+                    ? `Footer ${storeSettings.footer.footerVariant}`
+                    : "Footer 1"
+                }
+                options={["Footer 1", "Footer 2", "Footer 3"]}
+                setSelected={(selected) => {
+                  const variant = selected.replace("Footer ", "");
+                  updateStoreSettings({
+                    footer: {
+                      ...storeSettings.footer,
+                      footerVariant: variant,
+                    },
+                  });
+                }}
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                {storeSettings.footer?.footerVariant === "1" && "تصميم داكن مع تدرج لوني"}
+                {storeSettings.footer?.footerVariant === "2" && "تصميم فاتح بسيط"}
+                {storeSettings.footer?.footerVariant === "3" && "تصميم بسيط ومختصر"}
+              </p>
+            </div>
+
+            <Divider />
+
+            {/* Footer Content */}
+            <div className="mt-3">
+              <h4 className="sub-title mb-3">المحتوى</h4>
+              
+              <div className="flex flex-col gap-3">
+                <TextInput
+                  label="عنوان الفوتر"
+                  placeholder="مثال: عن المتجر"
+                  value={storeSettings.footer?.title || ""}
+                  onChange={(e) =>
+                    updateStoreSettings({
+                      footer: { ...storeSettings.footer, title: e.target.value },
+                    })
+                  }
+                />
+
+                <TextInput
+                  label="وصف الفوتر"
+                  placeholder="وصف قصير عن المتجر"
+                  value={storeSettings.footer?.description || ""}
+                  onChange={(e) =>
+                    updateStoreSettings({
+                      footer: { ...storeSettings.footer, description: e.target.value },
+                    })
+                  }
+                  lg
+                />
+
+                <TextInput
+                  label="نص إضافي"
+                  placeholder="نص إضافي للفوتر"
+                  value={storeSettings.footer?.text || ""}
+                  onChange={(e) =>
+                    updateStoreSettings({
+                      footer: { ...storeSettings.footer, text: e.target.value },
+                    })
+                  }
+                  lg
+                />
+              </div>
+            </div>
+
+            <Divider />
+
+            {/* Contact Information */}
+            <div className="mt-3">
+              <h4 className="sub-title mb-3">معلومات الاتصال</h4>
+              
+              <div className="flex flex-col gap-3">
+                <TextInput
+                  label="البريد الإلكتروني"
+                  placeholder="info@example.com"
+                  value={storeSettings.footer?.contactInfo?.email || ""}
+                  onChange={(e) =>
+                    updateStoreSettings({
+                      footer: {
+                        ...storeSettings.footer,
+                        contactInfo: {
+                          ...storeSettings.footer?.contactInfo,
+                          email: e.target.value,
+                        },
+                      },
+                    })
+                  }
+                />
+
+                <TextInput
+                  label="رقم الهاتف"
+                  placeholder="+123 456 7890"
+                  value={storeSettings.footer?.contactInfo?.phone || ""}
+                  onChange={(e) =>
+                    updateStoreSettings({
+                      footer: {
+                        ...storeSettings.footer,
+                        contactInfo: {
+                          ...storeSettings.footer?.contactInfo,
+                          phone: e.target.value,
+                        },
+                      },
+                    })
+                  }
+                />
+
+                <TextInput
+                  label="العنوان"
+                  placeholder="الرياض، المملكة العربية السعودية"
+                  value={storeSettings.footer?.contactInfo?.address || ""}
+                  onChange={(e) =>
+                    updateStoreSettings({
+                      footer: {
+                        ...storeSettings.footer,
+                        contactInfo: {
+                          ...storeSettings.footer?.contactInfo,
+                          address: e.target.value,
+                        },
+                      },
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            <Divider />
+
+            {/* Footer Colors */}
+            <div className="mt-3">
+              <h4 className="sub-title mb-3">الألوان</h4>
+              <FooterColorsEditor />
+            </div>
+
+            <Divider />
+
+            {/* Footer Links */}
+            <div className="mt-3">
+              <label className="sub-title mb-2 block">روابط سريعة</label>
           <div className="flex flex-col gap-2">
             {storeSettings.footer?.links?.map((link, index) => {
               const selectedPageId = link.url?.replace("/", "") || "";
@@ -307,6 +474,81 @@ const EditorStoreSettings = () => {
             </button>
           </div>
         </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Footer Colors Editor Component
+const FooterColorsEditor = () => {
+  const { storeSettings, updateStoreSettings } = useStoreSettingsStore();
+  const [open, setOpen] = useState("");
+
+  const styles = storeSettings.footer?.styles || {
+    backgroundColor: "#1e293b",
+    textColor: "#ffffff",
+    padding: "",
+    margin: "",
+  };
+
+  const updateStyles = (newStyles: Partial<typeof styles>) => {
+    updateStoreSettings({
+      footer: {
+        ...storeSettings.footer,
+        styles: {
+          ...styles,
+          ...newStyles,
+        },
+      },
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div>
+        <h5 className="text-xs text-slate-600 mb-2">لون الخلفية</h5>
+        <ColorPickerBar
+          label="الخلفية"
+          value={styles.backgroundColor || "#1e293b"}
+          onChange={(value) => updateStyles({ backgroundColor: value })}
+          open={open}
+          setOpen={setOpen}
+        />
+      </div>
+
+      <div>
+        <h5 className="text-xs text-slate-600 mb-2">لون النص</h5>
+        <ColorPickerBar
+          label="النص"
+          value={styles.textColor || "#ffffff"}
+          onChange={(value) => updateStyles({ textColor: value })}
+          open={open}
+          setOpen={setOpen}
+        />
+      </div>
+
+      <div>
+        <h5 className="text-xs text-slate-600 mb-2">المسافات الداخلية</h5>
+        <input
+          type="text"
+          value={styles.padding || ""}
+          onChange={(e) => updateStyles({ padding: e.target.value })}
+          placeholder="مثال: 20px أو 1rem"
+          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div>
+        <h5 className="text-xs text-slate-600 mb-2">المسافات الخارجية</h5>
+        <input
+          type="text"
+          value={styles.margin || ""}
+          onChange={(e) => updateStyles({ margin: e.target.value })}
+          placeholder="مثال: 20px أو 1rem"
+          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
       </div>
     </div>
   );

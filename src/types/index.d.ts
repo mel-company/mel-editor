@@ -25,8 +25,23 @@ export type StoreType = {
   footer: {
     logo?: FileType;
     text?: string;
+    title?: string; // عنوان الفوتر
+    description?: string; // وصف الفوتر
+    contactInfo?: {
+      email?: string;
+      phone?: string;
+      address?: string;
+    };
     links?: Array<{ id: string; label: string; url: string }>;
     socialLinks?: Array<{ id: string; platform: string; url: string }>;
+    showFooter?: boolean; // التحكم في إظهار/إخفاء Footer
+    footerVariant?: string; // نوع Footer (1, 2, 3)
+    styles?: {
+      backgroundColor?: string;
+      textColor?: string;
+      padding?: string;
+      margin?: string;
+    };
   };
 };
 
