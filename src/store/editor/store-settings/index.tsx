@@ -36,6 +36,7 @@ const defaultStoreSettings: StoreType = {
     logo: {},
     text: "",
     links: [],
+    socialLinks: [],
   },
 };
 

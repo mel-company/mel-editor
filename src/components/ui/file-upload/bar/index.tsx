@@ -1,17 +1,18 @@
 import { FileType } from "../../../../types";
 import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
 import { useFileUpload } from "../../../../hooks/use-file-upload";
-import classNames from "classnames";
+import classNames from "classnames";  
+import React from "react";
 
 interface FileUploadInputProps {
   label: string;
-  value?: FileType | null;
+  value: FileType | undefined;
   onChange: (file: FileType) => void;
 }
 
 const FileUploadBar = ({ label, value, onChange }: FileUploadInputProps) => {
   const { fileState, handleFileChange } = useFileUpload({
-    initialValue: value || null,
+    initialValue: value ?? undefined,
     onUpload: onChange,
     maxSizeMB: 5,
     acceptedTypes: ["image/*"],

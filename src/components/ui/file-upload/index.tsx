@@ -80,6 +80,8 @@ const FileUploadInput = ({ label, value, onChange, className }: FileUploadInputP
                                 onClick={(e) => {
                                     e.preventDefault(); // Prevent triggering file input
                                     e.stopPropagation();
+                                    displayImage && URL.revokeObjectURL(displayImage);
+                                    
                                     clear();
                                     // Optionally notify parent to clear as well if needed, currently we assume onChange handles new valid files.
                                 }}

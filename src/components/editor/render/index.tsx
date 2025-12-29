@@ -79,7 +79,7 @@ const RenderTemplate = () => {
               cursor-pointer transition-all duration-200 relative
               ${
                 activeElementType === "navigation"
-                  ? "outline-2 outline-blue-500 outline-outline-offset-2"
+                  ? "outline-2 outline-blue-500 outline-offset-2"
                   : ""
               }
             `}
@@ -135,7 +135,7 @@ const RenderTemplate = () => {
                     ${
                       section.target_id === activeSectionId &&
                       activeElementType === "section"
-                        ? "outline-2 outline-blue-500 outline"
+                        ? "outline-2 outline-blue-500 outline-offset-2"
                         : ""
                     }
                   `}
@@ -169,20 +169,58 @@ const Footer = ({
   footer,
   logo,
 }: {
-  footer: { logo?: any; text?: string; links?: any[] };
+  footer: {
+    logo?: any;
+    text?: string;
+    links?: any[];
+    socialLinks?: Array<{ id: string; platform: string; url: string }>;
+  };
   logo: any;
 }) => {
-  // Prioritize base64Content over url, as blob URLs expire after page reload
-  // Logo takes automatically from store logo
-  const logoUrl = logo?.base64Content || logo?.url;
+  // Logo takes automatically from store logo (same as navbar)
+  // Check if logo exists and has valid content
+  const logoUrl = (() => {
+    if (!logo) return null;
 
-  // Mock social media links for demonstration
-  const socialLinks = [
-    { icon: Facebook, href: "#", label: "فيسبوك" },
-    { icon: Instagram, href: "#", label: "انستغرام" },
-    { icon: Twitter, href: "#", label: "تويتر" },
-    { icon: Linkedin, href: "#", label: "لينكد إن" },
-  ];
+    const base64 = logo.base64Content?.trim();
+    const url = logo.url?.trim();
+
+    // Check if logo object is empty (no id, name, base64Content, or url)
+    const isEmpty = !logo.id && !logo.name && !base64 && !url;
+
+    if (isEmpty) return null;
+
+    return base64 || url || null;
+  })();
+
+  // Map platform names to icons
+  const platformIconMap: Record<string, any> = {
+    Facebook,
+    Instagram,
+    Twitter,
+    Linkedin,
+    YouTube: Linkedin, // You can add YouTube icon if available
+    TikTok: Linkedin, // You can add TikTok icon if available
+    Snapchat: Linkedin, // You can add Snapchat icon if available
+  };
+
+  const platformLabelMap: Record<string, string> = {
+    Facebook: "فيسبوك",
+    Instagram: "انستغرام",
+    Twitter: "تويتر",
+    Linkedin: "لينكد إن",
+    YouTube: "يوتيوب",
+    TikTok: "تيك توك",
+    Snapchat: "سناب شات",
+  };
+
+  // Use social links from footer settings, or show empty if none
+  const socialLinks =
+    footer?.socialLinks?.map((social) => ({
+      icon: platformIconMap[social.platform] || Facebook,
+      href: social.url || "#",
+      label: platformLabelMap[social.platform] || social.platform,
+    })) || [];
 
   return (
     <footer
@@ -190,61 +228,71 @@ const Footer = ({
       dir="rtl"
     >
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-10 lg:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 mb-4 sm:mb-6 md:mb-8">
           {/* Logo and Description Section */}
           <div className="lg:col-span-2">
-            {logoUrl && (
-              <div className="mb-6">
+            {logoUrl ? (
+              <div className="mb-4 sm:mb-6">
                 <img
                   src={logoUrl}
                   alt="Logo"
-                  className="h-12 w-auto filter brightness-0 invert"
+                  className="h-8 sm:h-10 md:h-12 w-auto max-w-[200px] object-contain"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
                   }}
+                  onLoad={(e) => {
+                    // Ensure image is visible
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = "block";
+                    target.style.opacity = "1";
+                  }}
                 />
               </div>
-            )}
-            {footer.text && (
-              <p className="text-slate-300 leading-relaxed mb-6 max-w-md">
+            ) : null}
+            {footer?.text && (
+              <p className="text-sm sm:text-base text-slate-300 leading-relaxed mb-4 sm:mb-6 max-w-md">
                 {footer.text}
               </p>
             )}
 
             {/* Social Media Links */}
-            <div className="flex gap-3">
-              {socialLinks.map((social, index) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={index}
-                    href={social.href}
-                    className="group relative w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1"
-                    aria-label={social.label}
-                  >
-                    <Icon className="w-5 h-5 text-slate-400 group-hover:text-white transition-colors" />
-                    <div className="absolute inset-0 rounded-lg bg-blue-600 opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
-                  </a>
-                );
-              })}
-            </div>
+            {socialLinks.length > 0 && (
+              <div className="flex gap-2 sm:gap-3">
+                {socialLinks.map((social, index) => {
+                  const Icon = social.icon;
+                  return (
+                    <a
+                      key={index}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-all duration-300 transform hover:scale-110 hover:-translate-y-1"
+                      aria-label={social.label}
+                    >
+                      <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 group-hover:text-white transition-colors" />
+                      <div className="absolute inset-0 rounded-lg bg-blue-600 opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Quick Links Section */}
-          {footer.links && footer.links.length > 0 && (
-            <div>
-              <h3 className="text-lg font-bold text-white mb-4 relative inline-block">
+          {footer?.links && footer.links.length > 0 && (
+            <div className="mt-4 sm:mt-0">
+              <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-2 sm:mb-3 md:mb-4 relative inline-block">
                 روابط سريعة
-                <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-gradient-to-l from-blue-600 to-purple-600"></span>
+                <span className="absolute bottom-0 right-0 w-8 sm:w-10 md:w-12 h-0.5 bg-gradient-to-l from-blue-600 to-purple-600"></span>
               </h3>
-              <nav className="flex flex-col gap-3">
+              <nav className="flex flex-col gap-1.5 sm:gap-2 md:gap-3">
                 {footer.links.map((link) => (
                   <a
                     key={link.id}
                     href={link.url}
-                    className="group flex items-center gap-2 text-slate-300 hover:text-blue-400 transition-all duration-300"
+                    className="group flex items-center gap-2 text-sm sm:text-base text-slate-300 hover:text-blue-400 transition-all duration-300"
                   >
                     <span className="w-0 h-0.5 bg-blue-400 group-hover:w-4 transition-all duration-300"></span>
                     <span className="group-hover:translate-x-1 transition-transform duration-300">
@@ -257,39 +305,39 @@ const Footer = ({
           )}
 
           {/* Contact Information Section */}
-          <div>
-            <h3 className="text-lg font-bold text-white mb-4 relative inline-block">
+          <div className="mt-4 sm:mt-0">
+            <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-2 sm:mb-3 md:mb-4 relative inline-block">
               تواصل معنا
-              <span className="absolute bottom-0 right-0 w-12 h-0.5 bg-gradient-to-l from-blue-600 to-purple-600"></span>
+              <span className="absolute bottom-0 right-0 w-8 sm:w-10 md:w-12 h-0.5 bg-gradient-to-l from-blue-600 to-purple-600"></span>
             </h3>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2 sm:gap-3 md:gap-4">
               <a
                 href="mailto:info@example.com"
-                className="group flex items-center gap-3 text-slate-300 hover:text-blue-400 transition-colors"
+                className="group flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-slate-300 hover:text-blue-400 transition-colors"
               >
-                <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
-                  <Mail className="w-5 h-5" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors shrink-0">
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="text-sm">info@example.com</span>
+                <span className="text-xs sm:text-sm">info@example.com</span>
               </a>
 
               <a
                 href="tel:+1234567890"
-                className="group flex items-center gap-3 text-slate-300 hover:text-blue-400 transition-colors"
+                className="group flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-slate-300 hover:text-blue-400 transition-colors"
               >
-                <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors">
-                  <Phone className="w-5 h-5" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors shrink-0">
+                  <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="text-sm" dir="ltr">
+                <span className="text-xs sm:text-sm" dir="ltr">
                   +123 456 7890
                 </span>
               </a>
 
-              <div className="group flex items-center gap-3 text-slate-300">
-                <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
-                  <MapPin className="w-5 h-5" />
+              <div className="group flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-slate-300">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center shrink-0">
+                  <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="text-sm">
+                <span className="text-xs sm:text-sm">
                   الرياض، المملكة العربية السعودية
                 </span>
               </div>
@@ -298,15 +346,15 @@ const Footer = ({
         </div>
 
         {/* Divider */}
-        <div className="border-t border-slate-700 my-8"></div>
+        <div className="border-t border-slate-700 my-6 sm:my-8"></div>
 
         {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-slate-400 text-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3 md:gap-4">
+          <p className="text-xs sm:text-sm text-slate-400 text-center sm:text-right">
             © {new Date().getFullYear()} جميع الحقوق محفوظة
           </p>
 
-          <div className="flex gap-6 text-sm">
+          <div className="flex flex-wrap justify-center sm:justify-end gap-2 sm:gap-4 md:gap-6 text-xs sm:text-sm">
             <a
               href="#"
               className="text-slate-400 hover:text-blue-400 transition-colors"

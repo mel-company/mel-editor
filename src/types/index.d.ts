@@ -26,6 +26,7 @@ export type StoreType = {
     logo?: FileType;
     text?: string;
     links?: Array<{ id: string; label: string; url: string }>;
+    socialLinks?: Array<{ id: string; platform: string; url: string }>;
   };
 };
 
