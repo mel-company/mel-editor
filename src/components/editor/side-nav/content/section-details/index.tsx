@@ -1,23 +1,227 @@
 import SectionImageList from "./image-list";
 import EditorProductList from "./product-list";
+import ProductSelector from "./product-selector";
+import CategorySelector from "./category-selector";
 import SectionContent from "./content";
 import ActiveSectionWrapper from "./active-wrapper";
 import DeleteSection from "./delete-section-btn";
 import SectionVariants from "./variants";
+import SectionStyles from "./styles";
+import NavigationStyles from "./navigation-styles";
+import useSectionDetails from "../../../../../hooks/editor-section-details";
+import { useSectionStore } from "../../../../../store/editor/section";
+import Divider from "../../../../ui/divider";
+import React, { useState, useEffect, useRef } from "react";
+import { Type, Image, Package, Settings, Tag } from "lucide-react";
 
 const EditorSectionDetails = () => {
+  const { option, section } = useSectionDetails();
+  const { activeElementType, activeSectionId } = useSectionStore();
+  const isProductSection = option?.products !== undefined;
+  const isCategorySection = option?.categories !== undefined;
+  const hasContent = section?.options?.find(
+    (opt) => opt.id === section?.section_id
+  )?.content;
+  const hasImages = section?.options?.find(
+    (opt) => opt.id === section?.section_id
+  )?.photos;
+
+  // Determine default tab based on available content
+  const getDefaultTab = (): "content" | "images" | "products" | "categories" | "styles" => {
+    if (hasContent) return "content";
+    if (hasImages) return "images";
+    if (isProductSection) return "products";
+    if (isCategorySection) return "categories";
+    return "styles";
+  };
+
+  const [activeTab, setActiveTab] = useState<"content" | "images" | "products" | "categories" | "styles">(getDefaultTab());
+  const sectionDetailsRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to section details when a section is selected
+  useEffect(() => {
+    if (activeSectionId && activeElementType === "section" && sectionDetailsRef.current) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        sectionDetailsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
+  }, [activeSectionId, activeElementType]);
+
+  // Reset to default tab when section changes
+  useEffect(() => {
+    if (activeSectionId && activeElementType === "section") {
+      const defaultTab = getDefaultTab();
+      setActiveTab(defaultTab);
+    }
+  }, [activeSectionId, activeElementType, hasContent, hasImages, isProductSection, isCategorySection]);
+
+  // Show navigation styles if navigation is selected
+  if (activeElementType === "navigation") {
+    return (
+      <div className="editor-nav-section">
+        <h3 className="title">{"شريط التنقل"}</h3>
+        <Divider />
+        <NavigationStyles />
+      </div>
+    );
+  }
+
+  // Show section details if section is selected
+  if (activeElementType === "section" && option) {
+    return (
+      <div className="editor-nav-section" ref={sectionDetailsRef}>
+        {/* Header with section name */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="title">{"تعديل القسم"}</h3>
+            <DeleteSection />
+          </div>
+          <div className="px-3 py-2 bg-blue-50 rounded-lg border border-blue-100">
+            <p className="text-xs text-slate-600 mb-1">القسم المحدد:</p>
+            <p className="text-sm font-semibold text-slate-800">{option?.title || section?.type}</p>
+          </div>
+        </div>
+
+        <Divider />
+
+        {/* Section Variant Selection */}
+        <div className="mb-4">
+          <SectionVariants />
+        </div>
+
+        <Divider />
+
+        {/* Tabs for different content types - Better organized */}
+        <div className="mb-4">
+          <p className="text-xs text-slate-600 mb-2 font-medium">اختر ما تريد تعديله:</p>
+          <div className="grid grid-cols-2 gap-2">
+            {hasContent && (
+              <button
+                onClick={() => setActiveTab("content")}
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
+                  activeTab === "content"
+                    ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                }`}
+              >
+                <Type className={`w-5 h-5 ${activeTab === "content" ? "text-blue-600" : "text-slate-500"}`} />
+                <span className="text-xs font-medium">النصوص</span>
+              </button>
+            )}
+            {hasImages && (
+              <button
+                onClick={() => setActiveTab("images")}
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
+                  activeTab === "images"
+                    ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                }`}
+              >
+                <Image className={`w-5 h-5 ${activeTab === "images" ? "text-blue-600" : "text-slate-500"}`} />
+                <span className="text-xs font-medium">الصور</span>
+              </button>
+            )}
+            {isProductSection && (
+              <button
+                onClick={() => setActiveTab("products")}
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
+                  activeTab === "products"
+                    ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                }`}
+              >
+                <Package className={`w-5 h-5 ${activeTab === "products" ? "text-blue-600" : "text-slate-500"}`} />
+                <span className="text-xs font-medium">المنتجات</span>
+              </button>
+            )}
+            {isCategorySection && (
+              <button
+                onClick={() => setActiveTab("categories")}
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
+                  activeTab === "categories"
+                    ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                }`}
+              >
+                <Tag className={`w-5 h-5 ${activeTab === "categories" ? "text-blue-600" : "text-slate-500"}`} />
+                <span className="text-xs font-medium">التصنيفات</span>
+              </button>
+            )}
+            <button
+              onClick={() => setActiveTab("styles")}
+              className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
+                activeTab === "styles"
+                  ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+              }`}
+            >
+              <Settings className={`w-5 h-5 ${activeTab === "styles" ? "text-blue-600" : "text-slate-500"}`} />
+              <span className="text-xs font-medium">التصميم</span>
+            </button>
+          </div>
+        </div>
+
+        <Divider />
+
+        {/* Content based on active tab - With clear header */}
+        <ActiveSectionWrapper>
+          <div className="mb-3">
+            <div className="flex items-center gap-2 px-2 py-1 bg-slate-50 rounded-lg">
+              {activeTab === "content" && (
+                <>
+                  <Type className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-sm font-semibold text-slate-800">تعديل النصوص</h4>
+                </>
+              )}
+              {activeTab === "images" && (
+                <>
+                  <Image className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-sm font-semibold text-slate-800">تعديل الصور</h4>
+                </>
+              )}
+              {activeTab === "products" && (
+                <>
+                  <Package className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-sm font-semibold text-slate-800">تعديل المنتجات</h4>
+                </>
+              )}
+              {activeTab === "categories" && (
+                <>
+                  <Tag className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-sm font-semibold text-slate-800">تعديل التصنيفات</h4>
+                </>
+              )}
+              {activeTab === "styles" && (
+                <>
+                  <Settings className="w-4 h-4 text-blue-600" />
+                  <h4 className="text-sm font-semibold text-slate-800">تعديل التصميم</h4>
+                </>
+              )}
+            </div>
+          </div>
+
+          {activeTab === "content" && hasContent && <SectionContent />}
+          {activeTab === "images" && hasImages && <SectionImageList />}
+          {activeTab === "products" && isProductSection && (
+            isProductSection ? <ProductSelector /> : <EditorProductList />
+          )}
+          {activeTab === "categories" && isCategorySection && <CategorySelector />}
+          {activeTab === "styles" && <SectionStyles />}
+        </ActiveSectionWrapper>
+      </div>
+    );
+  }
+
+  // Show nothing if nothing is selected
   return (
     <div className="editor-nav-section">
-      <div className="flex items-center justify-between">
-        <h3 className="title">{"معلومات القسم"}</h3>
-        <DeleteSection />
-      </div>
-      <SectionVariants />
-      <ActiveSectionWrapper>
-        <SectionContent />
-        <SectionImageList />
-        <EditorProductList />
-      </ActiveSectionWrapper>
+      <p className="text-sm text-slate-500 text-center py-8">
+        اختر عنصراً للتعديل
+      </p>
     </div>
   );
 };

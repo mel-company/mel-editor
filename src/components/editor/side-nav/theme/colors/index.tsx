@@ -1,34 +1,38 @@
 import { useState } from "react";
+import React from "react";
 import ColorPickerBar from "../../../../ui/color-picker-bar";
+import { useStoreSettingsStore } from "../../../../../store/editor/store-settings";
 
 const EditorThemeColors = () => {
   const [open, setOpen] = useState("");
-
-  const [data, setData] = useState({
+  const { storeSettings, setColors } = useStoreSettingsStore();
+  const colors = storeSettings.colors || {
     primary: "#4272FF",
     secondary: "#ACBA12",
     text: "#1D293D",
-  });
+  };
+
   return (
     <div className="editor-nav-section">
+      <h3 className="title">{"الألوان"}</h3>
       <ColorPickerBar
         label="الرئيسي"
-        value={data.primary}
-        onChange={(value) => setData({ ...data, primary: value })}
+        value={colors.primary}
+        onChange={(value) => setColors({ ...colors, primary: value })}
         open={open}
         setOpen={setOpen}
       />
       <ColorPickerBar
         label="الثانوي"
-        value={data.secondary}
-        onChange={(value) => setData({ ...data, secondary: value })}
+        value={colors.secondary}
+        onChange={(value) => setColors({ ...colors, secondary: value })}
         open={open}
         setOpen={setOpen}
       />
       <ColorPickerBar
         label="النصوص"
-        value={data.text}
-        onChange={(value) => setData({ ...data, text: value })}
+        value={colors.text}
+        onChange={(value) => setColors({ ...colors, text: value })}
         open={open}
         setOpen={setOpen}
       />

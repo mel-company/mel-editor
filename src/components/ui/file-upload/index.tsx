@@ -36,9 +36,9 @@ const FileUploadInput = ({ label, value, onChange, className }: FileUploadInputP
         handleDrop(e);
     };
 
-    // Determine the image source (url or base64) to display
+    // Determine the image source (base64 only, as blob URLs expire)
     // Priority: local preview file (if any), then value from props
-    const displayImage = fileState.file?.url || fileState.file?.base64Content || (value?.url ? value.url : value?.base64Content);
+    const displayImage = fileState.file?.base64Content || value?.base64Content || value?.url;
 
     return (
         <div className={classNames('flex flex-col gap-2', className)}>
@@ -69,12 +69,19 @@ const FileUploadInput = ({ label, value, onChange, className }: FileUploadInputP
                                 src={displayImage}
                                 alt="Preview"
                                 className="h-32 w-auto object-contain rounded-lg border border-slate-200"
+                                onError={(e) => {
+                                    // Hide image if it fails to load (e.g., expired blob URL)
+                                    const target = e.target as HTMLImageElement;
+                                    target.style.display = 'none';
+                                }}
                             />
                             <button
                                 type="button"
                                 onClick={(e) => {
                                     e.preventDefault(); // Prevent triggering file input
                                     e.stopPropagation();
+                                    displayImage && URL.revokeObjectURL(displayImage);
+                                    
                                     clear();
                                     // Optionally notify parent to clear as well if needed, currently we assume onChange handles new valid files.
                                 }}

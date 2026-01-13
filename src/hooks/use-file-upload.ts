@@ -46,8 +46,8 @@ export const useFileUpload = ({
                 id: crypto.randomUUID(),
                 name: file.name,
                 base64Content: base64,
-                // Create a temporary object URL for preview if needed, though base64 is usually enough
-                url: URL.createObjectURL(file),
+                // Don't save blob URLs as they expire and can't be restored after page reload
+                // Use base64Content for persistence instead
             };
 
             setFileState((prev) => ({

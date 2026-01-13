@@ -15,13 +15,16 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { ListChevronsUpDown } from "lucide-react";
 import { useSectionStore } from "../../../../../store/editor/section";
+import { usePageStore } from "../../../../../store/editor/page";
 import { SectionType } from "../../../../../types";
 import classNames from "classnames";
-import NewSectionBtn from "./new-section-btn";
 import Divider from "../../../../ui/divider";
 
 const EditorSectionList = () => {
-  const { sections, setSections } = useSectionStore();
+  const { getSections, setSections } = useSectionStore();
+  const { getCurrentPage } = usePageStore();
+  const currentPage = getCurrentPage();
+  const sections = getSections();
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -50,26 +53,45 @@ const EditorSectionList = () => {
     <div className="h-full flex flex-col justify-end mb-4">
       <div className="editor-nav-section">
         <Divider />
-        <h3 className="title">{"الاقسام"}</h3>
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={sections.map((section) => section.target_id)}
-            strategy={verticalListSortingStrategy}
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="title">{"الاقسام"}</h3>
+          {currentPage && (
+            <span className="text-xs text-slate-500">
+              ({sections.length} قسم)
+            </span>
+          )}
+        </div>
+        {currentPage && (
+          <p className="text-xs text-slate-500 mb-3">
+            أقسام صفحة: <span className="font-medium text-slate-700">{currentPage.name}</span>
+          </p>
+        )}
+        {sections.length === 0 ? (
+          <div className="p-4 bg-slate-50 rounded-lg text-center">
+            <p className="text-xs text-slate-500">
+              لا توجد أقسام في هذه الصفحة
+            </p>
+          </div>
+        ) : (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            <div className="w-full h-full gap-2 flex flex-col">
-              {sections.map((section, index) => {
-                return (
-                  <SectionItem key={section?.target_id} section={section} />
-                );
-              })}
-            </div>
-          </SortableContext>
-        </DndContext>
-        <NewSectionBtn />
+            <SortableContext
+              items={sections.map((section) => section.target_id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="w-full h-full gap-2 flex flex-col">
+                {sections.map((section, index) => {
+                  return (
+                    <SectionItem key={section?.target_id} section={section} />
+                  );
+                })}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { PenOff, SquaresIntersect } from "lucide-react";
 import { ReactNode } from "react";
 import useSectionDetails from "../../../../../../hooks/editor-section-details";
-
+import React from "react";
 const ActiveSectionWrapper = ({ children }: { children: ReactNode }) => {
   const { section, activeSectionId } = useSectionDetails();
   if (!activeSectionId) return <InActive />;

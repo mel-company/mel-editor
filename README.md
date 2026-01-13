@@ -1,5 +1,7 @@
 # Developer Guide - E-commerce UI Editor
 
+> 📚 **للتوثيق الشامل بالعربية:** راجع [DOCUMENTATION.md](./DOCUMENTATION.md) - يحتوي على شرح تفصيلي لبنية المشروع، Types، تدفق البيانات، State Management، كيفية إضافة قوالب وأقسام جديدة، والتكامل مع Backend.
+
 ## Overview
 
 This project is a React-based "No-Code" editor designed to allow users to build and customize e-commerce pages via a drag-and-drop interface (in progress) and a configuration sidebar. It is built for speed and ease of use, providing a "What You See Is What You Get" (WYSIWYG) experience.

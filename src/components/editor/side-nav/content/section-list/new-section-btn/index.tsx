@@ -5,7 +5,8 @@ import { useState } from "react";
 import { mockTemplate } from "../../../../../../mock/template";
 
 const NewSectionBtn = () => {
-  const { setSections, sections } = useSectionStore();
+  const { getSections, addSection } = useSectionStore();
+  const sections = getSections();
   const all_sections = mockTemplate.sections?.filter(
     (section) => section.editable
   );
@@ -37,10 +38,7 @@ const NewSectionBtn = () => {
             <span>{section?.options[0]?.title}</span>
             <button
               onClick={() => {
-                setSections([
-                  ...sections,
-                  { ...section, target_id: crypto.randomUUID() },
-                ]);
+                addSection({ ...section, target_id: crypto.randomUUID() });
                 setOpen(false);
               }}
               className="flex transition-shadow items-center cursor-pointer gap-0.5 text-blue-600 bg-white rounded-md px-2 py-1.5 hover:shadow-sm shadow-slate-200/60"

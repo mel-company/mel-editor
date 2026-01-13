@@ -1,9 +1,15 @@
 import { useSectionStore } from "../../store/editor/section";
+import { usePageStore } from "../../store/editor/page";
 import { FileType, SectionOptionType } from "../../types";
 
 const useSectionDetails = () => {
-  const { sections, setSection, activeSectionId, setSections } =
+  const { setSection, activeSectionId, deleteSection } =
     useSectionStore();
+  // Subscribe to page store to get reactive updates
+  const currentPage = usePageStore((state) => 
+    state.pages.find((p) => p.id === state.currentPageId)
+  );
+  const sections = currentPage?.sections || [];
 
   const section = sections?.find(
     (section) => section.target_id === activeSectionId
@@ -15,10 +21,7 @@ const useSectionDetails = () => {
 
   const removeSection = () => {
     if (!section) return;
-    const newSections = sections?.filter(
-      (section) => section.target_id !== activeSectionId
-    );
-    setSections(newSections);
+    deleteSection(activeSectionId);
   };
 
   const updateSectionOptions = (option: Partial<SectionOptionType>) => {
@@ -59,13 +62,16 @@ const useSectionDetails = () => {
   const handleUploadImage = (file: FileType, index: number) => {
     if (!section) return;
 
-    const currentPhotos = Array.isArray(option?.photos)
+    const currentPhotos: FileType[] = Array.isArray(option?.photos)
       ? [...option.photos]
       : [];
-    // Ensure the array is large enough if index is out of bounds (though unlikely with UI)
+    // Ensure the array is large enough if index is out of bounds
+    while (currentPhotos.length <= index) {
+      currentPhotos.push({} as FileType);
+    }
     currentPhotos[index] = file;
 
-    updateSectionOptions({ photos: currentPhotos });
+    updateSectionOptions({ photos: currentPhotos as any });
   };
 
   // const handleToggleProduct = ({ product }: { product: ProductType }) => {
@@ -90,7 +96,6 @@ const useSectionDetails = () => {
     section,
     sections,
     setSection,
-    setSections,
     removeSection,
     option,
     activeSectionId,

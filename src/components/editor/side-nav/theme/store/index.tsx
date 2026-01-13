@@ -13,6 +13,20 @@ const EditorThemeStore = () => {
     },
     name: "",
     description: "",
+    type: "e-commerce",
+    header: {
+      logo: {
+        base64Content: "",
+        name: "",
+        url: "",
+      },
+      navigationLinks: [],
+    },
+    footer: {
+      logo: {},
+      text: "",
+      links: [],
+    },
   });
 
   const handleChange = (value: Partial<StoreType>) => {
@@ -22,29 +36,7 @@ const EditorThemeStore = () => {
     });
   };
 
-  return (
-    <div className="editor-nav-section">
-      <FileUploadBar
-        label="الشعار"
-        value={data?.logo}
-        onChange={(file: FileType) => handleChange({ logo: file })}
-      />
-      <p className="text-sm text-slate-600">المتجر</p>
-      <TextInput
-        label="اسم المتجر"
-        placeholder="اسم المتجر"
-        value={data?.name}
-        onChange={(e) => handleChange({ name: e.target.value })}
-      />
-      <TextInput
-        label="وصف المتجر"
-        placeholder="وصف المتجر"
-        value={data?.description}
-        onChange={(e) => handleChange({ description: e.target.value })}
-        lg
-      />
-    </div>
-  );
+  return null; // Component is empty, return null for now
 };
 
 export default EditorThemeStore;

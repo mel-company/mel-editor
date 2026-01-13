@@ -4,6 +4,45 @@ export type StoreType = {
   logo: FileType;
   name: string;
   description: string;
+  type: "e-commerce" | "restaurant";
+  colors?: {
+    primary: string;
+    secondary: string;
+    text: string;
+  };
+  fonts?: {
+    heading: string;
+    body: string;
+  };
+  header: {
+    logo?: FileType;
+    navigationLinks?: Array<{ id: string; label: string; url: string; pageId?: string }>;
+    styles?: {
+      backgroundColor?: string;
+      textColor?: string;
+    };
+  };
+  footer: {
+    logo?: FileType;
+    text?: string;
+    title?: string; // عنوان الفوتر
+    description?: string; // وصف الفوتر
+    contactInfo?: {
+      email?: string;
+      phone?: string;
+      address?: string;
+    };
+    links?: Array<{ id: string; label: string; url: string }>;
+    socialLinks?: Array<{ id: string; platform: string; url: string }>;
+    showFooter?: boolean; // التحكم في إظهار/إخفاء Footer
+    footerVariant?: string; // نوع Footer (1, 2, 3)
+    styles?: {
+      backgroundColor?: string;
+      textColor?: string;
+      padding?: string;
+      margin?: string;
+    };
+  };
 };
 
 export type FileType = {
@@ -40,7 +79,7 @@ export type SectionOptionType = {
   thumbnail?: {
     url: string;
   };
-  photos?: any;
+  photos?: Array<{ id: string; label: string; url: string }>;
   content?: any;
   products?: ProductType[];
   categories?: CategoryType[];
@@ -54,7 +93,39 @@ export type SectionType = {
   view_all_link?: string;
   links?: any[];
   options: SectionOptionType[];
-  target_id: string;
+  target_id?: string; // Optional because templates don't have target_id, it's added when creating pages
+  styles?: {
+    // Colors
+    backgroundColor?: string;
+    textColor?: string;
+    headingColor?: string;
+    buttonColor?: string;
+    buttonTextColor?: string;
+    borderColor?: string;
+    // Typography
+    headingFontSize?: string;
+    textFontSize?: string;
+    headingFontWeight?: string;
+    textFontWeight?: string;
+    // Spacing
+    padding?: string;
+    paddingTop?: string;
+    paddingBottom?: string;
+    paddingLeft?: string;
+    paddingRight?: string;
+    margin?: string;
+    marginTop?: string;
+    marginBottom?: string;
+    marginLeft?: string;
+    marginRight?: string;
+    // Borders
+    borderWidth?: string;
+    borderStyle?: string;
+    borderRadius?: string;
+    // Effects
+    boxShadow?: string;
+    opacity?: string;
+  };
 };
 
 export type CategoryType = {
@@ -70,5 +141,18 @@ export type TemplateType = {
   thumbnail: {
     url: string;
   };
+  storeType: "e-commerce" | "restaurant";
   sections: SectionType[];
+};
+
+export type PageType = {
+  id: string;
+  name: string;
+  type: "home" | "about" | "content" | "menu";
+  sections: SectionType[];
+};
+
+export type EditorStoreType = {
+  pages: PageType[];
+  currentPageId: string;
 };

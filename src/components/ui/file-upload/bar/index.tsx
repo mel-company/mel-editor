@@ -1,26 +1,28 @@
 import { FileType } from "../../../../types";
 import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
 import { useFileUpload } from "../../../../hooks/use-file-upload";
-import classNames from "classnames";
+import classNames from "classnames";  
+import React from "react";
 
 interface FileUploadInputProps {
   label: string;
-  value: FileType;
+  value: FileType | undefined;
   onChange: (file: FileType) => void;
 }
 
 const FileUploadBar = ({ label, value, onChange }: FileUploadInputProps) => {
   const { fileState, handleFileChange } = useFileUpload({
-    initialValue: value,
+    initialValue: value ?? undefined,
     onUpload: onChange,
     maxSizeMB: 5,
     acceptedTypes: ["image/*"],
   });
 
+  // Use base64Content only, as blob URLs expire and can't be restored after page reload
   const displayImage =
-    fileState.file?.url ||
     fileState.file?.base64Content ||
-    (value?.url ? value.url : value?.base64Content);
+    value?.base64Content ||
+    value?.url; // Fallback to url only if base64 is not available
 
   return (
     <div
@@ -39,6 +41,11 @@ const FileUploadBar = ({ label, value, onChange }: FileUploadInputProps) => {
                 src={displayImage}
                 alt="Preview"
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  // Hide image if it fails to load (e.g., expired blob URL)
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
               />
             ) : (
               <ImageIcon strokeWidth={1.5} className="text-slate-500" />
