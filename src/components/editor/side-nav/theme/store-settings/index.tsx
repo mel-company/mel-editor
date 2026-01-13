@@ -358,20 +358,7 @@ const EditorStoreSettings = () => {
           </div>
         </div>
 
-        <div className="mt-3">
-          <TextInput
-            label="نص الفوتر"
-            placeholder="نص الفوتر"
-            value={storeSettings.footer?.text || ""}
-            onChange={(e) =>
-              updateStoreSettings({
-                footer: { ...storeSettings.footer, text: e.target.value },
-              })
-            }
-            lg
-          />
-        </div>
-
+       
         {/* Social Media Links */}
         <div className="mt-3">
           <label className="sub-title mb-2 block">روابط وسائل التواصل الاجتماعي</label>

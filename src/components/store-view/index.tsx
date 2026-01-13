@@ -86,15 +86,59 @@ const StoreView = ({
       <main className="flex-1">
         {sections.map((section) => {
           const sectionStyles = section.styles || {};
+          // Build comprehensive style object
+          const sectionStyle: React.CSSProperties = {
+            backgroundColor: sectionStyles.backgroundColor,
+            color: sectionStyles.textColor,
+            // Padding - support both shorthand and individual values
+            padding: sectionStyles.padding,
+            paddingTop: sectionStyles.paddingTop || sectionStyles.padding,
+            paddingBottom: sectionStyles.paddingBottom || sectionStyles.padding,
+            paddingLeft: sectionStyles.paddingLeft || sectionStyles.padding,
+            paddingRight: sectionStyles.paddingRight || sectionStyles.padding,
+            // Margin - support both shorthand and individual values
+            margin: sectionStyles.margin,
+            marginTop: sectionStyles.marginTop || sectionStyles.margin,
+            marginBottom: sectionStyles.marginBottom || sectionStyles.margin,
+            marginLeft: sectionStyles.marginLeft || sectionStyles.margin,
+            marginRight: sectionStyles.marginRight || sectionStyles.margin,
+            // Borders
+            borderWidth: sectionStyles.borderWidth,
+            borderStyle: sectionStyles.borderStyle as any,
+            borderColor: sectionStyles.borderColor,
+            borderRadius: sectionStyles.borderRadius,
+            // Effects
+            boxShadow: sectionStyles.boxShadow,
+            opacity: sectionStyles.opacity
+              ? parseFloat(sectionStyles.opacity)
+              : undefined,
+          };
           return (
             <div
               key={section.target_id}
-              style={{
-                backgroundColor: sectionStyles.backgroundColor,
-                color: sectionStyles.textColor,
-                padding: sectionStyles.padding,
-                margin: sectionStyles.margin,
-              }}
+              style={
+                {
+                  ...sectionStyle,
+                  // CSS Variables for use inside section components
+                  "--section-heading-color":
+                    sectionStyles.headingColor ||
+                    sectionStyles.textColor ||
+                    "#1D293D",
+                  "--section-text-color": sectionStyles.textColor || "#1D293D",
+                  "--section-button-color":
+                    sectionStyles.buttonColor || "#4272FF",
+                  "--section-button-text-color":
+                    sectionStyles.buttonTextColor || "#FFFFFF",
+                  "--section-heading-font-size":
+                    sectionStyles.headingFontSize || "2rem",
+                  "--section-text-font-size":
+                    sectionStyles.textFontSize || "1rem",
+                  "--section-heading-font-weight":
+                    sectionStyles.headingFontWeight || "bold",
+                  "--section-text-font-weight":
+                    sectionStyles.textFontWeight || "normal",
+                } as React.CSSProperties
+              }
             >
               <Section section={section} />
             </div>
@@ -147,6 +191,20 @@ const Section = ({ section }: { section: SectionType }) => {
         props.description = contentProps.description;
       } else if (section.type === "footer") {
         props.text = contentProps.text;
+      } else if (section.type === "ourStory") {
+        // For our story sections
+        props.title = contentProps.title;
+        props.description = contentProps.description;
+      } else if (section.type === "contact") {
+        // For contact sections
+        props.title = contentProps.title;
+        props.description = contentProps.description;
+        props.content = {
+          email: contentProps.email,
+          phone: contentProps.phone,
+          address: contentProps.address,
+          hours: contentProps.hours,
+        };
       } else {
         props = { ...props, ...contentProps };
       }
@@ -156,6 +214,20 @@ const Section = ({ section }: { section: SectionType }) => {
         props.description = restOptions.content.description;
       } else if (section.type === "footer") {
         props.text = restOptions.content.text;
+      } else if (section.type === "ourStory") {
+        // For our story sections
+        props.title = restOptions.content.title;
+        props.description = restOptions.content.description;
+      } else if (section.type === "contact") {
+        // For contact sections
+        props.title = restOptions.content.title;
+        props.description = restOptions.content.description;
+        props.content = {
+          email: restOptions.content.email,
+          phone: restOptions.content.phone,
+          address: restOptions.content.address,
+          hours: restOptions.content.hours,
+        };
       } else {
         props = { ...props, ...restOptions.content };
       }

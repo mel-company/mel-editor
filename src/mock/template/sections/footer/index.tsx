@@ -20,7 +20,12 @@ interface FooterProps {
     phone?: string;
     address?: string;
   };
-  navigationLinks?: Array<{ id: string; label: string; url: string; pageId?: string }>;
+  navigationLinks?: Array<{
+    id: string;
+    label: string;
+    url: string;
+    pageId?: string;
+  }>;
   socialLinks?: Array<{ id: string; platform: string; url: string }>;
   onLinkClick?: (pageId?: string) => void;
   styles?: {
@@ -163,7 +168,9 @@ const FooterSection1 = ({
                   </a>
                 ))
               ) : (
-                <p className="text-xs sm:text-sm text-slate-400">لا توجد روابط متاحة</p>
+                <p className="text-xs sm:text-sm text-slate-400">
+                  لا توجد روابط متاحة
+                </p>
               )}
             </nav>
           </div>
@@ -181,7 +188,9 @@ const FooterSection1 = ({
                   <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors shrink-0">
                     <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <span className="text-xs sm:text-sm">{contactInfo.email}</span>
+                  <span className="text-xs sm:text-sm">
+                    {contactInfo.email}
+                  </span>
                 </a>
               )}
               {contactInfo?.phone && (
@@ -192,7 +201,9 @@ const FooterSection1 = ({
                   <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors shrink-0">
                     <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <span className="text-xs sm:text-sm" dir="ltr">{contactInfo.phone}</span>
+                  <span className="text-xs sm:text-sm" dir="ltr">
+                    {contactInfo.phone}
+                  </span>
                 </a>
               )}
               {contactInfo?.address && (
@@ -200,31 +211,39 @@ const FooterSection1 = ({
                   <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center shrink-0">
                     <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <span className="text-xs sm:text-sm">{contactInfo.address}</span>
+                  <span className="text-xs sm:text-sm">
+                    {contactInfo.address}
+                  </span>
                 </div>
               )}
-              {!contactInfo?.email && !contactInfo?.phone && !contactInfo?.address && (
-                <>
-                  <a
-                    href="mailto:info@example.com"
-                    className="group flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-slate-300 hover:text-blue-400 transition-colors"
-                  >
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors shrink-0">
-                      <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <span className="text-xs sm:text-sm">info@example.com</span>
-                  </a>
-                  <a
-                    href="tel:+1234567890"
-                    className="group flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-slate-300 hover:text-blue-400 transition-colors"
-                  >
-                    <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors shrink-0">
-                      <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <span className="text-xs sm:text-sm" dir="ltr">+123 456 7890</span>
-                  </a>
-                </>
-              )}
+              {!contactInfo?.email &&
+                !contactInfo?.phone &&
+                !contactInfo?.address && (
+                  <>
+                    <a
+                      href="mailto:info@example.com"
+                      className="group flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-slate-300 hover:text-blue-400 transition-colors"
+                    >
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors shrink-0">
+                        <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <span className="text-xs sm:text-sm">
+                        info@example.com
+                      </span>
+                    </a>
+                    <a
+                      href="tel:+1234567890"
+                      className="group flex items-center gap-2 sm:gap-3 text-sm sm:text-base text-slate-300 hover:text-blue-400 transition-colors"
+                    >
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-blue-600/20 transition-colors shrink-0">
+                        <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <span className="text-xs sm:text-sm" dir="ltr">
+                        +123 456 7890
+                      </span>
+                    </a>
+                  </>
+                )}
             </div>
           </div>
         </div>
@@ -336,7 +355,9 @@ const FooterSection2 = ({
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-3">روابط سريعة</h3>
+            <h3 className="text-sm font-semibold text-slate-800 mb-3">
+              روابط سريعة
+            </h3>
             <nav className="flex flex-col gap-2">
               {navigationLinks && navigationLinks.length > 0 ? (
                 navigationLinks.map((link) => (
@@ -361,7 +382,9 @@ const FooterSection2 = ({
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-3">تواصل معنا</h3>
+            <h3 className="text-sm font-semibold text-slate-800 mb-3">
+              تواصل معنا
+            </h3>
             <div className="flex flex-col gap-3">
               {contactInfo?.email && (
                 <a
@@ -387,24 +410,26 @@ const FooterSection2 = ({
                   <span>{contactInfo.address}</span>
                 </div>
               )}
-              {!contactInfo?.email && !contactInfo?.phone && !contactInfo?.address && (
-                <>
-                  <a
-                    href="mailto:info@example.com"
-                    className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span>info@example.com</span>
-                  </a>
-                  <a
-                    href="tel:+1234567890"
-                    className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
-                  >
-                    <Phone className="w-4 h-4" />
-                    <span dir="ltr">+123 456 7890</span>
-                  </a>
-                </>
-              )}
+              {!contactInfo?.email &&
+                !contactInfo?.phone &&
+                !contactInfo?.address && (
+                  <>
+                    <a
+                      href="mailto:info@example.com"
+                      className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span>info@example.com</span>
+                    </a>
+                    <a
+                      href="tel:+1234567890"
+                      className="flex items-center gap-2 text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                    >
+                      <Phone className="w-4 h-4" />
+                      <span dir="ltr">+123 456 7890</span>
+                    </a>
+                  </>
+                )}
             </div>
           </div>
         </div>
@@ -427,6 +452,7 @@ const FooterSection3 = ({
   description,
   contactInfo,
   navigationLinks,
+  onLinkClick,
   styles,
 }: FooterProps) => {
   const logoUrl = (() => {
@@ -452,13 +478,7 @@ const FooterSection3 = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col gap-2">
-            {logoUrl && (
-              <img
-                src={logoUrl}
-                alt="Logo"
-                className="h-8 w-auto"
-              />
-            )}
+            {logoUrl && <img src={logoUrl} alt="Logo" className="h-8 w-auto" />}
             {title && (
               <h3 className="text-base font-bold text-slate-800">{title}</h3>
             )}
@@ -557,4 +577,3 @@ export const footer_sections = [
     ],
   },
 ];
-

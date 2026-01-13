@@ -95,10 +95,36 @@ export type SectionType = {
   options: SectionOptionType[];
   target_id?: string; // Optional because templates don't have target_id, it's added when creating pages
   styles?: {
+    // Colors
     backgroundColor?: string;
     textColor?: string;
+    headingColor?: string;
+    buttonColor?: string;
+    buttonTextColor?: string;
+    borderColor?: string;
+    // Typography
+    headingFontSize?: string;
+    textFontSize?: string;
+    headingFontWeight?: string;
+    textFontWeight?: string;
+    // Spacing
     padding?: string;
+    paddingTop?: string;
+    paddingBottom?: string;
+    paddingLeft?: string;
+    paddingRight?: string;
     margin?: string;
+    marginTop?: string;
+    marginBottom?: string;
+    marginLeft?: string;
+    marginRight?: string;
+    // Borders
+    borderWidth?: string;
+    borderStyle?: string;
+    borderRadius?: string;
+    // Effects
+    boxShadow?: string;
+    opacity?: string;
   };
 };
 

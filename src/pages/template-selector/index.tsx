@@ -10,6 +10,8 @@ import { menu_sections } from "../../mock/template/sections/menu";
 import { categories_sections } from "../../mock/template/sections/categories";
 import { recent_products_sections } from "../../mock/template/sections/recent-products";
 import { footer_sections } from "../../mock/template/sections/footer";
+import { our_story_sections } from "../../mock/template/sections/our-story";
+import { contact_sections } from "../../mock/template/sections/contact";
 import { mockProducts } from "../../mock/products";
 import { useNavigate } from "react-router-dom";
 
@@ -208,6 +210,10 @@ const TemplateSelector = () => {
         options = categories_sections;
       } else if (type === "footer") {
         options = footer_sections;
+      } else if (type === "ourStory") {
+        options = our_story_sections;
+      } else if (type === "contact") {
+        options = contact_sections;
       }
 
       const selectedOption = options.find((opt) => opt.id === sectionId);
@@ -360,9 +366,10 @@ const TemplateSelector = () => {
         sections: homePageSections,
       };
 
-      // Page 2: About Page - Hero variant 2 (Image + Text) with different content
+      // Page 2: About Page - Hero + Our Story + Contact sections
       const aboutPageSections: any[] = [];
 
+      // Add Hero section
       const aboutHero = createSectionWithVariant("hero", "2", {
         content: [
           {
@@ -389,6 +396,83 @@ const TemplateSelector = () => {
         ],
       });
       if (aboutHero) aboutPageSections.push(aboutHero);
+
+      // Add Our Story section
+      const ourStorySection = createSectionWithVariant("ourStory", "1", {
+        content: [
+          {
+            id: "title",
+            label: "العنوان",
+            name: "title",
+            type: "text",
+            value: "قصتنا",
+          },
+          {
+            id: "description",
+            label: "الوصف",
+            name: "description",
+            type: "textarea",
+            value: "نحن متجر متخصص في تقديم أفضل المنتجات والخدمات لعملائنا. بدأنا رحلتنا برؤية واضحة لتقديم تجربة تسوق استثنائية تجمع بين الجودة والسعر المناسب. نسعى دائماً لتطوير خدماتنا وتحسين تجربة عملائنا.",
+          },
+        ],
+        photos: [
+          {
+            id: crypto.randomUUID(),
+            label: "صورة",
+            url: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800",
+          },
+        ],
+      });
+      if (ourStorySection) aboutPageSections.push(ourStorySection);
+
+      // Add Contact section
+      const contactSection = createSectionWithVariant("contact", "1", {
+        content: [
+          {
+            id: "title",
+            label: "العنوان",
+            name: "title",
+            type: "text",
+            value: "اتصل بنا",
+          },
+          {
+            id: "description",
+            label: "الوصف",
+            name: "description",
+            type: "textarea",
+            value: "نحن هنا لمساعدتك. تواصل معنا عبر أي من الطرق التالية.",
+          },
+          {
+            id: "email",
+            label: "البريد الإلكتروني",
+            name: "email",
+            type: "text",
+            value: "info@example.com",
+          },
+          {
+            id: "phone",
+            label: "رقم الهاتف",
+            name: "phone",
+            type: "text",
+            value: "+966 50 123 4567",
+          },
+          {
+            id: "address",
+            label: "العنوان",
+            name: "address",
+            type: "textarea",
+            value: "الرياض، المملكة العربية السعودية",
+          },
+          {
+            id: "hours",
+            label: "ساعات العمل",
+            name: "hours",
+            type: "text",
+            value: "الأحد - الخميس: 9 صباحاً - 6 مساءً",
+          },
+        ],
+      });
+      if (contactSection) aboutPageSections.push(contactSection);
 
       const aboutPage: PageType = {
         id: crypto.randomUUID(),
@@ -421,9 +505,10 @@ const TemplateSelector = () => {
         sections: productsPageSections,
       };
 
-      // Page 4: Contact Page - Hero variant 1 (Text only) with contact content
+      // Page 4: Contact Page - Hero + Contact section
       const contactPageSections: any[] = [];
 
+      // Add Hero section
       const contactHero = createSectionWithVariant("hero", "1", {
         content: [
           {
@@ -444,6 +529,55 @@ const TemplateSelector = () => {
         ],
       });
       if (contactHero) contactPageSections.push(contactHero);
+
+      // Add Contact section
+      const contactPageContactSection = createSectionWithVariant("contact", "2", {
+        content: [
+          {
+            id: "title",
+            label: "العنوان",
+            name: "title",
+            type: "text",
+            value: "تواصل معنا",
+          },
+          {
+            id: "description",
+            label: "الوصف",
+            name: "description",
+            type: "textarea",
+            value: "تواصل معنا عبر أي من الطرق التالية",
+          },
+          {
+            id: "email",
+            label: "البريد الإلكتروني",
+            name: "email",
+            type: "text",
+            value: "info@example.com",
+          },
+          {
+            id: "phone",
+            label: "رقم الهاتف",
+            name: "phone",
+            type: "text",
+            value: "+966 50 123 4567",
+          },
+          {
+            id: "address",
+            label: "العنوان",
+            name: "address",
+            type: "textarea",
+            value: "الرياض، المملكة العربية السعودية",
+          },
+          {
+            id: "hours",
+            label: "ساعات العمل",
+            name: "hours",
+            type: "text",
+            value: "الأحد - الخميس: 9 صباحاً - 6 مساءً",
+          },
+        ],
+      });
+      if (contactPageContactSection) contactPageSections.push(contactPageContactSection);
 
       const contactPage: PageType = {
         id: crypto.randomUUID(),

@@ -1,10 +1,15 @@
 import { useSectionStore } from "../../store/editor/section";
+import { usePageStore } from "../../store/editor/page";
 import { FileType, SectionOptionType } from "../../types";
 
 const useSectionDetails = () => {
-  const { getSections, setSection, activeSectionId, deleteSection } =
+  const { setSection, activeSectionId, deleteSection } =
     useSectionStore();
-  const sections = getSections();
+  // Subscribe to page store to get reactive updates
+  const currentPage = usePageStore((state) => 
+    state.pages.find((p) => p.id === state.currentPageId)
+  );
+  const sections = currentPage?.sections || [];
 
   const section = sections?.find(
     (section) => section.target_id === activeSectionId

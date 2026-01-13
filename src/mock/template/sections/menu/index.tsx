@@ -28,15 +28,20 @@ const MenuItems = ({
               <p className="text-slate-600 text-sm mb-4 line-clamp-2">
                 {product.description}
               </p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-green-600">
-                  {product.price} ر.س
-                </span>
-                {product.discount > 0 && (
-                  <span className="text-sm text-slate-400 line-through">
-                    {product.price + product.discount} ر.س
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-green-600">
+                    {product.price} ر.س
                   </span>
-                )}
+                  {product.discount > 0 && (
+                    <span className="text-sm text-slate-400 line-through">
+                      {product.price + product.discount} ر.س
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs text-slate-500">
+                  متوفر: {product.stock} قطعة
+                </span>
               </div>
             </div>
           </div>
@@ -74,15 +79,20 @@ const MenuItemsGrid = ({
             <div className="p-4 flex-1">
               <h3 className="text-xl font-bold mb-2">{product.name}</h3>
               <p className="text-slate-600 text-sm mb-4">{product.description}</p>
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-green-600">
-                  {product.price} ر.س
-                </span>
-                {product.discount > 0 && (
-                  <span className="text-sm text-slate-400 line-through">
-                    {product.price + product.discount} ر.س
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-green-600">
+                    {product.price} ر.س
                   </span>
-                )}
+                  {product.discount > 0 && (
+                    <span className="text-sm text-slate-400 line-through">
+                      {product.price + product.discount} ر.س
+                    </span>
+                  )}
+                </div>
+                <span className="text-xs text-slate-500">
+                  متوفر: {product.stock} قطعة
+                </span>
               </div>
             </div>
           </div>
@@ -128,6 +138,9 @@ const MenuItemsList = ({
                   {product.price + product.discount} ر.س
                 </span>
               )}
+              <span className="text-xs text-slate-500 mt-1 block">
+                متوفر: {product.stock} قطعة
+              </span>
             </div>
           </div>
         ))}

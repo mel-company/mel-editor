@@ -4,6 +4,8 @@ import { hero_sections } from "./sections/hero";
 import { navigation_sections } from "./sections/navigation";
 import { recent_products_sections } from "./sections/recent-products";
 import { footer_sections } from "./sections/footer";
+import { our_story_sections } from "./sections/our-story";
+import { contact_sections } from "./sections/contact";
 
 export const mockTemplate: TemplateType = {
   id: "cklsmvdlkvmds",
@@ -52,6 +54,22 @@ export const mockTemplate: TemplateType = {
       type: "footer",
       view_all_link: "",
       options: footer_sections,
+      editable: true,
+    },
+    {
+      id: "5",
+      section_id: "1",
+      type: "ourStory",
+      view_all_link: "",
+      options: our_story_sections,
+      editable: true,
+    },
+    {
+      id: "6",
+      section_id: "1",
+      type: "contact",
+      view_all_link: "",
+      options: contact_sections,
       editable: true,
     },
   ],

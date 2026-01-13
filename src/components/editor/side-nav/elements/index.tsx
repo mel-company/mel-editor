@@ -5,14 +5,14 @@ import { usePageStore } from "../../../../store/editor/page";
 import { mockTemplate } from "../../../../mock/template";
 import { SectionType, PageType } from "../../../../types";
 import classNames from "classnames";
-import { Plus } from "lucide-react";
+import { Plus, Eye, X } from "lucide-react";
 import Divider from "../../../ui/divider";
 import EditorSectionList from "../content/section-list";
 
 // Mapping between page types and available section types
 const pageSectionMapping: Record<PageType["type"], string[]> = {
   home: ["hero", "categories", "recentProducts"], // الصفحة الرئيسية - 3 أقسام
-  about: ["hero"], // صفحة حول المتجر - 1 قسم
+  about: ["hero", "ourStory", "contact"], // صفحة حول المتجر - 3 أقسام
   content: ["hero"], // صفحة محتوى - 1 قسم
   menu: ["menu", "categories"], // صفحة القائمة (للمطاعم) - 2 أقسام
 };
@@ -23,6 +23,7 @@ const ElementsSide = () => {
   const currentPage = getCurrentPage();
   const [selectedSectionType, setSelectedSectionType] = useState<string>("");
   const [selectedVariant, setSelectedVariant] = useState<string>("");
+  const [showPreview, setShowPreview] = useState(false);
 
   // Get sections available for current page type
   const getAvailableSections = () => {
@@ -80,6 +81,8 @@ const ElementsSide = () => {
       recentProducts: "قسم المنتجات",
       categories: "قسم التصنيفات",
       menu: "قسم القائمة",
+      ourStory: "قسم قصتنا",
+      contact: "قسم اتصل بنا",
     };
     return labels[type] || type;
   };
@@ -101,11 +104,19 @@ const ElementsSide = () => {
         <Divider />
         <h3 className="title">{"إضافة قسم"}</h3>
         {currentPage && (
-          <p className="text-xs text-slate-500 mb-2">
-            الصفحة الحالية: <span className="font-medium text-slate-700">{getPageTypeLabel(currentPage.type)}</span>
-          </p>
+          <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+            <p className="text-xs text-slate-600 mb-1">
+              الصفحة الحالية:
+            </p>
+            <p className="text-sm font-semibold text-slate-800">
+              {getPageTypeLabel(currentPage.type)}
+            </p>
+            <p className="text-xs text-slate-500 mt-2">
+              الأقسام المتاحة: {availableSections.length} قسم
+            </p>
+          </div>
         )}
-        <p className="text-xs text-slate-500 mb-4">أضف أقسام جديدة إلى صفحتك</p>
+        <p className="text-xs text-slate-500 mb-4">أضف أقسام جديدة مرتبطة بصفحتك</p>
 
         {availableSections.length === 0 ? (
           <div className="p-4 bg-slate-50 rounded-lg text-center">
@@ -138,9 +149,20 @@ const ElementsSide = () => {
           {selectedSectionType &&
             getVariants(selectedSectionType).length > 0 && (
               <div className="relative">
-                <label className="block text-xs font-medium text-slate-700 mb-2">
-                  الشكل
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-medium text-slate-700">
+                    الشكل
+                  </label>
+                  {selectedVariant && (
+                    <button
+                      onClick={() => setShowPreview(true)}
+                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      <Eye className="w-3 h-3" />
+                      <span>معاينة</span>
+                    </button>
+                  )}
+                </div>
                 <select
                   value={selectedVariant}
                   onChange={(e) => setSelectedVariant(e.target.value)}
@@ -178,6 +200,73 @@ const ElementsSide = () => {
 
       {/* Sections List */}
       <EditorSectionList />
+
+      {/* Preview Modal */}
+      {showPreview && selectedSectionType && selectedVariant && (
+        <SectionPreviewModal
+          sectionType={selectedSectionType}
+          variantId={selectedVariant}
+          onClose={() => setShowPreview(false)}
+        />
+      )}
+    </div>
+  );
+};
+
+// Preview Modal Component
+const SectionPreviewModal = ({
+  sectionType,
+  variantId,
+  onClose,
+}: {
+  sectionType: string;
+  variantId: string;
+  onClose: () => void;
+}) => {
+  const availableSections = mockTemplate.sections.filter((s) => s.editable);
+  const section = availableSections.find((s) => s.type === sectionType);
+  const variant = section?.options?.find((opt) => opt.id === variantId);
+  const Component = variant?.component as any;
+
+  if (!Component) return null;
+
+  // Create mock props for preview
+  const mockProps: any = {};
+  if (variant?.content) {
+    if (Array.isArray(variant.content)) {
+      variant.content.forEach((item: any) => {
+        mockProps[item.name] = item.value || "";
+      });
+    } else {
+      Object.assign(mockProps, variant.content);
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-6 border-b border-slate-200">
+          <h2 className="text-xl font-bold text-slate-900">
+            معاينة: {variant?.title || sectionType}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+          >
+            <X className="w-5 h-5 text-slate-600" />
+          </button>
+        </div>
+        <div className="p-6">
+          <div className="border-2 border-slate-200 rounded-xl p-4 bg-slate-50">
+            <Component {...mockProps} />
+          </div>
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-xs text-blue-800">
+              💡 هذه معاينة للتصميم. بعد الإضافة يمكنك تعديل المحتوى والألوان.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

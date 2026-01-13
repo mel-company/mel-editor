@@ -98,6 +98,9 @@ const RecentProducts = ({
                     <span className="text-base sm:text-lg font-bold text-green-600">
                       {finalPrice} ر.س
                     </span>
+                    <span className="text-xs text-slate-500 mt-0.5">
+                      متوفر: {product.stock} قطعة
+                    </span>
                     {product.discount > 0 && (
                       <span className="text-xs text-slate-400 line-through">
                         {product.price} ر.س
@@ -232,6 +235,9 @@ const RecentProductsCarousel = ({
                           {product.price} ر.س
                         </span>
                       )}
+                      <span className="text-xs text-slate-500 mt-0.5">
+                        متوفر: {product.stock} قطعة
+                      </span>
                     </div>
                     {!isRestaurant && (
                       <button
@@ -360,6 +366,9 @@ const RecentProductsLarge = ({
                         {product.price} ر.س
                       </span>
                     )}
+                    <span className="text-xs text-slate-500 mt-0.5">
+                      متوفر: {product.stock} قطعة
+                    </span>
                   </div>
                   {!isRestaurant && (
                     <button
@@ -468,9 +477,14 @@ const RecentProductsCompact = ({
                   {product.name}
                 </h3>
                 <div className="flex items-center justify-between mt-auto gap-1">
-                  <span className="text-sm font-bold text-green-600">
-                    {finalPrice} ر.س
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-green-600">
+                      {finalPrice} ر.س
+                    </span>
+                    <span className="text-xs text-slate-500 mt-0.5">
+                      متوفر: {product.stock} قطعة
+                    </span>
+                  </div>
                   {!isRestaurant && (
                     <button
                       onClick={(e) => {
@@ -583,9 +597,14 @@ const RecentProductsList = ({
                   </p>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold text-green-600">
-                    {finalPrice} ر.س
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-lg font-bold text-green-600">
+                      {finalPrice} ر.س
+                    </span>
+                    <span className="text-xs text-slate-500 mt-0.5">
+                      متوفر: {product.stock} قطعة
+                    </span>
+                  </div>
                   {!isRestaurant && (
                     <button
                       onClick={(e) => {

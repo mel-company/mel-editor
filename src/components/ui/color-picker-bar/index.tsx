@@ -3,6 +3,52 @@ import { useEffect, useState } from "react";
 import { ColorPicker, useColor } from "react-color-palette";
 import "react-color-palette/css";
 
+// Helper function to convert hex to RGB
+const hexToRgb = (hex: string) => {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
+    : { r: 0, g: 0, b: 0 };
+};
+
+// Helper function to convert RGB to HSV
+const rgbToHsv = (r: number, g: number, b: number) => {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  let h = 0;
+  let s = 0;
+  const v = max;
+
+  const d = max - min;
+  s = max === 0 ? 0 : d / max;
+
+  if (max === min) {
+    h = 0;
+  } else {
+    switch (max) {
+      case r:
+        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+        break;
+      case g:
+        h = ((b - r) / d + 2) / 6;
+        break;
+      case b:
+        h = ((r - g) / d + 4) / 6;
+        break;
+    }
+  }
+
+  return { h: h * 360, s: s * 100, v: v * 100 };
+};
+
 const ColorPickerBar = ({
   label = "عنوان",
   value,
@@ -16,13 +62,27 @@ const ColorPickerBar = ({
   open: string;
   setOpen: (value: string) => void;
 }) => {
-  const [color, setColor] = useColor(value || "#000000");
+  const hexValue = value || "#000000";
+  const rgb = hexToRgb(hexValue);
+  const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+  
+  const [color, setColor] = useState({
+    hex: hexValue,
+    rgb: { r: rgb.r, g: rgb.g, b: rgb.b, a: 1 },
+    hsv: { h: hsv.h, s: hsv.s, v: hsv.v, a: 1 },
+  });
 
   // Update color when value prop changes from outside
   useEffect(() => {
     if (value && color?.hex !== value) {
       try {
-        setColor({ hex: value, rgb: undefined, hsv: undefined });
+        const newRgb = hexToRgb(value);
+        const newHsv = rgbToHsv(newRgb.r, newRgb.g, newRgb.b);
+        setColor({
+          hex: value,
+          rgb: { r: newRgb.r, g: newRgb.g, b: newRgb.b, a: 1 },
+          hsv: { h: newHsv.h, s: newHsv.s, v: newHsv.v, a: 1 },
+        });
       } catch (e) {
         // Ignore errors
       }
