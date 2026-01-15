@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
 import { usePageStore } from "../../store/editor/page";
 import { useStoreSettingsStore } from "../../store/editor/store-settings";
-import { templatesMap } from "../../mock/templates";
 import { PageType, TemplateType } from "../../types";
-import { Check, Sparkles, Store, UtensilsCrossed } from "lucide-react";
+import { Check, Sparkles, Store, UtensilsCrossed, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { getActiveTemplates, ApiTemplateResponse } from "../../services/api";
+import {
+  convertApiTemplateToTemplateType,
+  convertApiPagesToPageTypes,
+} from "../../utils/template-converter";
+import { mockProducts } from "../../mock/products";
 import { hero_sections } from "../../mock/template/sections/hero";
 import { menu_sections } from "../../mock/template/sections/menu";
 import { categories_sections } from "../../mock/template/sections/categories";
@@ -12,8 +18,6 @@ import { recent_products_sections } from "../../mock/template/sections/recent-pr
 import { footer_sections } from "../../mock/template/sections/footer";
 import { our_story_sections } from "../../mock/template/sections/our-story";
 import { contact_sections } from "../../mock/template/sections/contact";
-import { mockProducts } from "../../mock/products";
-import { useNavigate } from "react-router-dom";
 
 // Sample data for pages
 const sampleProducts = mockProducts.slice(0, 8);
@@ -123,18 +127,48 @@ const restaurantMenuItems = [
 ];
 const TemplateSelector = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [templates, setTemplates] = useState<TemplateType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { pages, setPages, setCurrentPageId } = usePageStore();
   const { storeSettings, updateStoreSettings, setStoreType } =
     useStoreSettingsStore();
   const navigate = useNavigate();
 
+  // Load active templates from API
+  useEffect(() => {
+    const loadTemplates = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getActiveTemplates();
+
+        // Convert API templates to TemplateType
+        const convertedTemplates = response.data.map((apiTemplate) =>
+          convertApiTemplateToTemplateType(apiTemplate)
+        );
+
+        setTemplates(convertedTemplates);
+      } catch (err) {
+        console.error("Error loading templates:", err);
+        setError("فشل تحميل القوالب. يرجى المحاولة مرة أخرى.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTemplates();
+  }, []);
+
   // Check if store type needs to be selected (no pages exist)
   const needsStoreTypeSelection = pages.length === 0;
   const hasSelectedStoreType = !!storeSettings.type;
 
-  // Filter templates by store type
-  const filteredTemplates = Object.values(templatesMap).filter(
-    (template) => template.storeType === storeSettings.type
+  // Filter templates by store type (if needed)
+  // Note: Since API templates might not have storeType, we show all active templates
+  const filteredTemplates = templates.filter(
+    (template) =>
+      !storeSettings.type || template.storeType === storeSettings.type
   );
 
   // Create available templates with editable features
@@ -163,18 +197,258 @@ const TemplateSelector = () => {
     },
   }));
 
-  const handleSelectTemplate = (templateId: string, e?: React.MouseEvent) => {
+  const handleSelectTemplate = async (
+    templateId: string,
+    e?: React.MouseEvent
+  ) => {
     if (e) {
       e.preventDefault();
       e.stopPropagation();
     }
 
-    // Get the selected template
-    const template = templatesMap[templateId];
+    // Get the selected template from API templates
+    const template = templates.find((t) => t.id === templateId);
     if (!template) {
       console.error("Template not found:", templateId);
       return;
     }
+
+    // Get the full API template data to access body.pages
+    let apiTemplateData: ApiTemplateResponse["data"][0] | undefined = undefined;
+    try {
+      const response = await getActiveTemplates();
+      apiTemplateData = response.data.find((t) => t.id === templateId);
+    } catch (err) {
+      console.error("Error fetching template details:", err);
+    }
+
+    // If we have API template data with pages, use it directly
+    if (
+      apiTemplateData &&
+      apiTemplateData.body?.pages &&
+      apiTemplateData.body.pages.length > 0
+    ) {
+      // Convert API pages to PageType
+      const initialPages = convertApiPagesToPageTypes(
+        apiTemplateData.body.pages,
+        templateId
+      );
+
+      // Update store settings from API template
+      if (apiTemplateData.body?.ui) {
+        const ui = apiTemplateData.body.ui;
+
+        // Update header
+        if (ui.header) {
+          updateStoreSettings({
+            header: {
+              ...storeSettings.header,
+              logo: ui.header.logo
+                ? { url: ui.header.logo }
+                : storeSettings.header.logo,
+              navigationLinks:
+                ui.header.navigation?.map((nav: any, index: number) => ({
+                  id: crypto.randomUUID(),
+                  label: nav.label,
+                  url: nav.route || nav.url || `/${index}`,
+                })) || storeSettings.header.navigationLinks,
+              styles: {
+                backgroundColor:
+                  ui.header.backgroundColor ||
+                  storeSettings.header.styles?.backgroundColor,
+                textColor:
+                  ui.header.textColor || storeSettings.header.styles?.textColor,
+              },
+            },
+          });
+        }
+
+        // Update footer
+        if (ui.footer) {
+          updateStoreSettings({
+            footer: {
+              ...storeSettings.footer,
+              logo: ui.footer.logo
+                ? { url: ui.footer.logo }
+                : storeSettings.footer.logo,
+              text: ui.footer.bottomBar?.text || storeSettings.footer.text,
+              links:
+                ui.footer.sections?.flatMap(
+                  (section: any) =>
+                    section.links?.map((link: any) => ({
+                      id: crypto.randomUUID(),
+                      label: link.label,
+                      url: link.route || link.url,
+                    })) || []
+                ) || storeSettings.footer.links,
+              socialLinks:
+                ui.footer.social?.map((social: any) => ({
+                  id: crypto.randomUUID(),
+                  platform: social.platform || social.icon,
+                  url: social.url,
+                })) || storeSettings.footer.socialLinks,
+              styles: {
+                backgroundColor:
+                  ui.footer.backgroundColor ||
+                  storeSettings.footer.styles?.backgroundColor,
+                textColor:
+                  ui.footer.textColor || storeSettings.footer.styles?.textColor,
+              },
+            },
+          });
+        }
+      }
+
+      // Update store info
+      if (apiTemplateData.body?.store) {
+        updateStoreSettings({
+          name: apiTemplateData.body.store.name || storeSettings.name,
+          description:
+            apiTemplateData.body.store.description || storeSettings.description,
+          logo: apiTemplateData.body.store.logo
+            ? { url: apiTemplateData.body.store.logo }
+            : storeSettings.logo,
+        });
+      }
+
+      // Set navigation links based on created pages
+      // Only show specific pages in navbar: home, menu (products), about, and contact
+      // Hide dynamic content pages from navbar
+      const visiblePageTypes = ["home", "menu", "about"];
+
+      // Get original API page data to check route/title for products/contact/home
+      const apiPagesMap = new Map(
+        apiTemplateData.body.pages.map((p: any) => [
+          p.id || p.title || p.route,
+          p,
+        ])
+      );
+
+      const navigationLinks = initialPages
+        .filter((page, index) => {
+          // Check if it's the home page (first page or route="/" or title contains "الرئيسية")
+          const apiPage = Array.from(apiPagesMap.values()).find(
+            (p: any) =>
+              p.title === page.name ||
+              p.id === page.name ||
+              (p.route &&
+                page.name.toLowerCase().includes(p.route.replace("/", "")))
+          );
+
+          // Check if it's home page by route or position
+          const isHomePage =
+            page.type === "home" ||
+            index === 0 || // First page is usually home
+            (apiPage && (apiPage.route === "/" || apiPage.route === "/home")) ||
+            page.name.toLowerCase().includes("الرئيسية") ||
+            page.name.toLowerCase().includes("home");
+
+          // If it's home page, always show it (even if type is "content")
+          if (isHomePage) {
+            return true;
+          }
+
+          // Always show home, menu, about
+          if (visiblePageTypes.includes(page.type)) {
+            return true;
+          }
+
+          // Show content pages only if they are products or contact page
+          if (page.type === "content") {
+            const pageNameLower = page.name.toLowerCase();
+            // Check if it's a contact page
+            const isContact =
+              pageNameLower.includes("contact") ||
+              pageNameLower.includes("تواصل") ||
+              pageNameLower.includes("اتصل");
+            // Check if it's a products page
+            const isProducts =
+              pageNameLower.includes("product") ||
+              pageNameLower.includes("منتج") ||
+              pageNameLower.includes("products");
+
+            // Also check original API page route
+            if (apiPage) {
+              const route = (apiPage.route || "").toLowerCase();
+              if (route.includes("/product") || route.includes("/products")) {
+                return true;
+              }
+              if (route.includes("/contact")) {
+                return true;
+              }
+            }
+
+            return isContact || isProducts;
+          }
+          // Hide all other pages
+          return false;
+        })
+        .map((page) => ({
+          id: crypto.randomUUID(),
+          label: page.name,
+          url: `/${page.type}`,
+          pageId: page.id,
+        }));
+
+      updateStoreSettings({
+        header: {
+          ...storeSettings.header,
+          navigationLinks: navigationLinks,
+        },
+      });
+
+      // Log pages before saving
+      console.log("💾 Saving pages to store:", {
+        pagesCount: initialPages.length,
+        totalSections: initialPages.reduce(
+          (sum, page) => sum + page.sections.length,
+          0
+        ),
+        pages: initialPages.map((page) => ({
+          name: page.name,
+          type: page.type,
+          sectionsCount: page.sections.length,
+          sections: page.sections.map((s) => ({
+            type: s.type,
+            section_id: s.section_id,
+            hasComponent: s.options?.some((o) => o.component) || false,
+          })),
+        })),
+      });
+
+      // Save template ID to localStorage for later use
+      localStorage.setItem("currentTemplateId", templateId);
+
+      // Set pages and navigate to editor
+      setPages(initialPages);
+      setCurrentPageId(initialPages[0]?.id || "");
+
+      // Verify pages were saved
+      setTimeout(() => {
+        const savedPages = usePageStore.getState().pages;
+        console.log("✅ Pages saved to store:", {
+          pagesCount: savedPages.length,
+          totalSections: savedPages.reduce(
+            (sum, page) => sum + page.sections.length,
+            0
+          ),
+          pages: savedPages.map((page) => ({
+            name: page.name,
+            sections: page.sections.map((s) => ({
+              type: s.type,
+              section_id: s.section_id,
+              hasComponent: !!s.options?.find((o) => o.id === s.section_id)
+                ?.component,
+            })),
+          })),
+        });
+      }, 100);
+
+      navigate("/editor");
+      return;
+    }
+
+    // Fallback to old logic if API template doesn't have pages structure
 
     // Initialize pages based on store type and selected template
     // Distribute template sections across 4 pages to make template complete
@@ -412,7 +686,8 @@ const TemplateSelector = () => {
             label: "الوصف",
             name: "description",
             type: "textarea",
-            value: "نحن متجر متخصص في تقديم أفضل المنتجات والخدمات لعملائنا. بدأنا رحلتنا برؤية واضحة لتقديم تجربة تسوق استثنائية تجمع بين الجودة والسعر المناسب. نسعى دائماً لتطوير خدماتنا وتحسين تجربة عملائنا.",
+            value:
+              "نحن متجر متخصص في تقديم أفضل المنتجات والخدمات لعملائنا. بدأنا رحلتنا برؤية واضحة لتقديم تجربة تسوق استثنائية تجمع بين الجودة والسعر المناسب. نسعى دائماً لتطوير خدماتنا وتحسين تجربة عملائنا.",
           },
         ],
         photos: [
@@ -531,53 +806,58 @@ const TemplateSelector = () => {
       if (contactHero) contactPageSections.push(contactHero);
 
       // Add Contact section
-      const contactPageContactSection = createSectionWithVariant("contact", "2", {
-        content: [
-          {
-            id: "title",
-            label: "العنوان",
-            name: "title",
-            type: "text",
-            value: "تواصل معنا",
-          },
-          {
-            id: "description",
-            label: "الوصف",
-            name: "description",
-            type: "textarea",
-            value: "تواصل معنا عبر أي من الطرق التالية",
-          },
-          {
-            id: "email",
-            label: "البريد الإلكتروني",
-            name: "email",
-            type: "text",
-            value: "info@example.com",
-          },
-          {
-            id: "phone",
-            label: "رقم الهاتف",
-            name: "phone",
-            type: "text",
-            value: "+966 50 123 4567",
-          },
-          {
-            id: "address",
-            label: "العنوان",
-            name: "address",
-            type: "textarea",
-            value: "الرياض، المملكة العربية السعودية",
-          },
-          {
-            id: "hours",
-            label: "ساعات العمل",
-            name: "hours",
-            type: "text",
-            value: "الأحد - الخميس: 9 صباحاً - 6 مساءً",
-          },
-        ],
-      });
-      if (contactPageContactSection) contactPageSections.push(contactPageContactSection);
+      const contactPageContactSection = createSectionWithVariant(
+        "contact",
+        "2",
+        {
+          content: [
+            {
+              id: "title",
+              label: "العنوان",
+              name: "title",
+              type: "text",
+              value: "تواصل معنا",
+            },
+            {
+              id: "description",
+              label: "الوصف",
+              name: "description",
+              type: "textarea",
+              value: "تواصل معنا عبر أي من الطرق التالية",
+            },
+            {
+              id: "email",
+              label: "البريد الإلكتروني",
+              name: "email",
+              type: "text",
+              value: "info@example.com",
+            },
+            {
+              id: "phone",
+              label: "رقم الهاتف",
+              name: "phone",
+              type: "text",
+              value: "+966 50 123 4567",
+            },
+            {
+              id: "address",
+              label: "العنوان",
+              name: "address",
+              type: "textarea",
+              value: "الرياض، المملكة العربية السعودية",
+            },
+            {
+              id: "hours",
+              label: "ساعات العمل",
+              name: "hours",
+              type: "text",
+              value: "الأحد - الخميس: 9 صباحاً - 6 مساءً",
+            },
+          ],
+        }
+      );
+      if (contactPageContactSection)
+        contactPageSections.push(contactPageContactSection);
 
       const contactPage: PageType = {
         id: crypto.randomUUID(),
@@ -590,12 +870,52 @@ const TemplateSelector = () => {
     }
 
     // Set navigation links based on created pages (in order)
-    const navigationLinks = initialPages.map((page) => ({
-      id: crypto.randomUUID(),
-      label: page.name,
-      url: `/${page.type}`,
-      pageId: page.id,
-    }));
+    // Only show specific pages in navbar: home, menu (products), about, and contact
+    // Hide dynamic content pages from navbar
+    const visiblePageTypes = ["home", "menu", "about"];
+    const navigationLinks = initialPages
+      .filter((page, index) => {
+        // Check if it's the home page (first page or name contains "الرئيسية" or "home")
+        const isHomePage =
+          page.type === "home" ||
+          index === 0 || // First page is usually home
+          page.name.toLowerCase().includes("الرئيسية") ||
+          page.name.toLowerCase().includes("home");
+
+        // If it's home page, always show it (even if type is "content")
+        if (isHomePage) {
+          return true;
+        }
+
+        // Always show home, menu, about
+        if (visiblePageTypes.includes(page.type)) {
+          return true;
+        }
+
+        // Show content pages only if they are products or contact page
+        if (page.type === "content") {
+          const pageNameLower = page.name.toLowerCase();
+          // Check if it's a contact page
+          const isContact =
+            pageNameLower.includes("contact") ||
+            pageNameLower.includes("تواصل") ||
+            pageNameLower.includes("اتصل");
+          // Check if it's a products page
+          const isProducts =
+            pageNameLower.includes("product") ||
+            pageNameLower.includes("منتج") ||
+            pageNameLower.includes("products");
+          return isContact || isProducts;
+        }
+        // Hide all other pages
+        return false;
+      })
+      .map((page) => ({
+        id: crypto.randomUUID(),
+        label: page.name,
+        url: `/${page.type}`,
+        pageId: page.id,
+      }));
 
     updateStoreSettings({
       header: {
@@ -614,7 +934,7 @@ const TemplateSelector = () => {
   return (
     <div
       dir="rtl"
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 py-8 px-4"
+      className="min-h-screen bg-linear-to-br from-slate-50 via-white to-slate-50 py-8 px-4"
     >
       <div className="max-w-7xl mx-auto">
         {/* Store Type Selection - Show only if no store type selected */}
@@ -785,8 +1105,35 @@ const TemplateSelector = () => {
               </div>
             </div>
 
+            {/* Loading State */}
+            {loading && (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-center">
+                  <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+                  <p className="text-lg text-slate-600">
+                    جاري تحميل القوالب...
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && !loading && (
+              <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center">
+                <p className="text-red-600 text-lg font-semibold mb-2">
+                  {error}
+                </p>
+                <button
+                  onClick={() => window.location.reload()}
+                  className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  إعادة المحاولة
+                </button>
+              </div>
+            )}
+
             {/* Templates Grid */}
-            {availableTemplates.length > 0 ? (
+            {!loading && !error && availableTemplates.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
                 {availableTemplates.map((template) => (
                   <div
@@ -803,7 +1150,7 @@ const TemplateSelector = () => {
                     `}
                   >
                     {/* Thumbnail */}
-                    <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
+                    <div className="relative aspect-video overflow-hidden bg-linear-to-br from-slate-100 to-slate-200">
                       <img
                         src={template.thumbnail.url}
                         alt={template.title}

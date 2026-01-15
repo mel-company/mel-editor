@@ -33,6 +33,25 @@ const RenderTemplate = () => {
       (s) => s.type !== "navigation" && s.type !== "footer"
     ) || [];
 
+  // Debug: Log sections for troubleshooting
+  useEffect(() => {
+    if (currentPage) {
+      console.log("📄 Current page sections:", {
+        pageName: currentPage.name,
+        totalSections: currentPage.sections.length,
+        filteredSections: sections.length,
+        sections: currentPage.sections.map((s) => ({
+          type: s.type,
+          section_id: s.section_id,
+          hasOptions: !!s.options,
+          optionsCount: s.options?.length || 0,
+          selectedOption: s.options?.find((o) => o.id === s.section_id),
+          hasComponent: !!s.options?.find((o) => o.id === s.section_id)?.component,
+        })),
+      });
+    }
+  }, [currentPage, sections]);
+
   // Clear active section when page changes
   useEffect(() => {
     setActiveSectionId(""); // Clear active section when switching pages

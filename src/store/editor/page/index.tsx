@@ -6,28 +6,48 @@ import { hero_sections } from "../../../mock/template/sections/hero";
 import { categories_sections } from "../../../mock/template/sections/categories";
 import { recent_products_sections } from "../../../mock/template/sections/recent-products";
 import { menu_sections } from "../../../mock/template/sections/menu";
+import { our_story_sections } from "../../../mock/template/sections/our-story";
+import { contact_sections } from "../../../mock/template/sections/contact";
+import { footer_sections } from "../../../mock/template/sections/footer";
 
 // Map section types to their section definitions
 const sectionTypesMap: Record<string, any[]> = {
   navigation: navigation_sections,
   hero: hero_sections,
+  carouselHero: hero_sections, // carouselHero uses hero_sections
   categories: categories_sections,
+  categoryGrid: categories_sections, // categoryGrid uses categories_sections
   recentProducts: recent_products_sections,
+  productGrid: recent_products_sections, // productGrid uses recent_products_sections
   menu: menu_sections,
+  // Add support for other section types from API
+  featuresGrid: categories_sections, // featuresGrid uses categories_sections
+  testimonialSlider: contact_sections, // testimonialSlider uses contact_sections
+  promoBanner: hero_sections, // promoBanner uses hero_sections
+  pageHeader: hero_sections, // pageHeader uses hero_sections
+  contentBlock: our_story_sections, // contentBlock uses our_story_sections
+  ourStory: our_story_sections,
+  contactForm: contact_sections,
+  contactInfo: contact_sections,
+  contact: contact_sections,
+  footer: footer_sections,
 };
 
 // Function to restore components in sections after loading from localStorage
 const restoreSectionComponents = (pages: PageType[]): PageType[] => {
-  return pages.map((page) => ({
-    ...page,
-    sections: page.sections.map((section) => {
+  console.log("🔄 Restoring components for pages:", pages.length);
+  
+  return pages.map((page) => {
+    const restoredSections = page.sections.map((section) => {
       const sectionOptions = sectionTypesMap[section.type];
       if (!sectionOptions) {
+        console.warn(`⚠️ No section options found for type: ${section.type}`);
         return section;
       }
 
       // If section has no options or options array is empty, restore from section definitions
       if (!section.options || section.options.length === 0) {
+        console.log(`📦 Restoring empty options for section type: ${section.type}`);
         return {
           ...section,
           options: sectionOptions,
@@ -45,16 +65,48 @@ const restoreSectionComponents = (pages: PageType[]): PageType[] => {
             ...savedOption, // Override with saved data (user's edits)
             component: optionDefinition.component, // Always use component from definitions
           };
+        } else {
+          console.warn(`⚠️ Option definition not found for section type: ${section.type}, option id: ${savedOption.id}`);
+          // Try to find any option with component as fallback
+          const fallbackOption = sectionOptions.find(opt => opt.component);
+          if (fallbackOption) {
+            return {
+              ...fallbackOption,
+              ...savedOption,
+              component: fallbackOption.component,
+            };
+          }
         }
         return savedOption;
       });
+
+      // Verify at least one option has component
+      const hasComponent = restoredOptions.some(opt => opt.component);
+      if (!hasComponent) {
+        console.error(`❌ No component found for section type: ${section.type}, using first option with component`);
+        const firstWithComponent = sectionOptions.find(opt => opt.component);
+        if (firstWithComponent) {
+          restoredOptions[0] = {
+            ...firstWithComponent,
+            ...restoredOptions[0],
+            component: firstWithComponent.component,
+          };
+        }
+      }
 
       return {
         ...section,
         options: restoredOptions,
       };
-    }),
-  }));
+    });
+
+    console.log(`✅ Restored page: ${page.name} with ${restoredSections.length} sections`);
+
+    return {
+      ...page,
+      sections: restoredSections,
+    };
+  });
 };
 
 type Store = {
