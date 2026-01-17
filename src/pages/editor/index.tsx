@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import RenderTemplate from "../../components/editor/render";
 import EditorSideNav from "../../components/editor/side-nav";
-import React from "react";
+
 const EditorPage = () => {
   const navigate = useNavigate();
 

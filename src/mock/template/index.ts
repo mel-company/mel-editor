@@ -1,16 +1,17 @@
 import { TemplateType } from "../../types";
 import { categories_sections } from "./sections/categories";
-import { hero_sections } from "./sections/hero";
-import { navigation_sections } from "./sections/navigation";
 import { recent_products_sections } from "./sections/recent-products";
 import { footer_sections } from "./sections/footer";
 import { our_story_sections } from "./sections/our-story";
 import { contact_sections } from "./sections/contact";
+import { navigation_sections } from "../../global-sections/page/home/production/navbar";
+import { hero_sections } from "../../global-sections/page/home/production/hero";
 
 export const mockTemplate: TemplateType = {
   id: "cklsmvdlkvmds",
   title: "Template 1",
   description: "Template 1 description",
+  storeType: "e-commerce",
 
   thumbnail: {
     url: "",
@@ -32,45 +33,45 @@ export const mockTemplate: TemplateType = {
       editable: true,
       options: hero_sections,
     },
-    {
-      id: "2",
-      section_id: "1",
-      type: "categories",
-      view_all_link: "",
-      options: categories_sections,
-      editable: true,
-    },
-    {
-      id: "3",
-      section_id: "1",
-      type: "recentProducts",
-      view_all_link: "",
-      options: recent_products_sections,
-      editable: true,
-    },
-    {
-      id: "4",
-      section_id: "1",
-      type: "footer",
-      view_all_link: "",
-      options: footer_sections,
-      editable: true,
-    },
-    {
-      id: "5",
-      section_id: "1",
-      type: "ourStory",
-      view_all_link: "",
-      options: our_story_sections,
-      editable: true,
-    },
-    {
-      id: "6",
-      section_id: "1",
-      type: "contact",
-      view_all_link: "",
-      options: contact_sections,
-      editable: true,
-    },
+    // {
+    //   id: "2",
+    //   section_id: "1",
+    //   type: "categories",
+    //   view_all_link: "",
+    //   options: categories_sections,
+    //   editable: true,
+    // },
+    // {
+    //   id: "3",
+    //   section_id: "1",
+    //   type: "recentProducts",
+    //   view_all_link: "",
+    //   options: recent_products_sections,
+    //   editable: true,
+    // },
+    // {
+    //   id: "4",
+    //   section_id: "1",
+    //   type: "footer",
+    //   view_all_link: "",
+    //   options: footer_sections,
+    //   editable: true,
+    // },
+    // {
+    //   id: "5",
+    //   section_id: "1",
+    //   type: "ourStory",
+    //   view_all_link: "",
+    //   options: our_story_sections,
+    //   editable: true,
+    // },
+    // {
+    //   id: "6",
+    //   section_id: "1",
+    //   type: "contact",
+    //   view_all_link: "",
+    //   options: contact_sections,
+    //   editable: true,
+    // },
   ],
 };

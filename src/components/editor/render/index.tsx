@@ -1,20 +1,13 @@
 import { useEffect } from "react";
 import React from "react";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Instagram,
-  Twitter,
-  Linkedin,
-} from "lucide-react";
+
 import { useSectionStore } from "../../../store/editor/section";
 import { usePageStore } from "../../../store/editor/page";
 import { useStoreSettingsStore } from "../../../store/editor/store-settings";
-import { SectionType, PageType } from "../../../types";
+import { SectionType, } from "../../../types";
 import { Navigation1 } from "../../../mock/template/sections/navigation";
 import { footer_sections } from "../../../mock/template/sections/footer";
+import { mockTemplate } from "../../../mock/template";
 
 const RenderTemplate = () => {
   const {
@@ -25,7 +18,10 @@ const RenderTemplate = () => {
   } = useSectionStore();
   const { pages, currentPageId, setCurrentPageId } = usePageStore();
   const { storeSettings } = useStoreSettingsStore();
-  const currentPage = pages.find((p) => p.id === currentPageId);
+  // const currentPage = pages.find((p) => p.id === currentPageId);
+
+  const page = pages.find((p) => p.id === currentPageId)
+  const currentPage = { ...page, ...mockTemplate }
   // Get sections directly from currentPage - they're already stored there
   // Filter out navigation and footer sections as they're rendered separately
   const sections =
@@ -99,10 +95,9 @@ const RenderTemplate = () => {
             }}
             className={`
               cursor-pointer transition-all duration-200 relative
-              ${
-                activeElementType === "navigation"
-                  ? "outline-2 outline-blue-500 outline-offset-2"
-                  : ""
+              ${activeElementType === "navigation"
+                ? "outline-2 outline-blue-500 outline-offset-2"
+                : ""
               }
             `}
             style={{
@@ -184,11 +179,10 @@ const RenderTemplate = () => {
                   }}
                   className={`
                     cursor-pointer transition-all duration-200
-                    ${
-                      section.target_id === activeSectionId &&
+                    ${section.target_id === activeSectionId &&
                       activeElementType === "section"
-                        ? "outline-2 outline-blue-500 outline-offset-2"
-                        : ""
+                      ? "outline-2 outline-blue-500 outline-offset-2"
+                      : ""
                     }
                   `}
                   style={
@@ -234,10 +228,9 @@ const RenderTemplate = () => {
               }}
               className={`
                 cursor-pointer transition-all duration-200 mt-auto
-                ${
-                  activeSectionId === "footer" && activeElementType === "footer"
-                    ? "outline-2 outline-blue-500 outline-offset-2"
-                    : ""
+                ${activeSectionId === "footer" && activeElementType === "footer"
+                  ? "outline-2 outline-blue-500 outline-offset-2"
+                  : ""
                 }
               `}
               style={{
