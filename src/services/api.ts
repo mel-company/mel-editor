@@ -155,14 +155,14 @@ export const updateTemplate = async (
             is_active: templateData.is_active ?? currentTemplate?.is_active ?? true,
         };
 
-        console.log(`🔄 Updating template: PATCH ${API_BASE_URL}/api/v1/template/${templateId}`, {
+        console.log(`🔄 Updating template: PUT ${API_BASE_URL}/api/v1/template/${templateId}`, {
             name: payload.name,
             hasBody: !!payload.body,
             is_active: payload.is_active,
         });
 
         const response = await fetch(`${API_BASE_URL}/api/v1/template/${templateId}`, {
-            method: 'PATCH',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',

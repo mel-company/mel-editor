@@ -537,7 +537,7 @@ export const saveStore = (storeData: {
   pages: PageType[];
   storeSettings: StoreType;
 }) =>
-  api.patch('/stores/me', storeData, {
+  api.put('/stores/me', storeData, {
     headers: { Authorization: `Bearer ${getToken()}` }
   });
 
