@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import RenderTemplate from "../../components/editor/render";
+import TemplateJsonWrapper from "../../components/editor/render/json-wrapper";
 import EditorSideNav from "../../components/editor/side-nav";
 
 const EditorPage = () => {
@@ -19,7 +19,7 @@ const EditorPage = () => {
       className="bg-slate-100 text-sm font-medium w-screen h-screen max-w-screen max-h-screen flex items-center justify-center relative overflow-hidden"
     >
       <EditorSideNav onNavigate={handleNavigate} />
-      <RenderTemplate />
+      <TemplateJsonWrapper />
     </main>
   );
 };

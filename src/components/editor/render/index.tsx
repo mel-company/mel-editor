@@ -8,6 +8,7 @@ import { SectionType, } from "../../../types";
 import { Navigation1 } from "../../../mock/template/sections/navigation";
 import { footer_sections } from "../../../mock/template/sections/footer";
 import { mockTemplate } from "../../../mock/template";
+import { getSectionProps } from "../../../utils/section-props";
 
 const RenderTemplate = () => {
   const {
@@ -319,140 +320,23 @@ const Footer = ({
 
 const Section = ({ section }: { section: SectionType }) => {
   const { storeSettings } = useStoreSettingsStore();
-  const { setCurrentPageId } = usePageStore();
 
   const selected_options = section.options?.find(
     (option) => option.id === section.section_id
   );
 
-  // Debug: check what's in selected_options
   if (!selected_options) {
-    console.warn("Option not found:", {
-      section_id: section.section_id,
-      section_type: section.type,
-      options_count: section.options?.length,
-      options_ids: section.options?.map((o) => o.id),
-    });
     return null;
   }
 
   const Component = selected_options.component as any;
 
   if (!Component) {
-    console.warn("Section component not found:", {
-      section_id: section.section_id,
-      section_type: section.type,
-      selected_option: selected_options,
-      has_component: !!selected_options.component,
-      component_type: typeof selected_options.component,
-    });
     return null;
   }
 
-  const { component: _Component, ...restOptions } = (selected_options ||
-    {}) as any;
-
-  let props: any = {
-    styles: section.styles, // Pass styles to component
-  };
-
-  // Handle content (title, description, etc.)
-  if (restOptions.content) {
-    if (Array.isArray(restOptions.content)) {
-      const contentProps = restOptions.content.reduce((acc: any, item: any) => {
-        acc[item.name] = item.value;
-        return acc;
-      }, {});
-      // For hero sections, pass title and description directly
-      if (section.type === "hero") {
-        props.title = contentProps.title;
-        props.description = contentProps.description;
-      } else if (section.type === "footer") {
-        // For footer, pass text
-        props.text = contentProps.text;
-      } else if (section.type === "ourStory") {
-        // For our story sections
-        props.title = contentProps.title;
-        props.description = contentProps.description;
-      } else if (section.type === "contact") {
-        // For contact sections
-        props.title = contentProps.title;
-        props.description = contentProps.description;
-        props.content = {
-          email: contentProps.email,
-          phone: contentProps.phone,
-          address: contentProps.address,
-          hours: contentProps.hours,
-        };
-      } else {
-        props.content = contentProps;
-      }
-    } else {
-      // For hero sections, pass title and description directly
-      if (section.type === "hero") {
-        props.title = restOptions.content.title;
-        props.description = restOptions.content.description;
-      } else if (section.type === "footer") {
-        props.text = restOptions.content.text;
-      } else if (section.type === "ourStory") {
-        // For our story sections
-        props.title = restOptions.content.title;
-        props.description = restOptions.content.description;
-      } else if (section.type === "contact") {
-        // For contact sections
-        props.title = restOptions.content.title;
-        props.description = restOptions.content.description;
-        props.content = {
-          email: restOptions.content.email,
-          phone: restOptions.content.phone,
-          address: restOptions.content.address,
-          hours: restOptions.content.hours,
-        };
-      } else {
-        props.content = restOptions.content;
-      }
-    }
-  }
-
-  // Handle photos (logo, images, etc.)
-  if (restOptions.photos && !Array.isArray(restOptions.photos)) {
-    props = { ...props, ...restOptions.photos };
-  } else if (restOptions.photos) {
-    props.photos = restOptions.photos;
-  }
-
-  // Handle products, categories, and view_all_link
-  if (restOptions.products !== undefined) {
-    props.products = restOptions.products;
-  }
-  if (restOptions.categories !== undefined) {
-    props.categories = restOptions.categories;
-  }
-  if (restOptions.view_all_link !== undefined || section.view_all_link) {
-    props.view_all_link =
-      restOptions.view_all_link || section.view_all_link || "";
-  }
-
-  // For footer sections, add footer-specific props
-  if (section.type === "footer") {
-    props.logo = storeSettings.logo;
-    props.navigationLinks = storeSettings.header?.navigationLinks;
-    props.socialLinks = storeSettings.footer?.socialLinks;
-    props.onLinkClick = (pageId?: string) => {
-      if (pageId) {
-        setCurrentPageId(pageId);
-        setTimeout(() => {
-          const pageContent = document.querySelector("[data-page-content]");
-          if (pageContent) {
-            pageContent.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }
-        }, 100);
-      }
-    };
-  }
+  // Use shared logic for props
+  const props = getSectionProps(section, storeSettings);
 
   return <Component {...props} />;
 };

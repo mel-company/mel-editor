@@ -9,6 +9,7 @@ import '@fontsource/ibm-plex-sans-arabic/400.css';
 import '@fontsource/ibm-plex-sans-arabic/500.css';
 import '@fontsource/ibm-plex-sans-arabic/600.css';
 import '@fontsource/ibm-plex-sans-arabic/700.css';
+import PreviewPage from "./pages/preview";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/store-view/cart" element={<StoreViewPage />} />
         <Route path="/product/:productId" element={<ProductDetailPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/template-preview" element={<PreviewPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 

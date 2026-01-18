@@ -36,8 +36,8 @@ interface FooterProps {
   };
 }
 
-// Footer 1: Dark Gradient
-const FooterSection1 = ({
+// Footer 1: Simple with Links
+export const Footer1 = ({
   logo,
   text,
   title,
@@ -526,7 +526,7 @@ export const footer_sections = [
     id: "1",
     title: "Footer - Dark Gradient",
     description: "تصميم داكن مع تدرج لوني",
-    component: FooterSection1,
+    component: Footer1,
     thumbnail: {
       url: "https://cdn.dribbble.com/userupload/17671963/file/original-3adc590720f59beeb44b8fa8876e4837.jpg?crop=107x0-2529x1816&format=webp&resize=400x300&vertical=center",
     },

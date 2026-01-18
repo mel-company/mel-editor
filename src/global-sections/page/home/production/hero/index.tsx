@@ -2,7 +2,7 @@
 import { HeroCarousel } from "./hero-carousel";
 
 // Hero 1: Text Only - نص فقط
-const HeroSection1 = ({
+export const HeroSection1 = ({
   title,
   description,
 }: {
@@ -26,7 +26,7 @@ const HeroSection1 = ({
 };
 
 // Hero 2: Image and Text - صورة ونص
-const HeroSection2 = ({
+export const HeroSection2 = ({
   title,
   description,
   photos,
@@ -69,7 +69,7 @@ const HeroSection2 = ({
 };
 
 // Hero 4: Full Width Image with Overlay
-const HeroSection4 = ({
+export const HeroSection4 = ({
   title,
   description,
   photos,
@@ -111,7 +111,7 @@ const HeroSection4 = ({
 };
 
 // Hero 5: Split Screen
-const HeroSection5 = ({
+export const HeroSection5 = ({
   title,
   description,
   photos,
