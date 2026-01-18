@@ -1,16 +1,7 @@
 import React from "react";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Facebook,
-  Instagram,
-  Twitter,
-  Linkedin,
-} from "lucide-react";
+
 import { PageType, SectionType, StoreType } from "../../types";
 import { Navigation1 } from "../../mock/template/sections/navigation";
-import { useStoreSettingsStore } from "../../store/editor/store-settings";
 import { footer_sections } from "../../mock/template/sections/footer";
 
 interface StoreViewProps {

@@ -1,84 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { useSectionStore } from "../../../store/editor/section";
-import { usePageStore } from "../../../store/editor/page";
-import { useStoreSettingsStore } from "../../../store/editor/store-settings";
+import { useEffect, useState } from "react";
 import RenderTemplate from "./index";
 import { reactToJSON } from "../../../utils/react-to-json";
-import { mockTemplate } from "../../../mock/template";
-import { Navigation1 } from "../../../mock/template/sections/navigation";
-import { footer_sections } from "../../../mock/template/sections/footer";
-import { getSectionProps } from "../../../utils/section-props";
-
 import { generateCodeFromJSON } from "../../../utils/json-to-code";
+import { useTemplateStructure } from "../../../hooks/use-template-structure";
 
 const TemplateJsonWrapper = () => {
-    const { pages, currentPageId } = usePageStore();
-    const { storeSettings } = useStoreSettingsStore();
+    const { navigation, sections, footer } = useTemplateStructure();
     const [jsonOutput, setJsonOutput] = useState<any>(null);
     const [showDebug, setShowDebug] = useState(false);
     const [showCode, setShowCode] = useState(false);
     const [generatedCode, setGeneratedCode] = useState("");
 
     useEffect(() => {
-        // Logic to reconstruct the tree structure similar to RenderTemplate
-        // This allows us to capture the "virtual" React tree as JSON
         const generateJSON = () => {
-            const page = pages.find((p) => p.id === currentPageId);
-            const currentPage = { ...page, ...mockTemplate };
-
-            const sections = currentPage?.sections.filter(
-                (s) => s.type !== "navigation" && s.type !== "footer"
-            ) || [];
-
-            // 1. Navigation Node (Reconstructing logic from RenderTemplate)
+            // 1. Navigation Node
             let navigationNode = null;
-            if (storeSettings.type !== "restaurant") {
-                navigationNode = (
-                    <Navigation1
-                        logo={storeSettings.logo}
-                        navigationLinks={storeSettings.header?.navigationLinks}
-                        primaryColor={storeSettings.colors?.primary}
-                    />
-                );
+            if (navigation) {
+                const { Component, props } = navigation;
+                navigationNode = <Component {...props} />;
             }
 
             // 2. Sections Nodes
             const sectionNodes = sections.map((section) => {
-                const selected_options = section.options?.find(
-                    (option) => option.id === section.section_id
-                );
-
-                if (!selected_options || !selected_options.component) return null;
-
-                const Component = selected_options.component as any;
-
-                // Use shared prop logic to get FULL props including styles and resolved content
-                const props = getSectionProps(section, storeSettings);
-
-                if (!props) return null;
-
-                return <Component key={section.id} {...props} />;
+                const { Component, props, id } = section;
+                return <Component key={id} {...props} />;
             });
 
             // 3. Footer Node
             let footerNode = null;
-            if (storeSettings.type !== "restaurant" && storeSettings.footer?.showFooter !== false) {
-                const footerVariant = storeSettings.footer?.footerVariant || "1";
-                const variantIndex = footerVariant ? parseInt(footerVariant) - 1 : 0;
-                const FooterComponent = footer_sections[variantIndex]?.component || footer_sections[0]?.component;
-
-                if (FooterComponent) {
-                    footerNode = <FooterComponent
-                        logo={storeSettings.logo}
-                        text={storeSettings.footer?.text}
-                        title={storeSettings.footer?.title}
-                        description={storeSettings.footer?.description}
-                        contactInfo={storeSettings.footer?.contactInfo}
-                        navigationLinks={storeSettings.header?.navigationLinks}
-                        socialLinks={storeSettings.footer?.socialLinks}
-                        styles={storeSettings.footer?.styles}
-                    />;
-                }
+            if (footer) {
+                const { Component, props } = footer;
+                footerNode = <Component {...props} />;
             }
 
             // Construct the full tree
@@ -101,7 +53,7 @@ const TemplateJsonWrapper = () => {
         if (json) {
             setGeneratedCode(generateCodeFromJSON(json));
         }
-    }, [pages, currentPageId, storeSettings]);
+    }, [navigation, sections, footer]);
 
     return (
         <div className="relative w-full h-full">

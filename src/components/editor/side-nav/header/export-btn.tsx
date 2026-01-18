@@ -86,47 +86,38 @@ const ExportButton = () => {
         </button>
       </div>
       <button
-        onClick={handleSaveToDatabase}
-        disabled={saving}
-        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-        title="حفظ في الداتابيس"
-      >
-        <Database size={14} />
-        {saving ? "جاري الحفظ..." : "حفظ في الداتابيس"}
-      </button>
-      <button
-        onClick={() => {
-          // Real Client-Side Build: Snapshot the current state
+        onClick={async () => {
           try {
-            // Access stores directly (we need to be inside component or use getState if outside, 
-            // but here we are inside component so we can use hooks or direct import of store)
-            // Access stores directly (we need to be inside component or use getState if outside, 
-            // but here we are inside component so we can use hooks or direct import of store)
-            // Using direct store access to ensure we get latest state without extra re-renders
-            // const { usePageStore } = require("../../../../store/editor/page");
-            // const { useStoreSettingsStore } = require("../../../../store/editor/store-settings");
-
+            setSaving(true);
             const pages = usePageStore.getState().pages;
             const storeSettings = useStoreSettingsStore.getState().storeSettings;
 
-            const buildData = {
+            // Prepare template data for the exporter
+            const templateData = {
               pages,
               storeSettings
             };
 
-            localStorage.setItem("built-template-data", JSON.stringify(buildData));
+            // Dynamically import to split bundle if needed, or just call directly
+            const { generateProjectZip } = await import("../../../../utils/project-exporter");
 
-            alert("✅ تم بناء النسخة بنجاح!\n\nتم حفظ التغييرات الحالية لإعداد المعاينة.\nاضغط على 'معاينة التطبيق' لرؤية النتيجة.");
-            console.log("Build snapshot saved to localStorage", buildData);
+            console.log("🏗️ Starting project generation...");
+            await generateProjectZip(templateData);
+
+            console.log("✅ Project zip generated and download triggered");
+            alert("✅ تم بناء المشروع وتحميله بنجاح!\n\nقم بفك الضغط وتشغيل:\n1. npm install\n2. npm run dev");
           } catch (e) {
             console.error("Build failed", e);
-            alert("❌ حدث خطأ أثناء البناء");
+            alert("❌ حدث خطأ أثناء بناء المشروع: " + (e as any).message);
+          } finally {
+            setSaving(false);
           }
         }}
-        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium"
+        disabled={saving}
+        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs font-medium disabled:opacity-50"
       >
         <Hammer size={14} />
-        بناء نسخة جديدة (Build)
+        {saving ? "جاري البناء..." : "بناء مشروع كامل (Vite)"}
       </button>
 
       <button

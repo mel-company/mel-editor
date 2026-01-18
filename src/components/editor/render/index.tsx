@@ -3,12 +3,7 @@ import React from "react";
 
 import { useSectionStore } from "../../../store/editor/section";
 import { usePageStore } from "../../../store/editor/page";
-import { useStoreSettingsStore } from "../../../store/editor/store-settings";
-import { SectionType, } from "../../../types";
-import { Navigation1 } from "../../../mock/template/sections/navigation";
-import { footer_sections } from "../../../mock/template/sections/footer";
-import { mockTemplate } from "../../../mock/template";
-import { getSectionProps } from "../../../utils/section-props";
+import { useTemplateStructure } from "../../../hooks/use-template-structure";
 
 const RenderTemplate = () => {
   const {
@@ -17,51 +12,35 @@ const RenderTemplate = () => {
     setActiveSectionId,
     setActiveElementType,
   } = useSectionStore();
-  const { pages, currentPageId, setCurrentPageId } = usePageStore();
-  const { storeSettings } = useStoreSettingsStore();
-  // const currentPage = pages.find((p) => p.id === currentPageId);
+  const { setCurrentPageId } = usePageStore();
 
-  const page = pages.find((p) => p.id === currentPageId)
-  const currentPage = { ...page, ...mockTemplate }
-  // Get sections directly from currentPage - they're already stored there
-  // Filter out navigation and footer sections as they're rendered separately
-  const sections =
-    currentPage?.sections.filter(
-      (s) => s.type !== "navigation" && s.type !== "footer"
-    ) || [];
+  const {
+    navigation,
+    sections,
+    footer,
+    globalStyles,
+    storeSettings,
+    currentPageId
+  } = useTemplateStructure();
 
   // Debug: Log sections for troubleshooting
   useEffect(() => {
-    if (currentPage) {
+    if (sections) {
       console.log("📄 Current page sections:", {
-        pageName: currentPage.name,
-        totalSections: currentPage.sections.length,
-        filteredSections: sections.length,
-        sections: currentPage.sections.map((s) => ({
+        totalSections: sections.length,
+        sections: sections.map((s) => ({
           type: s.type,
-          section_id: s.section_id,
-          hasOptions: !!s.options,
-          optionsCount: s.options?.length || 0,
-          selectedOption: s.options?.find((o) => o.id === s.section_id),
-          hasComponent: !!s.options?.find((o) => o.id === s.section_id)?.component,
+          section_id: s.id,
         })),
       });
     }
-  }, [currentPage, sections]);
+  }, [sections]);
 
   // Clear active section when page changes
   useEffect(() => {
     setActiveSectionId(""); // Clear active section when switching pages
     setActiveElementType(""); // Clear active element type
   }, [currentPageId, setActiveSectionId, setActiveElementType]);
-
-  // Apply fonts and colors from store settings
-  const fonts = storeSettings.fonts || { heading: "Arial", body: "Arial" };
-  const colors = storeSettings.colors || {
-    primary: "#4272FF",
-    secondary: "#ACBA12",
-    text: "#1D293D",
-  };
 
   return (
     <div
@@ -74,20 +53,10 @@ const RenderTemplate = () => {
     >
       <div
         className="w-full h-full max-h-[90vh] max-w-11/12 overflow-y-auto overflow-x-hidden bg-white rounded-2xl flex flex-col"
-        style={
-          {
-            fontFamily: fonts.body,
-            color: colors.text,
-            "--heading-font": fonts.heading,
-            "--body-font": fonts.body,
-            "--primary-color": colors.primary,
-            "--secondary-color": colors.secondary,
-            "--text-color": colors.text,
-          } as React.CSSProperties
-        }
+        style={globalStyles}
       >
-        {/* Navigation Bar - Main Header (only for e-commerce) */}
-        {storeSettings.type !== "restaurant" && (
+        {/* Navigation Bar */}
+        {navigation && (
           <div
             onClick={(e) => {
               e.stopPropagation();
@@ -106,11 +75,9 @@ const RenderTemplate = () => {
               color: storeSettings.header?.styles?.textColor,
             }}
           >
-            <Navigation1
-              logo={storeSettings.logo}
-              navigationLinks={storeSettings.header?.navigationLinks}
-              primaryColor={storeSettings.colors?.primary}
-              onLinkClick={(pageId) => {
+            <navigation.Component
+              {...navigation.props}
+              onLinkClick={(pageId?: string) => {
                 if (pageId) {
                   setCurrentPageId(pageId);
                   // Scroll to top of page content
@@ -138,13 +105,15 @@ const RenderTemplate = () => {
               لا توجد أقسام في هذه الصفحة
             </div>
           ) : (
-            sections.map((section) => {
-              const sectionStyles = section.styles || {};
-              // Build comprehensive style object
+            sections.map((sectionData) => {
+              const { Component, props, id, originalSection } = sectionData;
+              const sectionStyles = originalSection.styles || {};
+
+              // Build comprehensive style object for the WRAPPER
               const sectionStyle: React.CSSProperties = {
                 backgroundColor: sectionStyles.backgroundColor,
                 color: sectionStyles.textColor,
-                // Padding - support both shorthand and individual values
+                // Padding
                 padding: sectionStyles.padding,
                 paddingTop: sectionStyles.paddingTop || sectionStyles.padding,
                 paddingBottom:
@@ -152,7 +121,7 @@ const RenderTemplate = () => {
                 paddingLeft: sectionStyles.paddingLeft || sectionStyles.padding,
                 paddingRight:
                   sectionStyles.paddingRight || sectionStyles.padding,
-                // Margin - support both shorthand and individual values
+                // Margin
                 margin: sectionStyles.margin,
                 marginTop: sectionStyles.marginTop || sectionStyles.margin,
                 marginBottom:
@@ -170,17 +139,18 @@ const RenderTemplate = () => {
                   ? parseFloat(sectionStyles.opacity)
                   : undefined,
               };
+
               return (
                 <div
-                  key={section.target_id}
+                  key={id}
                   onClick={(e) => {
                     e.stopPropagation();
                     setActiveElementType("section");
-                    setActiveSectionId(section.target_id || "");
+                    setActiveSectionId(id || "");
                   }}
                   className={`
                     cursor-pointer transition-all duration-200
-                    ${section.target_id === activeSectionId &&
+                    ${id === activeSectionId &&
                       activeElementType === "section"
                       ? "outline-2 outline-blue-500 outline-offset-2"
                       : ""
@@ -211,134 +181,45 @@ const RenderTemplate = () => {
                     } as React.CSSProperties
                   }
                 >
-                  <Section section={section} />
+                  <Component {...props} />
                 </div>
               );
             })
           )}
         </div>
 
-        {/* Footer - Single footer for all pages (controlled by showFooter) */}
-        {storeSettings.type !== "restaurant" &&
-          storeSettings.footer?.showFooter !== false && (
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                setActiveElementType("footer");
-                setActiveSectionId("footer");
-              }}
-              className={`
+        {/* Footer */}
+        {footer && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              setActiveElementType("footer");
+              setActiveSectionId("footer");
+            }}
+            className={`
                 cursor-pointer transition-all duration-200 mt-auto
                 ${activeSectionId === "footer" && activeElementType === "footer"
-                  ? "outline-2 outline-blue-500 outline-offset-2"
-                  : ""
-                }
+                ? "outline-2 outline-blue-500 outline-offset-2"
+                : ""
+              }
               `}
-              style={{
-                backgroundColor:
-                  storeSettings.footer?.styles?.backgroundColor || "#1e293b",
-                color: storeSettings.footer?.styles?.textColor || "#ffffff",
-                padding: storeSettings.footer?.styles?.padding,
-                margin: storeSettings.footer?.styles?.margin,
-              }}
-            >
-              <Footer
-                footer={storeSettings.footer || { text: "", links: [] }}
-                logo={storeSettings.logo}
-                navigationLinks={storeSettings.header?.navigationLinks}
-                footerVariant={storeSettings.footer?.footerVariant || "1"}
-              />
-            </div>
-          )}
+            style={{
+              backgroundColor:
+                storeSettings.footer?.styles?.backgroundColor || "#1e293b",
+              color: storeSettings.footer?.styles?.textColor || "#ffffff",
+              padding: storeSettings.footer?.styles?.padding,
+              margin: storeSettings.footer?.styles?.margin,
+            }}
+          >
+            <footer.Component
+              {...footer.props}
+            // onLinkClick is already handled in getSectionProps for Footer
+            />
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-const Footer = ({
-  footer,
-  logo,
-  navigationLinks,
-  footerVariant,
-}: {
-  footer: {
-    logo?: any;
-    text?: string;
-    title?: string;
-    description?: string;
-    contactInfo?: {
-      email?: string;
-      phone?: string;
-      address?: string;
-    };
-    links?: any[];
-    socialLinks?: Array<{ id: string; platform: string; url: string }>;
-    styles?: {
-      backgroundColor?: string;
-      textColor?: string;
-      padding?: string;
-      margin?: string;
-    };
-  };
-  logo: any;
-  navigationLinks?: Array<{
-    id: string;
-    label: string;
-    url: string;
-    pageId?: string;
-  }>;
-  footerVariant?: string;
-}) => {
-  // Use selected footer variant component
-  const variantIndex = footerVariant ? parseInt(footerVariant) - 1 : 0;
-  const FooterComponent =
-    footer_sections[variantIndex]?.component || footer_sections[0]?.component;
-
-  if (!FooterComponent) {
-    return null;
-  }
-
-  return (
-    <FooterComponent
-      logo={logo}
-      text={footer?.text}
-      title={footer?.title}
-      description={footer?.description}
-      contactInfo={footer?.contactInfo}
-      navigationLinks={navigationLinks}
-      socialLinks={footer?.socialLinks}
-      onLinkClick={(pageId?: string) => {
-        if (pageId) {
-          const { setCurrentPageId } = usePageStore.getState();
-          setCurrentPageId(pageId);
-        }
-      }}
-      styles={footer?.styles}
-    />
-  );
-};
-
-const Section = ({ section }: { section: SectionType }) => {
-  const { storeSettings } = useStoreSettingsStore();
-
-  const selected_options = section.options?.find(
-    (option) => option.id === section.section_id
-  );
-
-  if (!selected_options) {
-    return null;
-  }
-
-  const Component = selected_options.component as any;
-
-  if (!Component) {
-    return null;
-  }
-
-  // Use shared logic for props
-  const props = getSectionProps(section, storeSettings);
-
-  return <Component {...props} />;
 };
 
 export default RenderTemplate;
