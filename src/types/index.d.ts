@@ -71,6 +71,37 @@ export type SectionPropsType = {
   value?: string;
 };
 
+/**
+ * Content item for editable text/textarea/link fields in sections
+ */
+export type ContentItem = {
+  name: string;
+  value: string;
+  type?: 'text' | 'textarea' | 'link' | 'image';
+  title?: string;
+  placeholder?: string;
+};
+
+/**
+ * Photo/Image item for sections
+ */
+export type PhotoItem = {
+  id: string;
+  label: string;
+  url?: string;
+  base64Content?: string;
+};
+
+/**
+ * Link item for navigation and footer links
+ */
+export type LinkItem = {
+  id: string;
+  label: string;
+  url: string;
+  pageId?: string;
+};
+
 export type SectionOptionType = {
   id: string;
   title: string;
@@ -80,8 +111,8 @@ export type SectionOptionType = {
   thumbnail?: {
     url: string;
   };
-  photos?: Array<{ id: string; label: string; url: string }>;
-  content?: any;
+  photos?: PhotoItem[];
+  content?: ContentItem[];
   products?: ProductType[];
   categories?: CategoryType[];
   view_all_link?: string;
@@ -92,9 +123,9 @@ export type SectionType = {
   type: string;
   editable: boolean;
   view_all_link?: string;
-  links?: any[];
-  content?: any;
-  photos?: any[];
+  links?: LinkItem[];
+  content?: ContentItem[] | Record<string, string>; // Support both array and object formats
+  photos?: PhotoItem[];
   options?: SectionOptionType[];
   target_id?: string; // Optional because templates don't have target_id, it's added when creating pages
   styles?: {

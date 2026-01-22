@@ -1,6 +1,7 @@
 import React from "react";
-import { Mail, Phone, MapPin, Clock, Send, MessageSquare, Globe, Instagram, Facebook, Twitter } from "lucide-react";
+import { Mail, Phone, MapPin, Clock, Send, } from "lucide-react";
 import { SectionOptionType } from "../../../../types";
+import { usePageStore } from "../../../../store/editor/page";
 
 // Contact 1: Form with Info
 const ContactSection1 = ({ id }: { id?: string }) => {
@@ -36,7 +37,7 @@ const ContactSection1 = ({ id }: { id?: string }) => {
               <div>
                 <p className="text-sm font-medium text-slate-600 mb-1">البريد الإلكتروني</p>
                 <a
-                  href={`mailto:$info@example.com`}
+                  href="mailto:info@example.com"
                   className="text-base text-slate-900 hover:text-blue-600 transition-colors"
                   data-type="text"
                   data-title="البريد الإلكتروني"
@@ -53,7 +54,7 @@ const ContactSection1 = ({ id }: { id?: string }) => {
               <div>
                 <p className="text-sm font-medium text-slate-600 mb-1">رقم الهاتف</p>
                 <a
-                  href={`tel:$+966 50 123 4567`}
+                  href="tel:+966501234567"
                   className="text-base text-slate-900 hover:text-green-600 transition-colors"
                   dir="ltr"
                   data-type="text"
@@ -176,7 +177,7 @@ const ContactSection2 = ({ id }: { id?: string }) => {
             </div>
             <h3 className="text-sm font-semibold text-slate-700 mb-2">البريد الإلكتروني</h3>
             <a
-              href={`mailto:$info@example.com`}
+              href="mailto:info@example.com"
               className="text-sm text-slate-600 hover:text-blue-600 transition-colors break-all"
               data-type="text"
               data-title="البريد الإلكتروني"
@@ -191,7 +192,7 @@ const ContactSection2 = ({ id }: { id?: string }) => {
             </div>
             <h3 className="text-sm font-semibold text-slate-700 mb-2">رقم الهاتف</h3>
             <a
-              href={`tel:$+966 50 123 4567`}
+              href="tel:+966501234567"
               className="text-sm text-slate-600 hover:text-green-600 transition-colors"
               dir="ltr"
               data-type="text"
@@ -236,7 +237,13 @@ const ContactSection2 = ({ id }: { id?: string }) => {
 };
 // Contact 3: Map Style (unchanged)
 const ContactSection3 = ({ id }: { id?: string }) => {
-  const mapUrl = "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400";
+  // Read photos from store (for images tab editing)
+  const sectionData = usePageStore((state) => {
+    const page = state.pages.find((p) => p.id === state.currentPageId);
+    return page?.sections.find((s) => s.id === id || s.section_id === id);
+  });
+  const photos = sectionData?.photos;
+  const mapUrl = photos?.[0]?.url || photos?.[0]?.base64Content || "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400";
 
   return (
     <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
@@ -265,6 +272,9 @@ const ContactSection3 = ({ id }: { id?: string }) => {
                 alt="الموقع"
                 className="w-full h-full object-cover"
                 style={{ minHeight: "400px" }}
+                data-type="image"
+                data-title="خريطة الموقع"
+                data-name="map"
               />
             </div>
           )}
@@ -292,7 +302,7 @@ const ContactSection3 = ({ id }: { id?: string }) => {
               <div>
                 <p className="text-sm font-medium text-slate-600 mb-1">رقم الهاتف</p>
                 <a
-                  href={`tel:$+966 50 123 4567`}
+                  href="tel:+966501234567"
                   className="text-base text-slate-900 hover:text-green-600 transition-colors"
                   dir="ltr"
                   data-type="text"
@@ -310,7 +320,7 @@ const ContactSection3 = ({ id }: { id?: string }) => {
               <div>
                 <p className="text-sm font-medium text-slate-600 mb-1">البريد الإلكتروني</p>
                 <a
-                  href={`mailto:$info@example.com`}
+                  href="mailto:info@example.com"
                   className="text-base text-slate-900 hover:text-blue-600 transition-colors"
                   data-type="text"
                   data-title="البريد الإلكتروني"
@@ -356,7 +366,7 @@ const ContactSection4 = ({ id }: { id?: string }) => {
               </div>
               <h3 className="text-lg font-bold mb-2">البريد الإلكتروني</h3>
               <a
-                href={`mailto:$info@example.com`}
+                href="mailto:info@example.com"
                 className="text-sm text-blue-100 hover:text-white transition-colors break-all"
                 data-type="text"
                 data-title="البريد الإلكتروني"
@@ -374,7 +384,7 @@ const ContactSection4 = ({ id }: { id?: string }) => {
               </div>
               <h3 className="text-lg font-bold mb-2">رقم الهاتف</h3>
               <a
-                href={`tel:$+966 50 123 4567`}
+                href="tel:+966501234567"
                 className="text-sm text-green-100 hover:text-white transition-colors"
                 dir="ltr"
                 data-type="text"
@@ -427,8 +437,13 @@ const ContactSection4 = ({ id }: { id?: string }) => {
 
 // Contact 5: Elegant Form with Background
 const ContactSection5 = ({ id }: { id?: string }) => {
-  const bgImage = "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400";
-
+  // Read photos from store (for images tab editing)
+  const sectionData = usePageStore((state) => {
+    const page = state.pages.find((p) => p.id === state.currentPageId);
+    return page?.sections.find((s) => s.id === id || s.section_id === id);
+  });
+  const photos = sectionData?.photos;
+  const bgImage = photos?.[0]?.url || photos?.[0]?.base64Content || "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400";
 
   return (
     <section className="relative py-12 sm:py-16 md:py-20 overflow-hidden">
@@ -438,6 +453,9 @@ const ContactSection5 = ({ id }: { id?: string }) => {
             src={bgImage}
             alt="Background"
             className="w-full h-full object-cover opacity-20"
+            data-type="image"
+            data-title="صورة الخلفية"
+            data-name="background"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50"></div>
         </div>
@@ -517,7 +535,7 @@ const ContactSection5 = ({ id }: { id?: string }) => {
                 <div>
                   <Mail className="w-5 h-5 text-blue-600 mx-auto mb-2" />
                   <a
-                    href={`mailto:$info@example.com`}
+                    href="mailto:info@example.com"
                     className="text-sm text-slate-600 hover:text-blue-600"
                     data-type="text"
                     data-title="البريد الإلكتروني"
@@ -529,7 +547,7 @@ const ContactSection5 = ({ id }: { id?: string }) => {
                 <div>
                   <Phone className="w-5 h-5 text-green-600 mx-auto mb-2" />
                   <a
-                    href={`tel:$+966 50 123 4567`}
+                    href="tel:+966501234567"
                     className="text-sm text-slate-600 hover:text-green-600"
                     dir="ltr"
                     data-type="text"
@@ -588,7 +606,7 @@ const ContactSection6 = ({ id }: { id?: string }) => {
               <div>
                 <h3 className="text-lg font-bold text-slate-900 mb-1">البريد الإلكتروني</h3>
                 <a
-                  href={`mailto:$info@example.com`}
+                  href="mailto:info@example.com"
                   className="text-base text-slate-600 hover:text-blue-600 transition-colors"
                   data-type="text"
                   data-title="البريد الإلكتروني"
@@ -605,7 +623,7 @@ const ContactSection6 = ({ id }: { id?: string }) => {
               <div>
                 <h3 className="text-lg font-bold text-slate-900 mb-1">رقم الهاتف</h3>
                 <a
-                  href={`tel:$+966 50 123 4567`}
+                  href="tel:+966501234567"
                   className="text-base text-slate-600 hover:text-green-600 transition-colors"
                   dir="ltr"
                   data-type="text"

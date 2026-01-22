@@ -22,8 +22,6 @@ const useSectionDetails = () => {
   // Extract the original section data for editing
   const section = processedSection?.originalSection;
 
-  console.log("[useSectionDetails] Debug:", { activeSectionId, processedCount: processedSections?.length, sectionFound: !!section });
-
   // Resolution Logic:
   // 1. Try standard options
   let option = section?.options?.find(
@@ -131,7 +129,10 @@ const useSectionDetails = () => {
 
     // Update DOM directly using data-name attribute
     if (activeSectionId) {
-      const sectionElement = document.getElementById(activeSectionId);
+      const sectionElement =
+        (document.querySelector(
+          `[data-section-instance-id="${activeSectionId}"]`
+        ) as HTMLElement | null) || document.getElementById(activeSectionId);
       if (sectionElement) {
         const targetElement = sectionElement.querySelector(`[data-name="${name}"]`);
         if (targetElement) {
@@ -203,7 +204,7 @@ const useSectionDetails = () => {
     if (!section) return;
 
     // Get current photos from section.photos (priority) or option.photos (fallback)
-    const currentPhotos: FileType[] = Array.isArray(section.photos)
+    const currentPhotos = Array.isArray(section.photos)
       ? [...section.photos]
       : Array.isArray(option?.photos)
         ? [...option.photos]
@@ -211,14 +212,26 @@ const useSectionDetails = () => {
 
     // Ensure the array is large enough
     while (currentPhotos.length <= index) {
-      currentPhotos.push({} as FileType);
+      currentPhotos.push({
+        id: `photo-${Date.now()}-${currentPhotos.length}`,
+        label: `صورة ${currentPhotos.length + 1}`,
+        url: '',
+        base64Content: ''
+      });
     }
-    currentPhotos[index] = file;
+
+    // Convert FileType to PhotoItem by adding required 'label' property
+    currentPhotos[index] = {
+      id: file.id || `photo-${Date.now()}`,
+      label: file.name || `صورة ${index + 1}`,
+      url: file.url,
+      base64Content: file.base64Content
+    };
 
     // Update section.photos directly (Primary storage now)
     const newOptions = section.options?.map((op) => {
       if (op.id === section.section_id) {
-        return { ...op, photos: currentPhotos as any };
+        return { ...op, photos: currentPhotos };
       }
       return op;
     });

@@ -1,6 +1,7 @@
 import TextInput from "../../../../ui/input";
 import FileUploadBar from "../../../../ui/file-upload/bar";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
+import { FileType } from "../../../../../types";
 
 export const SectionPropsComponent = (props: any) => {
   const { handleTextChange } = useSectionDetails();
@@ -30,8 +31,24 @@ export const SectionPropsComponent = (props: any) => {
           onChange={(e: any) => handleTextChange(e.target.value, props.name)}
         />
       );
+    case "image":
     case "file":
-      return <FileUploadBar {...props} />;
+      // Convert string URL to FileType object for FileUploadBar
+      const fileValue: any = typeof value === "string" && value 
+        ? { url: value, base64Content: value.startsWith("data:") ? value : undefined }
+        : undefined;
+      
+      return (
+        <FileUploadBar
+          label={label}
+          value={fileValue}
+          onChange={(file: any) => {
+            // Convert FileType back to string URL for storage
+            const url = file.base64Content || file.url || "";
+            handleTextChange(url, props.name);
+          }}
+        />
+      );
     default:
       return (
         <TextInput

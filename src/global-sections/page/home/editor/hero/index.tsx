@@ -82,6 +82,9 @@ const HeroSection2 = ({ id }: { id?: string }) => {
                         src={photoUrl}
                         className="w-full h-auto rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl object-cover"
                         alt={title || "Hero"}
+                        data-type="image"
+                        data-name="hero_image"
+                        data-title="صورة البطل"
                     />
                 </div>
             ) : (
@@ -144,6 +147,9 @@ const HeroSection3 = ({ id }: { id?: string }) => {
                             src={currentPhotoUrl}
                             className="w-full h-full object-cover transition-opacity duration-500"
                             alt={title || "Hero"}
+                            data-type="image"
+                            data-name="carousel_image"
+                            data-title="صور السلايدر"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-black/20"></div>
                     </div>
@@ -241,6 +247,9 @@ const HeroSection4 = ({ id }: { id?: string }) => {
                         src={photoUrl}
                         className="w-full h-full object-cover"
                         alt={title || "Hero"}
+                        data-type="image"
+                        data-name="fullwidth_image"
+                        data-title="صورة الخلفية"
                     />
                     <div className="absolute inset-0 bg-black/50"></div>
                 </div>
@@ -317,6 +326,9 @@ const HeroSection5 = ({ id }: { id?: string }) => {
                         src={photoUrl}
                         className="w-full h-auto rounded-2xl shadow-2xl object-cover"
                         alt={title || "Hero"}
+                        data-type="image"
+                        data-name="split_image"
+                        data-title="صورة القسم"
                     />
                 </div>
             ) : (
@@ -362,7 +374,7 @@ export const hero_sections = [
             url: "https://cdn.dribbble.com/userupload/17671963/file/original-3adc590720f59beeb44b8fa8876e4837.jpg?crop=107x0-2529x1816&format=webp&resize=400x300&vertical=center",
         },
         component: HeroSection2,
-        photos: [],
+        photos: [] as any[], // PhotoItem[] - will be populated when user adds images
         content: [
             {
                 id: "title",

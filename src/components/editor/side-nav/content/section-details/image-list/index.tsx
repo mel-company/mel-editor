@@ -5,115 +5,136 @@ import FileUploadBar from "../../../../../ui/file-upload/bar";
 import ImageUploadModal from "../../../../../ui/image-upload-modal";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";
+import { useDomImageScanner } from "../../../../../../hooks/editor-section-details/use-dom-image-scanner";
+
 const SectionImageList = () => {
-  const { handleUploadImage, option, section, setSection } =
+  const { handleUploadImage, section, setSection, activeSectionId } =
     useSectionDetails();
   const [showModal, setShowModal] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [selectedImageName, setSelectedImageName] = useState<string | null>(null);
 
-  // Show image list for sections that have photos (hero, ourStory, contact)
-  const shouldShowImages =
-    section?.type === "hero" ||
-    section?.type === "ourStory" ||
-    section?.type === "contact";
-  if (!shouldShowImages) return null;
+  // Dynamically detect images from the DOM
+  const detectedImages = useDomImageScanner(activeSectionId);
 
-  const photos = (section?.photos && Array.isArray(section.photos)) ? section.photos : (Array.isArray(option?.photos) ? option.photos : []);
-  // Determine max photos based on section type and variant
-  const maxPhotos =
-    section?.type === "hero" && section?.section_id === "3" ? 10 : // Hero carousel
-      section?.type === "ourStory" ? 1 : // Our Story sections typically have 1 photo
-        section?.type === "contact" ? 1 : // Contact sections typically have 1 photo (map)
-          1; // Default to 1
+  // If no images detected in the DOM, don't show this component
+  if (detectedImages.length === 0) return null;
 
-  const addPhotoSlot = () => {
-    if (!section || !option) return;
-    const newPhotos: FileType[] = [...photos, {} as FileType];
-    const newOptions = section.options?.map((op) => {
-      if (op.id === section.section_id) {
-        return { ...op, photos: newPhotos as any };
-      }
-      return op;
-    });
-    setSection({ ...section, options: newOptions });
-    setSelectedIndex(newPhotos.length - 1);
-    setShowModal(true);
+  // Get photos from section data
+  const sectionPhotos = section?.photos || [];
+
+  // Helper to find photo data by image name
+  const getPhotoByName = (imageName: string) => {
+    return sectionPhotos.find((photo) => photo.id === imageName || photo.label === imageName);
   };
 
-  const handleImageConfirm = (file: FileType) => {
-    if (selectedIndex !== null) {
-      handleUploadImage(file, selectedIndex);
-      setShowModal(false);
-      setSelectedIndex(null);
+  // Helper to update a specific image by name
+  const handleImageUpload = (file: FileType, imageName: string) => {
+    if (!section) return;
+
+    // Convert FileType to PhotoItem
+    const newPhoto = {
+      id: imageName,
+      label: file.name || imageName,
+      url: file.url,
+      base64Content: file.base64Content,
+    };
+
+    // Update or add the photo in the section.photos array
+    const existingIndex = sectionPhotos.findIndex(
+      (photo) => photo.id === imageName || photo.label === imageName
+    );
+
+    let updatedPhotos;
+    if (existingIndex >= 0) {
+      // Update existing photo
+      updatedPhotos = [...sectionPhotos];
+      updatedPhotos[existingIndex] = newPhoto;
+    } else {
+      // Add new photo
+      updatedPhotos = [...sectionPhotos, newPhoto];
+    }
+
+    // Update section.photos
+    setSection({
+      ...section,
+      photos: updatedPhotos,
+    });
+
+    // Also update the DOM element's src attribute for immediate visual feedback
+    if (activeSectionId) {
+      const sectionElement =
+        (document.querySelector(
+          `[data-section-instance-id="${activeSectionId}"]`
+        ) as HTMLElement | null) || document.getElementById(activeSectionId);
+
+      if (sectionElement) {
+        const imgElement = sectionElement.querySelector(
+          `[data-name="${imageName}"]`
+        ) as HTMLImageElement;
+        if (imgElement) {
+          imgElement.src = file.url || file.base64Content || "";
+        }
+      }
     }
   };
 
-  // Show photo upload slots - always show at least one slot for hero sections
-  const photoSlots = photos.length > 0 ? photos : [{} as FileType];
+  const handleImageConfirm = (file: FileType) => {
+    if (selectedImageName) {
+      handleImageUpload(file, selectedImageName);
+      setShowModal(false);
+      setSelectedImageName(null);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs text-slate-600">عدد الصور: {photos.length} / {maxPhotos}</p>
-        {photos.length < maxPhotos && (
-          <button
-            onClick={addPhotoSlot}
-            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200"
-          >
-            <Plus size={14} />
-            <span>إضافة صورة</span>
-          </button>
-        )}
+        <p className="text-xs text-slate-600">
+          عدد الصور: {detectedImages.length}
+        </p>
       </div>
       <div className="flex flex-col gap-3">
-        {photoSlots.map((photo: FileType, index: number) => {
-          // If photo is empty, show FileUploadBar with modal option
-          if (!photo.id && !photo.url && !photo.base64Content) {
-            return (
-              <div key={`photo-${index}`} className="border border-slate-200 rounded-lg p-3 bg-white">
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-700">
-                    صورة {index + 1}
-                  </label>
-                  <button
-                    onClick={() => {
-                      setSelectedIndex(index);
-                      setShowModal(true);
-                    }}
-                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-                  >
-                    إضافة مع خيارات
-                  </button>
-                </div>
-                <FileUploadBar
-                  label=""
-                  value={photo}
-                  onChange={(file) => handleUploadImage(file, index)}
-                />
-              </div>
-            );
-          }
+        {detectedImages.map((detectedImage) => {
+          const photo = getPhotoByName(detectedImage.name);
+          const photoUrl = photo?.url || photo?.base64Content || detectedImage.currentSrc;
+
           return (
-            <div key={photo.id || `photo-${index}`} className="border border-slate-200 rounded-lg p-3 bg-white">
+            <div
+              key={detectedImage.name}
+              className="border border-slate-200 rounded-lg p-3 bg-white"
+            >
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-xs font-semibold text-slate-700">
-                  صورة {index + 1}
+                  {detectedImage.title}
                 </label>
                 <button
                   onClick={() => {
-                    setSelectedIndex(index);
+                    setSelectedImageName(detectedImage.name);
                     setShowModal(true);
                   }}
                   className="text-xs text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  تعديل
+                  {photoUrl ? "تعديل" : "إضافة مع خيارات"}
                 </button>
               </div>
-              <FileUploadListItem
-                label={photo.name || `صورة ${index + 1}`}
-                value={photo}
-                onChange={(file) => handleUploadImage(file, index)}
-              />
+
+              {photoUrl ? (
+                <FileUploadListItem
+                  label={detectedImage.title}
+                  value={{
+                    id: detectedImage.name,
+                    name: detectedImage.title,
+                    url: photoUrl,
+                  }}
+                  onChange={(file) => handleImageUpload(file, detectedImage.name)}
+                />
+              ) : (
+                <FileUploadBar
+                  label=""
+                  value={{}}
+                  onChange={(file) => handleImageUpload(file, detectedImage.name)}
+                />
+              )}
             </div>
           );
         })}
@@ -124,10 +145,10 @@ const SectionImageList = () => {
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);
-          setSelectedIndex(null);
+          setSelectedImageName(null);
         }}
         onConfirm={handleImageConfirm}
-        label={`إضافة صورة ${selectedIndex !== null ? selectedIndex + 1 : ""}`}
+        label={`إضافة صورة ${selectedImageName ? detectedImages.find(img => img.name === selectedImageName)?.title : ""}`}
       />
     </div>
   );

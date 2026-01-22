@@ -50,7 +50,10 @@ const RenderTemplate = () => {
     const timeoutId = setTimeout(() => {
       sections.forEach((sectionData) => {
         const { id, originalSection } = sectionData;
-        const sectionElement = document.getElementById(id || "");
+        const sectionElement =
+          (document.querySelector(
+            `[data-section-instance-id="${id}"]`
+          ) as HTMLElement | null) || document.getElementById(id || "");
         
         if (sectionElement && originalSection?.content) {
           // Update all elements with data-name attributes using saved values
@@ -176,7 +179,9 @@ const RenderTemplate = () => {
 
               return (
                 <div
+                  // Keep the DOM id for backwards compatibility, but rely on a virtual id for editor logic.
                   id={id}
+                  data-section-instance-id={id}
                   key={id}
                   onClick={(e) => {
                     e.stopPropagation();

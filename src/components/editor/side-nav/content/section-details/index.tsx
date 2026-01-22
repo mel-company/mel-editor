@@ -9,9 +9,10 @@ import SectionVariants from "./variants";
 import SectionStyles from "./styles";
 import NavigationStyles from "./navigation-styles";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
+import { useDomImageScanner } from "../../../../../hooks/editor-section-details/use-dom-image-scanner";
 import { useSectionStore } from "../../../../../store/editor/section";
 import Divider from "../../../../ui/divider";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Type, Image, Package, Settings, Tag } from "lucide-react";
 
 const EditorSectionDetails = () => {
@@ -20,16 +21,23 @@ const EditorSectionDetails = () => {
   const isProductSection = option?.products !== undefined;
   const isCategorySection = option?.categories !== undefined;
   const hasContent = option?.content;
-  const hasImages = option?.photos;
+
+  // Check if section supports images by scanning the DOM
+  // This is dynamic - any section with data-type="image" elements will show the images tab
+  const detectedImages = useDomImageScanner(activeSectionId);
+  const hasImages =
+    detectedImages.length > 0 ||
+    (option?.photos !== undefined) ||
+    (section?.photos !== undefined);
 
   // Determine default tab based on available content
-  const getDefaultTab = (): "content" | "images" | "products" | "categories" | "styles" => {
+  const getDefaultTab = useCallback((): "content" | "images" | "products" | "categories" | "styles" => {
     if (hasContent) return "content";
     if (hasImages) return "images";
     if (isProductSection) return "products";
     if (isCategorySection) return "categories";
     return "styles";
-  };
+  }, [hasContent, hasImages, isProductSection, isCategorySection]);
 
   const [activeTab, setActiveTab] = useState<"content" | "images" | "products" | "categories" | "styles">(getDefaultTab());
   const sectionDetailsRef = useRef<HTMLDivElement>(null);
@@ -53,8 +61,7 @@ const EditorSectionDetails = () => {
       const defaultTab = getDefaultTab();
       setActiveTab(defaultTab);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSectionId, activeElementType]);
+  }, [activeSectionId, activeElementType, getDefaultTab]);
 
   // Show navigation styles if navigation is selected
   if (activeElementType === "navigation") {
