@@ -229,6 +229,34 @@ const Section = ({ section }: { section: SectionType }) => {
     props = { ...props, ...restOptions.photos };
   }
 
+  // Merge user overrides from section.content
+  // Merge user overrides from section.content
+  if (section.content) {
+    const contentOverrides = Array.isArray(section.content)
+      ? section.content.reduce((acc: any, item: any) => {
+        acc[item.name] = item.value;
+        return acc;
+      }, {})
+      : section.content;
+
+    props = { ...props, ...contentOverrides };
+
+    // Ensure specific fields expected by components are updated
+    if (section.type === "hero" || section.type === "ourStory") {
+      if (contentOverrides.title) props.title = contentOverrides.title;
+      if (contentOverrides.description) props.description = contentOverrides.description;
+    } else if (section.type === "footer") {
+      if (contentOverrides.text) props.text = contentOverrides.text;
+    } else if (section.type === "contact") {
+      if (contentOverrides.title) props.title = contentOverrides.title;
+      if (contentOverrides.description) props.description = contentOverrides.description;
+      // Merge nested content for contact if it exists
+      if (props.content) {
+        props.content = { ...props.content, ...contentOverrides };
+      }
+    }
+  }
+
   return <Component {...props} />;
 };
 

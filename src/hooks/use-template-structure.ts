@@ -5,7 +5,7 @@ import { mockTemplate } from "../mock/template";
 import { Navigation1 } from "../mock/template/sections/navigation";
 import { footer_sections } from "../mock/template/sections/footer";
 import { getSectionProps } from "../utils/section-props";
-import { SectionType } from "../types";
+import { SectionType, NavigationFooterType } from "../types";
 import { resolveComponent } from "../utils/component-registry";
 
 export const useTemplateStructure = () => {
@@ -16,10 +16,10 @@ export const useTemplateStructure = () => {
         const page = pages.find((p) => p.id === currentPageId);
         // Merge proper page data with mock template default structure if needed
         // Assuming mockTemplate provides fallbacks or structure
-        const currentPage = { ...page, ...mockTemplate };
+        const currentPage = { ...mockTemplate, ...page };
 
         // 1. Navigation
-        let navigation = null;
+        let navigation: NavigationFooterType | null = null;
         if (storeSettings.type !== "restaurant") {
             navigation = {
                 Component: Navigation1,
@@ -40,7 +40,42 @@ export const useTemplateStructure = () => {
         const sections = rawSections
             .map((section) => {
                 // 1. Try standard options-based resolution
-                const selected_options = section.options?.find(
+                // 1. Try standard options-based resolution
+                // 1. Try standard options-based resolution
+                // Hydrate options using the Registry/Mock directly.
+                let hydratedOptions = section.options;
+
+                // Strategy: Use fresh section definition as the source of truth for WHICH options exist.
+                // This ensures that even if the stored section is missing a variant (e.g. "Hero 2"), 
+                // it becomes available because we iterate over the FRESH list.
+                const freshSection = mockTemplate.sections.find(
+                    (s) => s.id === section.id || (s.type === section.type && s.section_id === section.section_id)
+                );
+
+                if (freshSection && freshSection.options) {
+                    hydratedOptions = freshSection.options.map((freshOption) => {
+                        const storedOption = section.options?.find((so) => so.id === freshOption.id);
+                        if (storedOption) {
+                            // Merge: Fresh structure (has photos etc) + Stored values
+                            return { ...freshOption, ...storedOption };
+                        }
+                        // If no stored option exists for this variant, return the fresh default
+                        return freshOption;
+                    });
+                } else if (section.options) {
+                    // Fallback for Custom Sections (not in mockTemplate):
+                    // We can only iterate over what we have stored, but we try to hydrate structure from registry
+                    hydratedOptions = section.options.map((storedOption) => {
+                        const registryEntry = resolveComponent(section.type, storedOption.id);
+                        if (registryEntry) {
+                            const { component, defaultOptions } = registryEntry;
+                            return { component, ...defaultOptions, ...storedOption };
+                        }
+                        return storedOption;
+                    });
+                }
+
+                const selected_options = hydratedOptions?.find(
                     (option) => option.id === section.section_id
                 );
 
@@ -74,7 +109,10 @@ export const useTemplateStructure = () => {
                                 id: section.section_id,
                                 // Merge content: default content + section overrides
                                 content: Array.isArray(defaultOptions?.content)
-                                    ? defaultOptions.content // Merge logic for arrays is complex, using default for now
+                                    ? defaultOptions.content.map((item: any) => {
+                                        const savedValue = (section as any).content?.[item.name];
+                                        return savedValue !== undefined ? { ...item, value: savedValue } : item;
+                                    })
                                     : { ...defaultOptions?.content, ...(section as any).content }
                             }
                         ]
@@ -98,7 +136,7 @@ export const useTemplateStructure = () => {
             .filter((s): s is NonNullable<typeof s> => s !== null);
 
         // 3. Footer
-        let footer = null;
+        let footer: NavigationFooterType | null = null;
         if (
             storeSettings.type !== "restaurant" &&
             storeSettings.footer?.showFooter !== false

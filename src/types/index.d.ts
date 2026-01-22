@@ -94,6 +94,7 @@ export type SectionType = {
   view_all_link?: string;
   links?: any[];
   content?: any;
+  photos?: any[];
   options?: SectionOptionType[];
   target_id?: string; // Optional because templates don't have target_id, it's added when creating pages
   styles?: {
@@ -157,4 +158,9 @@ export type PageType = {
 export type EditorStoreType = {
   pages: PageType[];
   currentPageId: string;
+};
+
+export type NavigationFooterType = {
+  Component: React.ComponentType<any>;
+  props: Record<string, any>;
 };

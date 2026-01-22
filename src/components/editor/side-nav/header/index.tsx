@@ -16,32 +16,31 @@ const EditoNavHeader = ({
 }) => {
   const options = isRestaurant
     ? [
-        {
-          label: "الثيم",
-          value: "theme",
-        },
-      ]
+      {
+        label: "الثيم",
+        value: "theme",
+      },
+    ]
     : [
-        {
-          label: "الثيم",
-          value: "theme",
-        },
-        {
-          label: "المحتوى",
-          value: "content",
-        },
-        {
-          label: "العناصر",
-          value: "elements",
-        },
-      ];
+      {
+        label: "الثيم",
+        value: "theme",
+      },
+      {
+        label: "المحتوى",
+        value: "content",
+      },
+      {
+        label: "العناصر",
+        value: "elements",
+      },
+    ];
 
   return (
     <div className="flex flex-col gap-2">
       <div
-        className={`grid p-1 w-full bg-slate-50 rounded-xl relative ${
-          isRestaurant ? "grid-cols-1" : "grid-cols-3"
-        }`}
+        className={`grid p-1 w-full bg-slate-50 rounded-xl relative ${isRestaurant ? "grid-cols-1" : "grid-cols-3"
+          }`}
       >
         {options.map((option) => (
           <button
@@ -59,23 +58,23 @@ const EditoNavHeader = ({
           </button>
         ))}
       </div>
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-1">
         <button
           onClick={() => onNavigate?.("dashboard")}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-xs font-medium"
+          className="cursor-pointer flex line-clamp-1 text-nowrap items-center justify-center gap-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors font-medium"
         >
-          <Home className="w-4 h-4" />
-          <span>لوحة التحكم</span>
+          <Home className="w-4 h-4 min-w-4 min-h-4" />
+          <span className="text-sm">لوحة التحكم</span>
         </button>
         <button
           onClick={() => onNavigate?.("store")}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-xs font-medium"
+          className="cursor-pointer line-clamp-1 text-nowrap flex items-center justify-center gap-1 px-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium"
         >
           <Eye className="w-4 h-4" />
-          <span>عرض المتجر</span>
+          <span className="text-sm">معاينة</span>
         </button>
       </div>
-      <ExportButton />
+      {/* <ExportButton /> */}
     </div>
   );
 };

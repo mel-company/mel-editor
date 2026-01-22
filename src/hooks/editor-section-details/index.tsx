@@ -88,24 +88,23 @@ const useSectionDetails = () => {
     }
 
     if (option) {
-      // Merge scanned schema. Avoid duplicates if registry already defined them.
-      // Strategy: Append scanned items that don't match existing names.
-      const existingContent = Array.isArray(option.content) ? option.content : [];
-      const newItems = scannedSchema.filter(scannedItem =>
-        !existingContent.some((existing: any) => existing.name === scannedItem.name)
-      );
+      // Priority: Scanned Schema.
+      // If we have scanned items (data-type attributes), use ONLY them for content.
+      // This ignores static props to prevent duplicates.
 
-      // Hydrate new items from section.content if available (persistence)
-      const hydratedNewItems = newItems.map(item => {
-        if (section?.content && section.content[item.name] !== undefined) {
+      // Hydrate items from section.content if available (persistence)
+      // But prefer scanned DOM values if section.content is empty/undefined
+      const hydratedScannedItems = scannedSchema.map(item => {
+        if (section?.content && section.content[item.name] !== undefined && section.content[item.name] !== "") {
           return { ...item, value: section.content[item.name] };
         }
+        // Use scanned value from DOM (which contains initial values like "اتصل بنا")
         return item;
       });
 
       option = {
         ...option,
-        content: [...existingContent, ...hydratedNewItems]
+        content: hydratedScannedItems
       };
     }
   }
@@ -130,6 +129,24 @@ const useSectionDetails = () => {
     if (!section) return;
     if (!option) return;
 
+    // Update DOM directly using data-name attribute
+    if (activeSectionId) {
+      const sectionElement = document.getElementById(activeSectionId);
+      if (sectionElement) {
+        const targetElement = sectionElement.querySelector(`[data-name="${name}"]`);
+        if (targetElement) {
+          const dataType = targetElement.getAttribute("data-type");
+          if (dataType === "link") {
+            targetElement.setAttribute("href", value);
+          } else if (dataType === "image") {
+            targetElement.setAttribute("src", value);
+          } else {
+            targetElement.textContent = value;
+          }
+        }
+      }
+    }
+
     // Custom Component Path: Direct update to section.content
     if (isCustomComponent) {
       const currentContent = section.content || {};
@@ -143,56 +160,74 @@ const useSectionDetails = () => {
       return;
     }
 
-    // Standard Path: Update options array
+    // Standard Path: Update options array AND section.content for persistence
+    let newOptionContent = option.content;
+
     if (Array.isArray(option.content)) {
-      const newContent = option.content.map((item: any) => {
+      newOptionContent = option.content.map((item: any) => {
         if (item.name === name) {
           return { ...item, value };
         }
         return item;
       });
-      updateSectionOptions({ ...option, content: newContent });
     } else {
-      // Fallback for object-based content (if any remains)
-      updateSectionOptions({
-        content: {
-          ...option.content,
-          [name]: value,
-        },
-      });
+      // Fallback for object-based content
+      newOptionContent = {
+        ...option.content,
+        [name]: value,
+      };
     }
+
+    // Prepare persistence object (Key-Value)
+    const contentForPersistence = {
+      ...(section.content || {}),
+      [name]: value
+    };
+
+    // Update both options (for immediate view) and content (for persistence/fallback)
+    const newOptions = section.options?.map((op) => {
+      if (op.id === section.section_id) {
+        return { ...op, content: newOptionContent };
+      }
+      return op;
+    });
+
+    setSection({
+      ...section,
+      options: newOptions,
+      content: contentForPersistence
+    });
   };
 
   const handleUploadImage = (file: FileType, index: number) => {
     if (!section) return;
 
-    const currentPhotos: FileType[] = Array.isArray(option?.photos)
-      ? [...option.photos]
-      : [];
-    // Ensure the array is large enough if index is out of bounds
+    // Get current photos from section.photos (priority) or option.photos (fallback)
+    const currentPhotos: FileType[] = Array.isArray(section.photos)
+      ? [...section.photos]
+      : Array.isArray(option?.photos)
+        ? [...option.photos]
+        : [];
+
+    // Ensure the array is large enough
     while (currentPhotos.length <= index) {
       currentPhotos.push({} as FileType);
     }
     currentPhotos[index] = file;
 
-    // For custom components, we should likely also update section.content or section.photos if we separate them?
-    // But the previous implementation logic handled photos via updateSectionOptions which writes options.
-    // For custom components, we probably want to update section.content.photos or similar if we follow that pattern?
-    // Or honestly, if 'updateSectionOptions' fails for custom components (because options mapping wont find ID), we need a fork here too.
+    // Update section.photos directly (Primary storage now)
+    const newOptions = section.options?.map((op) => {
+      if (op.id === section.section_id) {
+        return { ...op, photos: currentPhotos as any };
+      }
+      return op;
+    });
 
-    if (isCustomComponent) {
-      // To be consistent with how we handle text, we should probably save photos properly. 
-      // However, the original code used a dedicated 'SectionType.options.photos' array.
-      // If we want to support custom component images, we should probably mirror that.
-      // But for now, let's assume 'section.photos' doesn't exist on SectionType, only content.
-      // So maybe we shouldn't fully support images yet unless we added that to SectionType?
-      // Actually, SectionType options has photos.
-      // Let's implement a simple override for now if needed, but the original request focused on text content.
-      // Left as is, it might break because updateSectionOptions won't find the option ID in the real section options (which is empty).
-      return;
-    }
-
-    updateSectionOptions({ photos: currentPhotos as any });
+    setSection({
+      ...section,
+      photos: currentPhotos,
+      options: newOptions
+    });
   };
 
   return {

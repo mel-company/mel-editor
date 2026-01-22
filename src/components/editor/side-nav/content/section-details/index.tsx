@@ -53,7 +53,8 @@ const EditorSectionDetails = () => {
       const defaultTab = getDefaultTab();
       setActiveTab(defaultTab);
     }
-  }, [activeSectionId, activeElementType, hasContent, hasImages, isProductSection, isCategorySection]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSectionId, activeElementType]);
 
   // Show navigation styles if navigation is selected
   if (activeElementType === "navigation") {
@@ -76,20 +77,11 @@ const EditorSectionDetails = () => {
             <h3 className="title">{"تعديل القسم"}</h3>
             <DeleteSection />
           </div>
-          <div className="px-3 py-2 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-xs text-slate-600 mb-1">القسم المحدد:</p>
-            <p className="text-sm font-semibold text-slate-800">{option?.title || section?.type}</p>
-          </div>
-        </div>
 
-        <Divider />
-
-        {/* Section Variant Selection */}
-        <div className="mb-4">
           <SectionVariants />
         </div>
 
-        <Divider />
+
 
         {/* Tabs for different content types - Better organized */}
         <div className="mb-4">
@@ -99,8 +91,8 @@ const EditorSectionDetails = () => {
               <button
                 onClick={() => setActiveTab("content")}
                 className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "content"
-                    ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
-                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                  ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
                   }`}
               >
                 <Type className={`w-5 h-5 ${activeTab === "content" ? "text-blue-600" : "text-slate-500"}`} />
@@ -111,8 +103,8 @@ const EditorSectionDetails = () => {
               <button
                 onClick={() => setActiveTab("images")}
                 className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "images"
-                    ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
-                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                  ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
                   }`}
               >
                 <Image className={`w-5 h-5 ${activeTab === "images" ? "text-blue-600" : "text-slate-500"}`} />
@@ -123,8 +115,8 @@ const EditorSectionDetails = () => {
               <button
                 onClick={() => setActiveTab("products")}
                 className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "products"
-                    ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
-                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                  ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
                   }`}
               >
                 <Package className={`w-5 h-5 ${activeTab === "products" ? "text-blue-600" : "text-slate-500"}`} />
@@ -135,8 +127,8 @@ const EditorSectionDetails = () => {
               <button
                 onClick={() => setActiveTab("categories")}
                 className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "categories"
-                    ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
-                    : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                  ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
                   }`}
               >
                 <Tag className={`w-5 h-5 ${activeTab === "categories" ? "text-blue-600" : "text-slate-500"}`} />
@@ -146,8 +138,8 @@ const EditorSectionDetails = () => {
             <button
               onClick={() => setActiveTab("styles")}
               className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "styles"
-                  ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
-                  : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
                 }`}
             >
               <Settings className={`w-5 h-5 ${activeTab === "styles" ? "text-blue-600" : "text-slate-500"}`} />

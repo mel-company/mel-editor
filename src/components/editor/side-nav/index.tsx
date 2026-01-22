@@ -36,13 +36,13 @@ const EditorSideNav = ({
         // Restaurant: Only show theme (colors)
         <ThemeSide />
       ) : // E-commerce: Show all options
-      side === "content" ? (
-        <ContentSide />
-      ) : side === "elements" ? (
-        <ElementsSide />
-      ) : (
-        <ThemeSide />
-      )}
+        side === "content" ? (
+          <ContentSide />
+        ) : side === "elements" ? (
+          <ElementsSide />
+        ) : (
+          <ThemeSide />
+        )}
     </article>
   );
 };

@@ -39,9 +39,14 @@ export const useSectionStore = create<Store>()((set, get) => ({
   setSection: (section) => {
     const currentPage = usePageStore.getState().getCurrentPage();
     if (currentPage) {
-      const updatedSections = currentPage.sections.map((s) =>
-        s.target_id === section.target_id ? section : s
-      );
+      const updatedSections = currentPage.sections.map((s) => {
+        // Match by target_id (primary) or fall back to section_id/id
+        const isMatch = s.target_id
+          ? s.target_id === section.target_id
+          : (s.id === section.id || s.section_id === section.section_id);
+
+        return isMatch ? section : s;
+      });
       usePageStore
         .getState()
         .updatePage({ ...currentPage, sections: updatedSections });

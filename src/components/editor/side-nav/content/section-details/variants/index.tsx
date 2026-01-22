@@ -1,5 +1,5 @@
 import useStoreDetails from "../../../../../../hooks/editor-section-details";
-import React from "react";
+
 const SectionVariants = () => {
   const { section, setSection } = useStoreDetails();
   const options = section?.options;

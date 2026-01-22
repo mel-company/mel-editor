@@ -1,12 +1,36 @@
 import useSectionDetails from "../../../../../../hooks/editor-section-details";
 import { SectionPropsComponent } from "../../section-props";
 import React from "react";
-import { FileText } from "lucide-react";
+import { FileText, Mail } from "lucide-react";
 
 const SectionContent = () => {
   const { option } = useSectionDetails();
 
   const content = option?.content;
+
+  // Helper to categorize fields
+  const getFieldCategory = (item: any) => {
+    if (item.id?.startsWith('heading_') || item.name?.includes('title') || item.name?.includes('heading')) return 'headings';
+    if (item.name?.includes('email') || item.name?.includes('phone') || item.name?.includes('address') || item.name?.includes('hours') || item.name?.includes('location')) return 'contact';
+    if (item.id?.startsWith('paragraph_') || item.type === 'textarea' || item.name?.includes('description')) return 'text';
+    if (item.id?.startsWith('link_') || item.name?.includes('link') || item.name?.includes('url')) return 'links';
+    return 'other';
+  };
+
+  const categorizedContent = React.useMemo(() => {
+    const groups: Record<string, any[]> = { headings: [], text: [], contact: [], links: [], other: [] };
+    if (Array.isArray(content)) {
+      content.forEach((item: any) => {
+        const cat = getFieldCategory(item);
+        if (groups[cat]) {
+          groups[cat].push(item);
+        } else {
+          groups.other.push(item);
+        }
+      });
+    }
+    return groups;
+  }, [content]);
 
   if (!content || (Array.isArray(content) && content.length === 0)) {
     return (
@@ -17,25 +41,6 @@ const SectionContent = () => {
     );
   }
 
-  // Helper to categorize fields
-  const getFieldCategory = (item: any) => {
-    if (item.id?.startsWith('heading_') || item.name?.includes('title') || item.name?.includes('heading')) return 'headings';
-    if (item.id?.startsWith('paragraph_') || item.type === 'textarea' || item.name?.includes('description')) return 'text';
-    if (item.id?.startsWith('link_') || item.name?.includes('link') || item.name?.includes('url')) return 'links';
-    return 'other';
-  };
-
-  const categorizedContent = React.useMemo(() => {
-    const groups: Record<string, any[]> = { headings: [], text: [], links: [], other: [] };
-    if (Array.isArray(content)) {
-      content.forEach((item: any) => {
-        const cat = getFieldCategory(item);
-        groups[cat].push(item);
-      });
-    }
-    return groups;
-  }, [content]);
-
   // Get labels for common field names
   const getFieldLabel = (name: string) => {
     const labels: Record<string, string> = {
@@ -44,6 +49,10 @@ const SectionContent = () => {
       text: "النص",
       subtitle: "العنوان الفرعي",
       buttonText: "نص الزر",
+      email: "البريد الإلكتروني",
+      phone: "رقم الهاتف",
+      address: "العنوان",
+      hours: "ساعات العمل",
     };
     return labels[name] || name;
   };
@@ -60,12 +69,7 @@ const SectionContent = () => {
         <div className="space-y-3">
           {items.map((item) => (
             <div key={`${item.id}-${item.name}`} className="border border-slate-200 rounded-lg p-3 bg-white shadow-sm hover:border-blue-300 transition-colors">
-              <div className="mb-2">
-                <label className="text-xs font-medium text-slate-700 block mb-1">
-                  {item.label || getFieldLabel(item.name)}
-                </label>
-              </div>
-              <SectionPropsComponent {...item} />
+              <SectionPropsComponent {...item} label={item.label || getFieldLabel(item.name)} />
             </div>
           ))}
         </div>
@@ -76,6 +80,7 @@ const SectionContent = () => {
   return (
     <div className="flex flex-col gap-6">
       {renderGroup("العناوين", categorizedContent.headings, FileText)}
+      {renderGroup("معلومات الاتصال", categorizedContent.contact, Mail)}
       {renderGroup("النصوص", categorizedContent.text, FileText)}
       {/* Re-use FileText or import LinkIcon if valid */}
       {renderGroup("أخرى", [...categorizedContent.links, ...categorizedContent.other], FileText)}

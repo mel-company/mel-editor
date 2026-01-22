@@ -1,96 +1,91 @@
 import { SectionOptionType } from "../types";
 
-/**
- * Scans an HTML string (or Component source) to identify potential editable fields.
- * Returns a schema (SectionOptionType['content']) that can be used to populate the sidebar.
- */
-export const generateSchemaFromHtml = (html: string): any[] => {
-    const schema: any[] = [];
+export const generateSchemaFromHtml = (html: string, liveElement?: HTMLElement | null): any[] => {
+    // Safety check for SSR or non-browser environments
+    if (typeof document === "undefined") {
+        return [];
+    }
 
-    // Counters for unique IDs
+    const schema: any[] = [];
+    const root = document.createElement("div");
+    root.innerHTML = html;
+    
+    // If liveElement is provided, use it to get actual textContent from rendered DOM
+    const getLiveValue = (dataName: string, dataType: string): string => {
+        if (liveElement) {
+            const liveEl = liveElement.querySelector(`[data-name="${dataName}"]`);
+            if (liveEl) {
+                if (dataType === "image") {
+                    return liveEl.getAttribute("src") || "";
+                } else if (dataType === "link") {
+                    return liveEl.getAttribute("href") || "";
+                } else {
+                    return liveEl.textContent?.trim() || "";
+                }
+            }
+        }
+        return "";
+    };
+
+    // Counters for auto-generated IDs
     const counters = {
         heading: 0,
         paragraph: 0,
         image: 0,
-        link: 0
+        link: 0,
+        custom: 0,
     };
 
-    // 1. Headings (h1-h6) -> Text Input
-    // Regex captures: <h[1-6] ...>CONTENT</h[1-6]>
-    const headingRegex = /<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/gi;
-    let headingMatch;
-    while ((headingMatch = headingRegex.exec(html)) !== null) {
-        const level = headingMatch[1];
-        const content = headingMatch[2].replace(/<\/?[^>]+(>|$)/g, "").trim(); // Strip internal tags
-
-        if (content) {
-            counters.heading++;
-            schema.push({
-                id: `heading_${counters.heading}`,
-                label: `العنوان ${counters.heading} (H${level})`,
-                name: `heading_${counters.heading}`,
-                type: "text",
-                value: content
-            });
+    // Helper to get attribute case-insensitively or via variations
+    const getAttribute = (el: Element, ...names: string[]) => {
+        for (const name of names) {
+            if (el.hasAttribute(name)) return el.getAttribute(name);
         }
-    }
+        return null;
+    };
 
-    // 2. Paragraphs (p) -> Textarea
-    const pRegex = /<p[^>]*>([\s\S]*?)<\/p>/gi;
-    let pMatch;
-    while ((pMatch = pRegex.exec(html)) !== null) {
-        const content = pMatch[1].replace(/<\/?[^>]+(>|$)/g, "").trim();
+    // Iterate over all elements to preserve order
+    const allElements = root.querySelectorAll("*");
 
-        if (content) {
-            counters.paragraph++;
+    allElements.forEach((el) => {
+        const tagName = el.tagName.toLowerCase();
+
+        // 1. Check for Explicit Attributes
+        const dataType = getAttribute(el, "data-type", "datatype");
+
+        if (dataType) {
+            const dataTitle = getAttribute(el, "data-title", "datatitle", "title") || "Custom Field";
+            const dataName = getAttribute(el, "data-name", "dataname", "name", "id");
+
+            // Generate a name/id if not provided
+            counters.custom++;
+            const fieldId = dataName || `custom_${dataType}_${counters.custom}`;
+
+            // Determine value based on type
+            // Try to get from live DOM first, then fall back to parsed HTML
+            let value = getLiveValue(fieldId, dataType);
+            if (!value) {
+                if (dataType === "image") {
+                    value = el.getAttribute("src") || "";
+                } else if (dataType === "link") {
+                    value = el.getAttribute("href") || "";
+                } else {
+                    value = el.textContent?.trim() || "";
+                }
+            }
+
             schema.push({
-                id: `paragraph_${counters.paragraph}`,
-                label: `النص ${counters.paragraph}`,
-                name: `paragraph_${counters.paragraph}`,
-                type: "textarea",
-                value: content
+                id: fieldId,
+                label: dataTitle,
+                name: fieldId,
+                type: dataType === "paragraph" ? "textarea" : dataType, // Map paragraph to textarea if needed
+                value
             });
+            return; // Skip implicit check for this element
         }
-    }
 
-    // 3. Images (img) -> Image Uploader
-    // Regex captures src attribute
-    const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
-    let imgMatch;
-    while ((imgMatch = imgRegex.exec(html)) !== null) {
-        const src = imgMatch[1];
-        counters.image++;
 
-        // For images, we usually handle them separately in the 'photos' array or a special 'image' content type.
-        // However, the requested schema format for 'content' usually handles simple values.
-        // If we want to make it editable, we might need to conform to how the sidebar expects images.
-        // For now, let's treat it as a text field for the URL or a special 'image' type if supported.
-
-        schema.push({
-            id: `image_${counters.image}`,
-            label: `الصورة ${counters.image}`,
-            name: `image_${counters.image}`,
-            type: "image", // Assuming 'image' type is supported or will be handled
-            value: src
-        });
-    }
-
-    // 4. Links (a) -> Link Input
-    const linkRegex = /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
-    let linkMatch;
-    while ((linkMatch = linkRegex.exec(html)) !== null) {
-        const href = linkMatch[1];
-        const text = linkMatch[2].replace(/<\/?[^>]+(>|$)/g, "").trim();
-
-        counters.link++;
-        schema.push({
-            id: `link_${counters.link}`,
-            label: `الرابط ${counters.link} (${text || "Link"})`,
-            name: `link_${counters.link}`,
-            type: "text", // Simple URL edit for now
-            value: href
-        });
-    }
+    });
 
     return schema;
 };

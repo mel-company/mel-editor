@@ -12,19 +12,19 @@ const SectionImageList = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Show image list for sections that have photos (hero, ourStory, contact)
-  const shouldShowImages = 
-    section?.type === "hero" || 
-    section?.type === "ourStory" || 
+  const shouldShowImages =
+    section?.type === "hero" ||
+    section?.type === "ourStory" ||
     section?.type === "contact";
   if (!shouldShowImages) return null;
 
-  const photos = Array.isArray(option?.photos) ? option.photos : [];
+  const photos = (section?.photos && Array.isArray(section.photos)) ? section.photos : (Array.isArray(option?.photos) ? option.photos : []);
   // Determine max photos based on section type and variant
-  const maxPhotos = 
+  const maxPhotos =
     section?.type === "hero" && section?.section_id === "3" ? 10 : // Hero carousel
-    section?.type === "ourStory" ? 1 : // Our Story sections typically have 1 photo
-    section?.type === "contact" ? 1 : // Contact sections typically have 1 photo (map)
-    1; // Default to 1
+      section?.type === "ourStory" ? 1 : // Our Story sections typically have 1 photo
+        section?.type === "contact" ? 1 : // Contact sections typically have 1 photo (map)
+          1; // Default to 1
 
   const addPhotoSlot = () => {
     if (!section || !option) return;

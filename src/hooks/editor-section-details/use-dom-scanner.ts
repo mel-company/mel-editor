@@ -16,9 +16,14 @@ export const useDomScannerEffect = (
             const element = document.getElementById(elementId || activeSectionId);
 
             if (element) {
-                // Generate schema from the current HTML
-                const schema = generateSchemaFromHtml(element.innerHTML);
-                setScannedSchema(schema);
+                // Use a small delay to ensure DOM is fully rendered
+                // Generate schema from the current HTML, passing the live element to get actual values
+                const timeoutId = setTimeout(() => {
+                    const schema = generateSchemaFromHtml(element.innerHTML, element);
+                    setScannedSchema(schema);
+                }, 100);
+                
+                return () => clearTimeout(timeoutId);
             } else {
                 setScannedSchema([]);
             }

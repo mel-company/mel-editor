@@ -42,6 +42,40 @@ const RenderTemplate = () => {
     setActiveElementType(""); // Clear active element type
   }, [currentPageId, setActiveSectionId, setActiveElementType]);
 
+  // Restore saved values from store to DOM after sections render
+  useEffect(() => {
+    if (!sections || sections.length === 0) return;
+
+    // Small delay to ensure DOM is fully rendered
+    const timeoutId = setTimeout(() => {
+      sections.forEach((sectionData) => {
+        const { id, originalSection } = sectionData;
+        const sectionElement = document.getElementById(id || "");
+        
+        if (sectionElement && originalSection?.content) {
+          // Update all elements with data-name attributes using saved values
+          Object.entries(originalSection.content).forEach(([name, value]) => {
+            if (value && typeof value === "string") {
+              const targetElement = sectionElement.querySelector(`[data-name="${name}"]`);
+              if (targetElement) {
+                const dataType = targetElement.getAttribute("data-type");
+                if (dataType === "link") {
+                  targetElement.setAttribute("href", value);
+                } else if (dataType === "image") {
+                  targetElement.setAttribute("src", value);
+                } else {
+                  targetElement.textContent = value;
+                }
+              }
+            }
+          });
+        }
+      });
+    }, 150);
+
+    return () => clearTimeout(timeoutId);
+  }, [sections, currentPageId]);
+
   return (
     <div
       onClick={(e) => {

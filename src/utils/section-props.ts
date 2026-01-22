@@ -19,6 +19,7 @@ export const getSectionProps = (
     const { component: _Component, ...restOptions } = selected_options as any;
 
     let props: any = {
+        id: section.id || section.section_id, // Pass ID for store connection
         styles: section.styles, // Pass styles to component
     };
 
@@ -26,7 +27,8 @@ export const getSectionProps = (
     if (restOptions.content) {
         if (Array.isArray(restOptions.content)) {
             const contentProps = restOptions.content.reduce((acc: any, item: any) => {
-                acc[item.name] = item.value;
+                const key = item.name || item.id;
+                if (key) acc[key] = item.value;
                 return acc;
             }, {});
             // For hero sections, pass title and description directly
@@ -42,14 +44,14 @@ export const getSectionProps = (
             } else if (section.type === "contact") {
                 props.title = contentProps.title;
                 props.description = contentProps.description;
-                props.content = {
-                    email: contentProps.email,
-                    phone: contentProps.phone,
-                    address: contentProps.address,
-                    hours: contentProps.hours,
-                };
+                props.email = contentProps.email;
+                props.phone = contentProps.phone;
+                props.address = contentProps.address;
+                props.hours = contentProps.hours;
             } else {
                 props.content = contentProps;
+                // Auto-flatten content props for compatibility with components expecting top-level props
+                Object.assign(props, contentProps);
             }
         } else {
             if (section.type === "hero") {
@@ -63,23 +65,58 @@ export const getSectionProps = (
             } else if (section.type === "contact") {
                 props.title = restOptions.content.title;
                 props.description = restOptions.content.description;
-                props.content = {
-                    email: restOptions.content.email,
-                    phone: restOptions.content.phone,
-                    address: restOptions.content.address,
-                    hours: restOptions.content.hours,
-                };
+                props.email = restOptions.content.email;
+                props.phone = restOptions.content.phone;
+                props.address = restOptions.content.address;
+                props.hours = restOptions.content.hours;
             } else {
                 props.content = restOptions.content;
+                // Auto-flatten for object-based content as well
+                Object.assign(props, restOptions.content);
             }
         }
     }
 
+    // Handle user overrides from section.content
+    if (section.content) {
+        const contentOverrides = Array.isArray(section.content)
+            ? section.content.reduce((acc: any, item: any) => {
+                const key = item.name || item.id;
+                if (key) acc[key] = item.value;
+                return acc;
+            }, {})
+            : section.content;
+
+        props = { ...props, ...contentOverrides };
+
+        if (section.type === "hero" || section.type === "ourStory") {
+            if (contentOverrides.title !== undefined) props.title = contentOverrides.title;
+            if (contentOverrides.description !== undefined) props.description = contentOverrides.description;
+        } else if (section.type === "footer") {
+            if (contentOverrides.text !== undefined) props.text = contentOverrides.text;
+        } else if (section.type === "contact") {
+            if (contentOverrides.title !== undefined) props.title = contentOverrides.title;
+            if (contentOverrides.description !== undefined) props.description = contentOverrides.description;
+            if (contentOverrides.email !== undefined) props.email = contentOverrides.email;
+            if (contentOverrides.phone !== undefined) props.phone = contentOverrides.phone;
+            if (contentOverrides.address !== undefined) props.address = contentOverrides.address;
+            if (contentOverrides.hours !== undefined) props.hours = contentOverrides.hours;
+            // Generic fallback for any other scanned fields
+            Object.assign(props, contentOverrides);
+        } else {
+            // Generic fallback for non-specific sections
+            Object.assign(props, contentOverrides);
+        }
+    }
+
     // Handle photos
-    if (restOptions.photos && !Array.isArray(restOptions.photos)) {
-        props = { ...props, ...restOptions.photos };
-    } else if (restOptions.photos) {
-        props.photos = restOptions.photos;
+    // Prioritize section.photos (user uploads) over restOptions.photos (mock defaults)
+    const photos = section.photos || restOptions.photos;
+
+    if (photos && !Array.isArray(photos)) {
+        props = { ...props, ...photos };
+    } else if (photos) {
+        props.photos = photos;
     }
 
     // Handle products, categories, and view_all_link
@@ -117,5 +154,8 @@ export const getSectionProps = (
         };
     }
 
+    if (section.type === 'contact') {
+        console.log("getSectionProps CONTACT:", { sectionId: section.id, props });
+    }
     return props;
 };
