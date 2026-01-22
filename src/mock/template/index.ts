@@ -33,6 +33,17 @@ export const mockTemplate: TemplateType = {
       editable: true,
       options: hero_sections,
     },
+    {
+      id: "test-registry-lookup",
+      section_id: "1",
+      type: "contact",
+      editable: false,
+      // Testing overrides: The registry has defaults, but we override the title here
+      content: {
+        title: "Custom Contact Title",
+        description: "This description replaces the default one from the registry.",
+      }
+    },
     // {
     //   id: "2",
     //   section_id: "1",

@@ -19,12 +19,8 @@ const EditorSectionDetails = () => {
   const { activeElementType, activeSectionId } = useSectionStore();
   const isProductSection = option?.products !== undefined;
   const isCategorySection = option?.categories !== undefined;
-  const hasContent = section?.options?.find(
-    (opt) => opt.id === section?.section_id
-  )?.content;
-  const hasImages = section?.options?.find(
-    (opt) => opt.id === section?.section_id
-  )?.photos;
+  const hasContent = option?.content;
+  const hasImages = option?.photos;
 
   // Determine default tab based on available content
   const getDefaultTab = (): "content" | "images" | "products" | "categories" | "styles" => {
@@ -102,11 +98,10 @@ const EditorSectionDetails = () => {
             {hasContent && (
               <button
                 onClick={() => setActiveTab("content")}
-                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
-                  activeTab === "content"
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "content"
                     ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
                     : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
-                }`}
+                  }`}
               >
                 <Type className={`w-5 h-5 ${activeTab === "content" ? "text-blue-600" : "text-slate-500"}`} />
                 <span className="text-xs font-medium">النصوص</span>
@@ -115,11 +110,10 @@ const EditorSectionDetails = () => {
             {hasImages && (
               <button
                 onClick={() => setActiveTab("images")}
-                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
-                  activeTab === "images"
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "images"
                     ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
                     : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
-                }`}
+                  }`}
               >
                 <Image className={`w-5 h-5 ${activeTab === "images" ? "text-blue-600" : "text-slate-500"}`} />
                 <span className="text-xs font-medium">الصور</span>
@@ -128,11 +122,10 @@ const EditorSectionDetails = () => {
             {isProductSection && (
               <button
                 onClick={() => setActiveTab("products")}
-                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
-                  activeTab === "products"
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "products"
                     ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
                     : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
-                }`}
+                  }`}
               >
                 <Package className={`w-5 h-5 ${activeTab === "products" ? "text-blue-600" : "text-slate-500"}`} />
                 <span className="text-xs font-medium">المنتجات</span>
@@ -141,11 +134,10 @@ const EditorSectionDetails = () => {
             {isCategorySection && (
               <button
                 onClick={() => setActiveTab("categories")}
-                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
-                  activeTab === "categories"
+                className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "categories"
                     ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
                     : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
-                }`}
+                  }`}
               >
                 <Tag className={`w-5 h-5 ${activeTab === "categories" ? "text-blue-600" : "text-slate-500"}`} />
                 <span className="text-xs font-medium">التصنيفات</span>
@@ -153,11 +145,10 @@ const EditorSectionDetails = () => {
             )}
             <button
               onClick={() => setActiveTab("styles")}
-              className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${
-                activeTab === "styles"
+              className={`flex flex-col items-center justify-center gap-2 px-3 py-3 rounded-lg border-2 transition-all ${activeTab === "styles"
                   ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
                   : "bg-white border-slate-200 text-slate-600 hover:border-blue-300 hover:bg-blue-50"
-              }`}
+                }`}
             >
               <Settings className={`w-5 h-5 ${activeTab === "styles" ? "text-blue-600" : "text-slate-500"}`} />
               <span className="text-xs font-medium">التصميم</span>

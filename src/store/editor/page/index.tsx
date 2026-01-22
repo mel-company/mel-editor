@@ -36,7 +36,7 @@ const sectionTypesMap: Record<string, any[]> = {
 // Function to restore components in sections after loading from localStorage
 const restoreSectionComponents = (pages: PageType[]): PageType[] => {
   console.log("🔄 Restoring components for pages:", pages.length);
-  
+
   return pages.map((page) => {
     const restoredSections = page.sections.map((section) => {
       const sectionOptions = sectionTypesMap[section.type];
@@ -94,10 +94,14 @@ const restoreSectionComponents = (pages: PageType[]): PageType[] => {
         }
       }
 
-      return {
+      // Ensure target_id exists (critical for editor selection)
+      const sanitizedSection = {
         ...section,
+        target_id: section.target_id || section.id || section.section_id,
         options: restoredOptions,
       };
+
+      return sanitizedSection;
     });
 
     console.log(`✅ Restored page: ${page.name} with ${restoredSections.length} sections`);
@@ -134,7 +138,7 @@ export const usePageStore = create<Store>()(
             console.warn("Maximum 4 pages allowed");
             return state;
           }
-          
+
           return {
             pages: [...state.pages, page],
             currentPageId: page.id,
@@ -154,7 +158,7 @@ export const usePageStore = create<Store>()(
                 ? newPages[0].id
                 : ""
               : state.currentPageId;
-          
+
           // Update navigation links - remove deleted page
           try {
             const { useStoreSettingsStore } = require("../store-settings");
@@ -172,7 +176,7 @@ export const usePageStore = create<Store>()(
           } catch (error) {
             console.error("Error updating navigation links:", error);
           }
-          
+
           return { pages: newPages, currentPageId: newCurrentPageId };
         });
       },

@@ -142,6 +142,7 @@ const RenderTemplate = () => {
 
               return (
                 <div
+                  id={id}
                   key={id}
                   onClick={(e) => {
                     e.stopPropagation();

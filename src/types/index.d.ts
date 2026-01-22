@@ -74,6 +74,7 @@ export type SectionPropsType = {
 export type SectionOptionType = {
   id: string;
   title: string;
+  type?: string;
   description?: string;
   component?: React.ComponentType<any> | ReactNode;
   thumbnail?: {
@@ -92,7 +93,8 @@ export type SectionType = {
   editable: boolean;
   view_all_link?: string;
   links?: any[];
-  options: SectionOptionType[];
+  content?: any;
+  options?: SectionOptionType[];
   target_id?: string; // Optional because templates don't have target_id, it's added when creating pages
   styles?: {
     // Colors

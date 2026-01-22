@@ -6,6 +6,7 @@ import { Navigation1 } from "../mock/template/sections/navigation";
 import { footer_sections } from "../mock/template/sections/footer";
 import { getSectionProps } from "../utils/section-props";
 import { SectionType } from "../types";
+import { resolveComponent } from "../utils/component-registry";
 
 export const useTemplateStructure = () => {
     const { pages, currentPageId } = usePageStore();
@@ -38,24 +39,61 @@ export const useTemplateStructure = () => {
 
         const sections = rawSections
             .map((section) => {
+                // 1. Try standard options-based resolution
                 const selected_options = section.options?.find(
                     (option) => option.id === section.section_id
                 );
 
-                if (!selected_options || !selected_options.component) return null;
+                if (selected_options && selected_options.component) {
+                    const Component = selected_options.component as any;
+                    const props = getSectionProps(section, storeSettings);
 
-                const Component = selected_options.component as any;
-                const props = getSectionProps(section, storeSettings);
+                    if (!props) return null;
 
-                if (!props) return null;
+                    return {
+                        id: section.id || section.section_id,
+                        type: section.type,
+                        Component,
+                        props,
+                        originalSection: section,
+                    };
+                }
 
-                return {
-                    id: section.id || section.section_id, // Use reliable ID
-                    type: section.type,
-                    Component,
-                    props,
-                    originalSection: section, // Keep original for editor selection logic
-                };
+                // 2. Try Registry resolution (Custom/Static Sections)
+                const registryEntry = resolveComponent(section.type, section.section_id);
+                if (registryEntry) {
+                    const { component: Component, defaultOptions } = registryEntry;
+
+                    // Create a virtual section that includes the default options 
+                    // disguised as the expected structure for getSectionProps
+                    const virtualSection = {
+                        ...section,
+                        options: [
+                            {
+                                ...defaultOptions,
+                                id: section.section_id,
+                                // Merge content: default content + section overrides
+                                content: Array.isArray(defaultOptions?.content)
+                                    ? defaultOptions.content // Merge logic for arrays is complex, using default for now
+                                    : { ...defaultOptions?.content, ...(section as any).content }
+                            }
+                        ]
+                    };
+
+                    // Use getSectionProps to resolve the final props including content
+                    // We must trick getSectionProps into finding the option we just created
+                    const props = getSectionProps(virtualSection as any, storeSettings);
+
+                    return {
+                        id: section.id || section.section_id,
+                        type: section.type,
+                        Component,
+                        props: props || { id: section.id || section.section_id },
+                        originalSection: section,
+                    };
+                }
+
+                return null;
             })
             .filter((s): s is NonNullable<typeof s> => s !== null);
 
