@@ -4,10 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node server.js",
+    "dev:client": "vite",
+    "build": "vite build && vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "build:client": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "node server.js --production"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -18,6 +20,7 @@
     "add": "^2.0.6",
     "classnames": "^2.5.1",
     "daisyui": "^5.5.14",
+    "express": "^5.2.1",
     "file-saver": "^2.0.5",
     "jsdom": "^27.4.0",
     "jszip": "^3.10.1",

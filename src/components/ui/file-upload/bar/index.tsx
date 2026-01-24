@@ -1,8 +1,7 @@
 import { FileType } from "../../../../types";
 import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
 import { useFileUpload } from "../../../../hooks/use-file-upload";
-import classNames from "classnames";  
-import React from "react";
+import classNames from "classnames";
 
 interface FileUploadInputProps {
   label: string;

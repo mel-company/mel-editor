@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import TemplateSelector from './pages/template-selector'
 import EditorPage from "./pages/editor";
 import StoreViewPage from "./pages/store-view";
@@ -13,20 +13,16 @@ import PreviewPage from "./pages/preview";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<TemplateSelector />} />
-        <Route path="/editor" element={<EditorPage />} />
-        <Route path="/store-view" element={<StoreViewPage />} />
-        <Route path="/store-view/cart" element={<StoreViewPage />} />
-        <Route path="/product/:productId" element={<ProductDetailPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/template-preview" element={<PreviewPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-
-
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<TemplateSelector />} />
+      <Route path="/editor" element={<EditorPage />} />
+      <Route path="/store-view" element={<StoreViewPage />} />
+      <Route path="/store-view/cart" element={<StoreViewPage />} />
+      <Route path="/product/:productId" element={<ProductDetailPage />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/template-preview" element={<PreviewPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

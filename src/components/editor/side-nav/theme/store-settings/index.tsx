@@ -7,6 +7,7 @@ import SelectList from "../../../../ui/select-list";
 import Divider from "../../../../ui/divider";
 import ColorPickerBar from "../../../../ui/color-picker-bar";
 import { Plus, Trash2 } from "lucide-react";
+import FileUploadBar from "../../../../ui/file-upload/bar";
 
 const EditorStoreSettings = () => {
   const {
@@ -27,22 +28,15 @@ const EditorStoreSettings = () => {
         {/* Store Logo */}
         <div className="mt-3">
           <div className="flex items-start gap-2">
-            <div className="flex-1">
-              <FileUploadInput
+            <FileUploadBar label="الشعار"
+              value={storeSettings.logo || {}}
+              onChange={setLogo} />
+            {/* <FileUploadInput
                 label="شعار المتجر"
                 value={storeSettings.logo || {}}
                 onChange={setLogo}
-              />
-            </div>
-            {(storeSettings.logo?.base64Content || storeSettings.logo?.url) && (
-              <button
-                onClick={() => setLogo({})}
-                className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-600 mt-6"
-                title="حذف الشعار"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            )}
+              /> */}
+
           </div>
         </div>
 
@@ -70,10 +64,9 @@ const EditorStoreSettings = () => {
         </div>
       </div>
 
-      <Divider />
 
       {/* Header Settings */}
-      <div>
+      {/* <div>
         <h3 className="title">{"الناف بار (Navigation Bar)"}</h3>
 
         <div className="mt-3">
@@ -82,8 +75,7 @@ const EditorStoreSettings = () => {
           </p>
         </div>
 
-        {/* Navigation Links - Static (Read-only) */}
-        <div className="mt-3">
+         <div className="mt-3">
           <label className="sub-title mb-2 block">روابط التنقل</label>
           <div className="flex flex-col gap-2">
             {storeSettings.header?.navigationLinks?.map((link, index) => {
@@ -107,15 +99,13 @@ const EditorStoreSettings = () => {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <Divider />
 
       {/* Footer Settings */}
-      <div>
+      {/* <div>
         <h3 className="title">{"الفوتر"}</h3>
 
-        {/* Show/Hide Footer Toggle */}
         <div className="mt-3">
           <label className="flex items-center gap-3 cursor-pointer">
             <input
@@ -146,7 +136,6 @@ const EditorStoreSettings = () => {
           <>
             <Divider />
 
-            {/* Footer Variant Selection */}
             <div className="mt-3">
               <label className="sub-title mb-2 block">نوع التصميم</label>
               <SelectList
@@ -175,7 +164,6 @@ const EditorStoreSettings = () => {
 
             <Divider />
 
-            {/* Footer Content */}
             <div className="mt-3">
               <h4 className="sub-title mb-3">المحتوى</h4>
 
@@ -219,7 +207,6 @@ const EditorStoreSettings = () => {
 
             <Divider />
 
-            {/* Contact Information */}
             <div className="mt-3">
               <h4 className="sub-title mb-3">معلومات الاتصال</h4>
 
@@ -279,13 +266,12 @@ const EditorStoreSettings = () => {
 
             <Divider />
 
-            {/* Footer Colors */}
             <div className="mt-3">
               <h4 className="sub-title mb-3">الألوان</h4>
               <FooterColorsEditor />
             </div>
 
-            {/* <Divider />
+            <Divider />
 
             <div className="mt-3">
               <label className="sub-title mb-2 block">روابط سريعة</label>
@@ -355,10 +341,10 @@ const EditorStoreSettings = () => {
                   );
                 })}
               </div>
-            </div> */}
+            </div>
 
 
-            {/* <div className="mt-3">
+            <div className="mt-3">
               <label className="sub-title mb-2 block">روابط وسائل التواصل الاجتماعي</label>
               <div className="flex flex-col gap-2">
                 {storeSettings.footer?.socialLinks?.map((social, index) => {
@@ -458,10 +444,10 @@ const EditorStoreSettings = () => {
                   <span>إضافة رابط</span>
                 </button>
               </div>
-            </div> */}
+            </div>
           </>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

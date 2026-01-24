@@ -17,6 +17,7 @@ const ProductSelector = () => {
 
   // Get current selected products
   const selectedProductIds = option.products?.map((p: ProductType) => p.id) || [];
+  const selectedProducts: ProductType[] = option.products || [];
 
   // Filter products
   let filteredProducts = mockProducts;
@@ -62,34 +63,52 @@ const ProductSelector = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between mb-2">
-        <div>
-          <p className="text-xs text-slate-600">المنتجات المحددة</p>
-          <p className="text-xs font-semibold text-slate-800">
-            {selectedProductIds.length} منتج محدد
+      {/* Header */}
+      <h3 className="text-sm font-semibold text-slate-700">المنتجات</h3>
+
+      {/* Selected Products List - Pill Style */}
+      <div className="flex flex-col gap-2">
+        {selectedProducts.map((product: ProductType) => (
+          <div
+            key={product.id}
+            className="flex items-center gap-3 px-3 py-2 bg-slate-50 rounded-full"
+          >
+            {/* Product Thumbnail */}
+            <div className="w-10 h-10 bg-slate-200 rounded-lg overflow-hidden shrink-0">
+              {product.thumbnail?.url ? (
+                <img
+                  src={product.thumbnail.url}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                  IMG
+                </div>
+              )}
+            </div>
+            {/* Product Name */}
+            <p className="flex-1 text-sm font-medium text-slate-700 truncate">
+              {product.name}
+            </p>
+          </div>
+        ))}
+
+        {/* Empty State */}
+        {selectedProducts.length === 0 && (
+          <p className="text-xs text-slate-400 text-center py-4">
+            لا توجد منتجات محددة
           </p>
-        </div>
-        <button
-          onClick={() => setShowSelector(!showSelector)}
-          className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${
-            showSelector
-              ? "bg-slate-100 text-slate-700 border-slate-300"
-              : "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
-          }`}
-        >
-          {showSelector ? (
-            <>
-              <X size={14} />
-              <span>إخفاء</span>
-            </>
-          ) : (
-            <>
-              <Check size={14} />
-              <span>اختيار منتجات</span>
-            </>
-          )}
-        </button>
+        )}
       </div>
+
+      {/* Add/Remove Button */}
+      <button
+        onClick={() => setShowSelector(!showSelector)}
+        className="w-full py-2.5 text-sm font-medium text-blue-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+      >
+        اضافة | ازالة
+      </button>
 
       {showSelector && (
         <div className="border border-slate-200 rounded-lg p-4 bg-white shadow-sm">
@@ -191,7 +210,7 @@ const ProductSelector = () => {
                         }
                       )}
                     >
-                      <div className="w-16 h-16 border-2 border-slate-200 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <div className="w-16 h-16 border-2 border-slate-200 bg-slate-100 rounded-lg overflow-hidden shrink-0">
                         {product.thumbnail?.url ? (
                           <img
                             src={product.thumbnail.url}
@@ -229,7 +248,7 @@ const ProductSelector = () => {
                       </div>
                       <div
                         className={classNames(
-                          "w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all",
+                          "w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all",
                           {
                             "bg-blue-600 border-blue-600 shadow-sm": isSelected,
                             "border-slate-300 bg-white": !isSelected,
@@ -269,36 +288,6 @@ const ProductSelector = () => {
               )}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Selected Products Preview */}
-      {!showSelector && selectedProductIds.length > 0 && (
-        <div className="space-y-2">
-          {option.products?.slice(0, 3).map((product: ProductType) => (
-            <div
-              key={product.id}
-              className="flex items-center gap-2 p-2 bg-slate-50 rounded-md"
-            >
-              <div className="w-8 h-8 border border-slate-200 bg-slate-100 rounded overflow-hidden">
-                {product.thumbnail?.url ? (
-                  <img
-                    src={product.thumbnail.url}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : null}
-              </div>
-              <p className="text-xs text-slate-700 flex-1 truncate">
-                {product.name}
-              </p>
-            </div>
-          ))}
-          {selectedProductIds.length > 3 && (
-            <p className="text-xs text-slate-500 text-center">
-              و {selectedProductIds.length - 3} منتجات أخرى
-            </p>
-          )}
         </div>
       )}
     </div>

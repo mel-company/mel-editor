@@ -7,10 +7,15 @@ import { footer_sections } from "../mock/template/sections/footer";
 import { getSectionProps } from "../utils/section-props";
 import { SectionType, NavigationFooterType } from "../types";
 import { resolveComponent } from "../utils/component-registry";
+import { useSSRProducts, useSSRCategories } from "../context/ssr-data-context";
 
 export const useTemplateStructure = () => {
     const { pages, currentPageId } = usePageStore();
     const { storeSettings } = useStoreSettingsStore();
+
+    // Get SSR data (will be empty array if not in SSR context)
+    const ssrProducts = useSSRProducts();
+    const ssrCategories = useSSRCategories();
 
     const structure = useMemo(() => {
         const page = pages.find((p) => p.id === currentPageId);
@@ -84,6 +89,18 @@ export const useTemplateStructure = () => {
                     const props = getSectionProps(section, storeSettings);
 
                     if (!props) return null;
+
+                    // Inject SSR data for sections that need products or categories
+                    if (section.type === "recent-products" || section.type === "recentProducts" || section.type === "products") {
+                        if (ssrProducts && ssrProducts.length > 0) {
+                            props.products = ssrProducts;
+                        }
+                    }
+                    if (section.type === "categories" || section.type === "categoryGrid") {
+                        if (ssrCategories && ssrCategories.length > 0) {
+                            props.categories = ssrCategories;
+                        }
+                    }
 
                     return {
                         id: section.id || section.section_id,
@@ -189,7 +206,7 @@ export const useTemplateStructure = () => {
             storeSettings,
             currentPageId,
         };
-    }, [pages, currentPageId, storeSettings]);
+    }, [pages, currentPageId, storeSettings, ssrProducts, ssrCategories]);
 
     return structure;
 };

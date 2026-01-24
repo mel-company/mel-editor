@@ -3,16 +3,16 @@ import EditorThemeFonts from "./fonts";
 import EditorThemeColors from "./colors";
 import EditorStoreSettings from "./store-settings";
 import Divider from "../../../ui/divider";
-import React from "react";
+
 const ThemeSide = () => {
   return (
     <div className="flex flex-col gap-4 h-full overflow-x-hidden">
       <EditorStoreSettings />
-      <Divider />
-      <EditorThemeStore />
-      <Divider />
+      {/* <Divider /> */}
+      {/* <EditorThemeStore /> */}
+      {/* <Divider /> */}
       <EditorThemeFonts />
-      <Divider />
+      {/* <Divider /> */}
       <EditorThemeColors />
     </div>
   );

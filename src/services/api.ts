@@ -233,3 +233,75 @@ export const saveTemplate = async (templateData: {
     }
 };
 
+// Import mock data for fallback
+import { mockProducts } from '../mock/products';
+import { mockCategories } from '../mock/categories';
+import { ProductType, CategoryType } from '../types';
+
+export interface ProductsResponse {
+    data: ProductType[];
+    total?: number;
+    page?: number;
+    limit?: number;
+}
+
+export interface CategoriesResponse {
+    data: CategoryType[];
+    total?: number;
+    page?: number;
+    limit?: number;
+}
+
+/**
+ * Fetch products from the backend API
+ * Falls back to mock data if API is unavailable
+ */
+export const fetchProducts = async (): Promise<ProductType[]> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/products`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            console.warn(`Products API returned ${response.status}, using mock data`);
+            return mockProducts;
+        }
+
+        const data: ProductsResponse = await response.json();
+        return data.data || data || mockProducts;
+    } catch (error: any) {
+        console.warn('⚠️ Could not fetch products from API, using mock data:', error.message);
+        return mockProducts;
+    }
+};
+
+/**
+ * Fetch categories from the backend API
+ * Falls back to mock data if API is unavailable
+ */
+export const fetchCategories = async (): Promise<CategoryType[]> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/v1/categories`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            console.warn(`Categories API returned ${response.status}, using mock data`);
+            return mockCategories;
+        }
+
+        const data: CategoriesResponse = await response.json();
+        return data.data || data || mockCategories;
+    } catch (error: any) {
+        console.warn('⚠️ Could not fetch categories from API, using mock data:', error.message);
+        return mockCategories;
+    }
+};
