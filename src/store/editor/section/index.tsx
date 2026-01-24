@@ -87,9 +87,10 @@ export const useSectionStore = create<Store>()((set, get) => ({
         .updatePage({ ...currentPage, sections: updatedSections });
 
       // Clear active section if it was deleted
-      const { activeSectionId, setActiveSectionId } = get();
+      const { activeSectionId } = get();
       if (activeSectionId === targetId) {
-        setActiveSectionId("");
+        // Directly set both to empty to avoid setActiveSectionId setting activeElementType to "section"
+        set({ activeSectionId: "", activeElementType: "" });
       }
     }
   },

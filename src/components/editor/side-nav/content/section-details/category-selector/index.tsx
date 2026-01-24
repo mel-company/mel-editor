@@ -69,7 +69,7 @@ const CategorySelector = () => {
           url: newCategoryImage.url || "",
           base64Content: newCategoryImage.base64Content || "",
         }
-        : undefined,
+        : undefined as any,
     };
 
     const currentCategories: CategoryType[] = option.categories || [];

@@ -54,7 +54,7 @@ const RenderTemplate = () => {
           (document.querySelector(
             `[data-section-instance-id="${id}"]`
           ) as HTMLElement | null) || document.getElementById(id || "");
-        
+
         if (sectionElement && originalSection?.content) {
           // Update all elements with data-name attributes using saved values
           Object.entries(originalSection.content).forEach(([name, value]) => {
@@ -186,11 +186,12 @@ const RenderTemplate = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     setActiveElementType("section");
-                    setActiveSectionId(id || "");
+                    // Use target_id (primary identifier) to match how sections are stored and deleted
+                    setActiveSectionId(originalSection.target_id || id || "");
                   }}
                   className={`
                     cursor-pointer transition-all duration-200
-                    ${id === activeSectionId &&
+                    ${(originalSection.target_id === activeSectionId || id === activeSectionId) &&
                       activeElementType === "section"
                       ? "outline-2 outline-blue-500 outline-offset-2"
                       : ""
