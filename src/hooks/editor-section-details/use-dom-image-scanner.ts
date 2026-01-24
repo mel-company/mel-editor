@@ -45,6 +45,13 @@ export const useDomImageScanner = (
                 index,
             }));
 
+            console.log('[useDomImageScanner] Detected images:', {
+                activeSectionId,
+                imageElementsCount: imageElements.length,
+                images,
+                sectionElement: sectionElement.tagName
+            });
+
             setDetectedImages(images);
         }, 100);
 

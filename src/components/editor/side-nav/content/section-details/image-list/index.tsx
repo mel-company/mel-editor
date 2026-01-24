@@ -4,31 +4,48 @@ import FileUploadListItem from "../../../../../ui/file-upload/item";
 import FileUploadBar from "../../../../../ui/file-upload/bar";
 import ImageUploadModal from "../../../../../ui/image-upload-modal";
 import { Plus } from "lucide-react";
-import React, { useState } from "react";
-import { useDomImageScanner } from "../../../../../../hooks/editor-section-details/use-dom-image-scanner";
+import React, { useState, useMemo, useCallback } from "react";
+import { DetectedImage } from "../../../../../../hooks/editor-section-details/use-dom-image-scanner";
 
-const SectionImageList = () => {
+interface SectionImageListProps {
+  detectedImages: DetectedImage[];
+}
+
+const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) => {
   const { handleUploadImage, section, setSection, activeSectionId } =
     useSectionDetails();
   const [showModal, setShowModal] = useState(false);
   const [selectedImageName, setSelectedImageName] = useState<string | null>(null);
 
-  // Dynamically detect images from the DOM
-  const detectedImages = useDomImageScanner(activeSectionId);
+  // Memoize section photos to prevent unnecessary re-renders
+  const sectionPhotos = useMemo(() => section?.photos || [], [section?.photos]);
+
+  // Check if this is a carousel section
+  const isCarousel = useMemo(() =>
+    section?.type === "hero" && section?.section_id === "3",
+    [section?.type, section?.section_id]
+  );
+
+  // Debug logging - only when detectedImages changes
+  console.log('[SectionImageList] Render:', {
+    activeSectionId,
+    detectedImagesCount: detectedImages.length,
+    sectionType: section?.type,
+    sectionId: section?.section_id,
+    isCarousel,
+    sectionPhotosCount: sectionPhotos.length
+  });
 
   // If no images detected in the DOM, don't show this component
   if (detectedImages.length === 0) return null;
 
-  // Get photos from section data
-  const sectionPhotos = section?.photos || [];
-
   // Helper to find photo data by image name
-  const getPhotoByName = (imageName: string) => {
+  const getPhotoByName = useCallback((imageName: string) => {
     return sectionPhotos.find((photo) => photo.id === imageName || photo.label === imageName);
-  };
+  }, [sectionPhotos]);
 
   // Helper to update a specific image by name
-  const handleImageUpload = (file: FileType, imageName: string) => {
+  const handleImageUpload = useCallback((file: FileType, imageName: string) => {
     if (!section) return;
 
     // Convert FileType to PhotoItem
@@ -76,15 +93,48 @@ const SectionImageList = () => {
         }
       }
     }
-  };
+  }, [section, sectionPhotos, setSection, activeSectionId]);
 
-  const handleImageConfirm = (file: FileType) => {
+  const handleImageConfirm = useCallback((file: FileType) => {
     if (selectedImageName) {
       handleImageUpload(file, selectedImageName);
       setShowModal(false);
       setSelectedImageName(null);
     }
-  };
+  }, [selectedImageName, handleImageUpload]);
+
+  // Helper to add a new slide (for carousel sections)
+  const addNewSlide = useCallback(() => {
+    if (!section) return;
+
+    const newSlide = {
+      id: `slide_${Date.now()}`,
+      label: `شريحة ${detectedImages.length + 1}`,
+      url: '',
+      base64Content: ''
+    };
+
+    const updatedPhotos = [...sectionPhotos, newSlide];
+
+    setSection({
+      ...section,
+      photos: updatedPhotos,
+    });
+  }, [section, sectionPhotos, detectedImages.length, setSection]);
+
+  // Helper to delete a slide (for carousel sections)
+  const deleteSlide = useCallback((imageName: string) => {
+    if (!section) return;
+
+    const updatedPhotos = sectionPhotos.filter(
+      (photo) => photo.id !== imageName && photo.label !== imageName
+    );
+
+    setSection({
+      ...section,
+      photos: updatedPhotos,
+    });
+  }, [section, sectionPhotos, setSection]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -92,6 +142,15 @@ const SectionImageList = () => {
         <p className="text-xs text-slate-600">
           عدد الصور: {detectedImages.length}
         </p>
+        {isCarousel && (
+          <button
+            onClick={addNewSlide}
+            className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200"
+          >
+            <Plus size={14} />
+            <span>إضافة شريحة</span>
+          </button>
+        )}
       </div>
       <div className="flex flex-col gap-3">
         {detectedImages.map((detectedImage) => {
@@ -107,15 +166,25 @@ const SectionImageList = () => {
                 <label className="text-xs font-semibold text-slate-700">
                   {detectedImage.title}
                 </label>
-                <button
-                  onClick={() => {
-                    setSelectedImageName(detectedImage.name);
-                    setShowModal(true);
-                  }}
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-                >
-                  {photoUrl ? "تعديل" : "إضافة مع خيارات"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setSelectedImageName(detectedImage.name);
+                      setShowModal(true);
+                    }}
+                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    {photoUrl ? "تعديل" : "إضافة مع خيارات"}
+                  </button>
+                  {isCarousel && detectedImages.length > 1 && (
+                    <button
+                      onClick={() => deleteSlide(detectedImage.name)}
+                      className="text-xs text-red-600 hover:text-red-700 font-medium"
+                    >
+                      حذف
+                    </button>
+                  )}
+                </div>
               </div>
 
               {photoUrl ? (
@@ -152,6 +221,8 @@ const SectionImageList = () => {
       />
     </div>
   );
-};
+});
+
+SectionImageList.displayName = 'SectionImageList';
 
 export default SectionImageList;

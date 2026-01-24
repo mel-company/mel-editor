@@ -77,12 +77,20 @@ export const useSectionStore = create<Store>()((set, get) => ({
   deleteSection: (targetId) => {
     const currentPage = usePageStore.getState().getCurrentPage();
     if (currentPage) {
-      const updatedSections = currentPage.sections.filter(
-        (s) => s.target_id !== targetId
-      );
+      const updatedSections = currentPage.sections.filter((s) => {
+        // Match by target_id (primary) or fall back to section_id/id
+        const sectionId = s.target_id || s.id || s.section_id;
+        return sectionId !== targetId;
+      });
       usePageStore
         .getState()
         .updatePage({ ...currentPage, sections: updatedSections });
+
+      // Clear active section if it was deleted
+      const { activeSectionId, setActiveSectionId } = get();
+      if (activeSectionId === targetId) {
+        setActiveSectionId("");
+      }
     }
   },
 }));

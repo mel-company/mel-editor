@@ -178,7 +178,7 @@ const EditorStoreSettings = () => {
             {/* Footer Content */}
             <div className="mt-3">
               <h4 className="sub-title mb-3">المحتوى</h4>
-              
+
               <div className="flex flex-col gap-3">
                 <TextInput
                   label="عنوان الفوتر"
@@ -222,7 +222,7 @@ const EditorStoreSettings = () => {
             {/* Contact Information */}
             <div className="mt-3">
               <h4 className="sub-title mb-3">معلومات الاتصال</h4>
-              
+
               <div className="flex flex-col gap-3">
                 <TextInput
                   label="البريد الإلكتروني"
@@ -285,45 +285,60 @@ const EditorStoreSettings = () => {
               <FooterColorsEditor />
             </div>
 
-            <Divider />
+            {/* <Divider />
 
-            {/* Footer Links */}
             <div className="mt-3">
               <label className="sub-title mb-2 block">روابط سريعة</label>
-          <div className="flex flex-col gap-2">
-            {storeSettings.footer?.links?.map((link, index) => {
-              const selectedPageId = link.url?.replace("/", "") || "";
-              const pageOptions = pages.map((page) => page.name);
-              const pageIdMap = pages.reduce((acc, page) => {
-                acc[page.name] = page.id;
-                return acc;
-              }, {} as Record<string, string>);
+              <div className="flex flex-col gap-2">
+                {storeSettings.footer?.links?.map((link, index) => {
+                  const selectedPageId = link.url?.replace("/", "") || "";
+                  const pageOptions = pages.map((page) => page.name);
+                  const pageIdMap = pages.reduce((acc, page) => {
+                    acc[page.name] = page.id;
+                    return acc;
+                  }, {} as Record<string, string>);
 
-              return (
-                <div key={link.id} className="flex gap-2 items-start">
-                  <div className="flex-1 flex flex-col gap-2">
-                    <div>
-                      <label className="text-xs text-slate-600 mb-1 block">
-                        اختر الصفحة
-                      </label>
-                      <SelectList
-                        selected={
-                          pages.find((p) => p.id === selectedPageId)?.name || ""
-                        }
-                        options={pageOptions}
-                        setSelected={(pageName) => {
-                          const pageId = pageIdMap[pageName];
-                          const selectedPage = pages.find(
-                            (p) => p.id === pageId
-                          );
-                          const updatedLinks = [
-                            ...(storeSettings.footer?.links || []),
-                          ];
-                          updatedLinks[index] = {
-                            ...link,
-                            label: selectedPage?.name || link.label,
-                            url: `/${pageId}`,
-                          };
+                  return (
+                    <div key={link.id} className="flex gap-2 items-start">
+                      <div className="flex-1 flex flex-col gap-2">
+                        <div>
+                          <label className="text-xs text-slate-600 mb-1 block">
+                            اختر الصفحة
+                          </label>
+                          <SelectList
+                            selected={
+                              pages.find((p) => p.id === selectedPageId)?.name || ""
+                            }
+                            options={pageOptions}
+                            setSelected={(pageName) => {
+                              const pageId = pageIdMap[pageName];
+                              const selectedPage = pages.find(
+                                (p) => p.id === pageId
+                              );
+                              const updatedLinks = [
+                                ...(storeSettings.footer?.links || []),
+                              ];
+                              updatedLinks[index] = {
+                                ...link,
+                                label: selectedPage?.name || link.label,
+                                url: `/${pageId}`,
+                              };
+                              updateStoreSettings({
+                                footer: {
+                                  ...storeSettings.footer,
+                                  links: updatedLinks,
+                                },
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const updatedLinks =
+                            storeSettings.footer?.links?.filter(
+                              (_, i) => i !== index
+                            ) || [];
                           updateStoreSettings({
                             footer: {
                               ...storeSettings.footer,
@@ -331,58 +346,82 @@ const EditorStoreSettings = () => {
                             },
                           });
                         }}
-                      />
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-600 mt-1"
+                        title="حذف الرابط"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      const updatedLinks =
-                        storeSettings.footer?.links?.filter(
-                          (_, i) => i !== index
-                        ) || [];
-                      updateStoreSettings({
-                        footer: {
-                          ...storeSettings.footer,
-                          links: updatedLinks,
-                        },
-                      });
-                    }}
-                    className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-600 mt-1"
-                    title="حذف الرابط"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                  );
+                })}
+              </div>
+            </div> */}
 
-       
-        {/* Social Media Links */}
-        <div className="mt-3">
-          <label className="sub-title mb-2 block">روابط وسائل التواصل الاجتماعي</label>
-          <div className="flex flex-col gap-2">
-            {storeSettings.footer?.socialLinks?.map((social, index) => {
-              const platformOptions = ["Facebook", "Instagram", "Twitter", "Linkedin", "YouTube", "TikTok", "Snapchat"];
-              return (
-                <div key={social.id} className="flex gap-2 items-start">
-                  <div className="flex-1 flex flex-col gap-2">
-                    <div>
-                      <label className="text-xs text-slate-600 mb-1 block">
-                        المنصة
-                      </label>
-                      <SelectList
-                        selected={social.platform || ""}
-                        options={platformOptions}
-                        setSelected={(platform) => {
-                          const updatedSocialLinks = [
-                            ...(storeSettings.footer?.socialLinks || []),
-                          ];
-                          updatedSocialLinks[index] = {
-                            ...social,
-                            platform,
-                          };
+
+            {/* <div className="mt-3">
+              <label className="sub-title mb-2 block">روابط وسائل التواصل الاجتماعي</label>
+              <div className="flex flex-col gap-2">
+                {storeSettings.footer?.socialLinks?.map((social, index) => {
+                  const platformOptions = ["Facebook", "Instagram", "Twitter", "Linkedin", "YouTube", "TikTok", "Snapchat"];
+                  return (
+                    <div key={social.id} className="flex gap-2 items-start">
+                      <div className="flex-1 flex flex-col gap-2">
+                        <div>
+                          <label className="text-xs text-slate-600 mb-1 block">
+                            المنصة
+                          </label>
+                          <SelectList
+                            selected={social.platform || ""}
+                            options={platformOptions}
+                            setSelected={(platform) => {
+                              const updatedSocialLinks = [
+                                ...(storeSettings.footer?.socialLinks || []),
+                              ];
+                              updatedSocialLinks[index] = {
+                                ...social,
+                                platform,
+                              };
+                              updateStoreSettings({
+                                footer: {
+                                  ...storeSettings.footer,
+                                  socialLinks: updatedSocialLinks,
+                                },
+                              });
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-600 mb-1 block">
+                            الرابط
+                          </label>
+                          <TextInput
+                            label=""
+                            placeholder="https://..."
+                            value={social.url || ""}
+                            onChange={(e) => {
+                              const updatedSocialLinks = [
+                                ...(storeSettings.footer?.socialLinks || []),
+                              ];
+                              updatedSocialLinks[index] = {
+                                ...social,
+                                url: e.target.value,
+                              };
+                              updateStoreSettings({
+                                footer: {
+                                  ...storeSettings.footer,
+                                  socialLinks: updatedSocialLinks,
+                                },
+                              });
+                            }}
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const updatedSocialLinks =
+                            storeSettings.footer?.socialLinks?.filter(
+                              (_, i) => i !== index
+                            ) || [];
                           updateStoreSettings({
                             footer: {
                               ...storeSettings.footer,
@@ -390,77 +429,36 @@ const EditorStoreSettings = () => {
                             },
                           });
                         }}
-                      />
+                        className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-600 mt-1"
+                        title="حذف الرابط"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
-                    <div>
-                      <label className="text-xs text-slate-600 mb-1 block">
-                        الرابط
-                      </label>
-                      <TextInput
-                        label=""
-                        placeholder="https://..."
-                        value={social.url || ""}
-                        onChange={(e) => {
-                          const updatedSocialLinks = [
-                            ...(storeSettings.footer?.socialLinks || []),
-                          ];
-                          updatedSocialLinks[index] = {
-                            ...social,
-                            url: e.target.value,
-                          };
-                          updateStoreSettings({
-                            footer: {
-                              ...storeSettings.footer,
-                              socialLinks: updatedSocialLinks,
-                            },
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      const updatedSocialLinks =
-                        storeSettings.footer?.socialLinks?.filter(
-                          (_, i) => i !== index
-                        ) || [];
-                      updateStoreSettings({
-                        footer: {
-                          ...storeSettings.footer,
-                          socialLinks: updatedSocialLinks,
-                        },
-                      });
-                    }}
-                    className="p-2 hover:bg-red-50 rounded-lg transition-colors text-red-600 mt-1"
-                    title="حذف الرابط"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              );
-            })}
-            <button
-              onClick={() => {
-                const newSocial = {
-                  id: crypto.randomUUID(),
-                  platform: "Facebook",
-                  url: "",
-                };
-                const currentSocialLinks = storeSettings.footer?.socialLinks || [];
-                updateStoreSettings({
-                  footer: {
-                    ...storeSettings.footer,
-                    socialLinks: [...currentSocialLinks, newSocial],
-                  },
-                });
-              }}
-              className="flex items-center justify-center gap-2 p-2 border border-dashed border-slate-300 rounded-lg hover:bg-slate-50 transition-colors text-slate-600 text-sm"
-            >
-              <Plus className="w-4 h-4" />
-              <span>إضافة رابط</span>
-            </button>
-          </div>
-        </div>
+                  );
+                })}
+                <button
+                  onClick={() => {
+                    const newSocial = {
+                      id: crypto.randomUUID(),
+                      platform: "Facebook",
+                      url: "",
+                    };
+                    const currentSocialLinks = storeSettings.footer?.socialLinks || [];
+                    updateStoreSettings({
+                      footer: {
+                        ...storeSettings.footer,
+                        socialLinks: [...currentSocialLinks, newSocial],
+                      },
+                    });
+                  }}
+                  className="flex items-center justify-center gap-2 p-2 border border-dashed border-slate-300 rounded-lg hover:bg-slate-50 transition-colors text-slate-600 text-sm"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>إضافة رابط</span>
+                </button>
+              </div>
+            </div> */}
           </>
         )}
       </div>
@@ -516,7 +514,7 @@ const FooterColorsEditor = () => {
         />
       </div>
 
-      <div>
+      {/* <div>
         <h5 className="text-xs text-slate-600 mb-2">المسافات الداخلية</h5>
         <input
           type="text"
@@ -536,7 +534,7 @@ const FooterColorsEditor = () => {
           placeholder="مثال: 20px أو 1rem"
           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </div>
+      </div> */}
     </div>
   );
 };

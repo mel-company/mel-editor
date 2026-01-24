@@ -20,14 +20,16 @@ const SectionContent = () => {
   const categorizedContent = React.useMemo(() => {
     const groups: Record<string, any[]> = { headings: [], text: [], contact: [], links: [], other: [] };
     if (Array.isArray(content)) {
-      content.forEach((item: any) => {
-        const cat = getFieldCategory(item);
-        if (groups[cat]) {
-          groups[cat].push(item);
-        } else {
-          groups.other.push(item);
-        }
-      });
+      content
+        .filter((item: any) => item.type !== 'image') // Filter out image fields - they belong in Photos tab
+        .forEach((item: any) => {
+          const cat = getFieldCategory(item);
+          if (groups[cat]) {
+            groups[cat].push(item);
+          } else {
+            groups.other.push(item);
+          }
+        });
     }
     return groups;
   }, [content]);

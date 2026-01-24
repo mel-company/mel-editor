@@ -15,8 +15,17 @@ const useSectionDetails = () => {
   const { sections: processedSections } = useTemplateStructure();
 
   // Find the processed section that matches activeSectionId
+  // activeSectionId is set to section.target_id from the section list,
+  // but processedSections use id (which is section.id || section.section_id)
+  // So we need to match against the original section's target_id
   const processedSection = processedSections?.find(
-    (s) => s.id === activeSectionId
+    (s) => {
+      const original = s.originalSection;
+      return original.target_id === activeSectionId ||
+        original.id === activeSectionId ||
+        original.section_id === activeSectionId ||
+        s.id === activeSectionId;
+    }
   );
 
   // Extract the original section data for editing
@@ -86,23 +95,33 @@ const useSectionDetails = () => {
     }
 
     if (option) {
-      // Priority: Scanned Schema.
-      // If we have scanned items (data-type attributes), use ONLY them for content.
-      // This ignores static props to prevent duplicates.
-
-      // Hydrate items from section.content if available (persistence)
+      // Hydrate scanned items from section.content if available (persistence)
       // But prefer scanned DOM values if section.content is empty/undefined
       const hydratedScannedItems = scannedSchema.map(item => {
         if (section?.content && section.content[item.name] !== undefined && section.content[item.name] !== "") {
           return { ...item, value: section.content[item.name] };
         }
-        // Use scanned value from DOM (which contains initial values like "اتصل بنا")
+        // Use scanned value from DOM (which contains initial values)
         return item;
+      });
+
+      // MERGE scanned items with existing content instead of replacing
+      // This preserves static content fields (like title, description) while adding DOM-detected fields
+      let mergedContent = Array.isArray(option.content) ? [...option.content] : [];
+
+      // Add scanned items that don't already exist in the content
+      hydratedScannedItems.forEach(scannedItem => {
+        const existsInContent = mergedContent.some(
+          (item: any) => item.name === scannedItem.name || item.id === scannedItem.id
+        );
+        if (!existsInContent) {
+          mergedContent.push(scannedItem);
+        }
       });
 
       option = {
         ...option,
-        content: hydratedScannedItems
+        content: mergedContent
       };
     }
   }

@@ -1,12 +1,10 @@
 import { useState, useMemo } from "react";
-import React from "react";
 import { CategoryType, FileType } from "../../../../../../types";
 import { mockCategories } from "../../../../../../mock/categories";
 import useSectionDetails from "../../../../../../hooks/editor-section-details";
 import { Check, X, Search, Tag, Plus, Image as ImageIcon } from "lucide-react";
 import classNames from "classnames";
 import FileUploadBar from "../../../../../../components/ui/file-upload/bar";
-import ImageUploadModal from "../../../../../../components/ui/image-upload-modal";
 
 const CategorySelector = () => {
   const { section, option, setSection } = useSectionDetails();
@@ -68,9 +66,9 @@ const CategorySelector = () => {
       name: newCategoryName,
       thumbnail: newCategoryImage
         ? {
-            url: newCategoryImage.url || "",
-            base64Content: newCategoryImage.base64Content || "",
-          }
+          url: newCategoryImage.url || "",
+          base64Content: newCategoryImage.base64Content || "",
+        }
         : undefined,
     };
 
@@ -129,11 +127,10 @@ const CategorySelector = () => {
           )}
           <button
             onClick={() => setShowSelector(!showSelector)}
-            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${
-              showSelector
-                ? "bg-slate-100 text-slate-700 border-slate-300"
-                : "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
-            }`}
+            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors border ${showSelector
+              ? "bg-slate-100 text-slate-700 border-slate-300"
+              : "bg-blue-50 text-blue-600 border-blue-200 hover:bg-blue-100"
+              }`}
           >
             {showSelector ? (
               <>
@@ -153,13 +150,13 @@ const CategorySelector = () => {
       {showSelector && (
         <div className="border border-slate-200 rounded-lg p-3 bg-white">
           {/* Add New Category Button */}
-          <button
+          {/* <button
             onClick={() => setShowAddModal(true)}
             className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-2 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg transition-colors text-sm font-medium"
           >
             <Plus size={16} />
             <span>إضافة تصنيف جديد</span>
-          </button>
+          </button> */}
 
           {/* Search Bar */}
           <div className="relative mb-4">
@@ -320,11 +317,10 @@ const CategorySelector = () => {
                 <button
                   onClick={handleAddCategory}
                   disabled={!newCategoryName.trim()}
-                  className={`flex-1 font-medium py-3 px-6 rounded-lg transition-colors ${
-                    newCategoryName.trim()
-                      ? "bg-blue-600 hover:bg-blue-700 text-white"
-                      : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                  }`}
+                  className={`flex-1 font-medium py-3 px-6 rounded-lg transition-colors ${newCategoryName.trim()
+                    ? "bg-blue-600 hover:bg-blue-700 text-white"
+                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
                 >
                   إضافة
                 </button>

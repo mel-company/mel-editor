@@ -12,7 +12,7 @@ import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { useDomImageScanner } from "../../../../../hooks/editor-section-details/use-dom-image-scanner";
 import { useSectionStore } from "../../../../../store/editor/section";
 import Divider from "../../../../ui/divider";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Type, Image, Package, Settings, Tag } from "lucide-react";
 
 const EditorSectionDetails = () => {
@@ -20,18 +20,43 @@ const EditorSectionDetails = () => {
   const { activeElementType, activeSectionId } = useSectionStore();
   const isProductSection = option?.products !== undefined;
   const isCategorySection = option?.categories !== undefined;
-  const hasContent = option?.content;
+
+  // Better content check - ensure it's an array with items or a truthy object
+  const hasContent = useMemo(() => {
+    if (!option?.content) return false;
+    if (Array.isArray(option.content)) {
+      return option.content.length > 0;
+    }
+    return true; // Non-array content is considered valid
+  }, [option?.content]);
 
   // Check if section supports images by scanning the DOM
   // This is dynamic - any section with data-type="image" elements will show the images tab
   const detectedImages = useDomImageScanner(activeSectionId);
-  const hasImages =
-    detectedImages.length > 0 ||
-    (option?.photos !== undefined) ||
-    (section?.photos !== undefined);
+
+  // Photos tab should appear if:
+  // 1. DOM scanner detected image elements with data-type="image"
+  // 2. OR section defines photos property (indicating it supports images, even if empty array)
+  const hasImages = useMemo(() =>
+    detectedImages.length > 0 || (section?.photos !== undefined),
+    [detectedImages.length, section?.photos]
+  );
+
+  console.log('[EditorSectionDetails] Debug Info:', {
+    hasImages,
+    hasContent,
+    detectedImagesLength: detectedImages.length,
+    optionContent: option?.content,
+    optionPhotos: option?.photos,
+    sectionPhotos: section?.photos,
+    sectionType: section?.type,
+    sectionId: section?.section_id,
+    isProductSection,
+    isCategorySection
+  });
 
   // Determine default tab based on available content
-  const getDefaultTab = useCallback((): "content" | "images" | "products" | "categories" | "styles" => {
+  const getDefaultTab = useMemo(() => {
     if (hasContent) return "content";
     if (hasImages) return "images";
     if (isProductSection) return "products";
@@ -39,7 +64,7 @@ const EditorSectionDetails = () => {
     return "styles";
   }, [hasContent, hasImages, isProductSection, isCategorySection]);
 
-  const [activeTab, setActiveTab] = useState<"content" | "images" | "products" | "categories" | "styles">(getDefaultTab());
+  const [activeTab, setActiveTab] = useState<"content" | "images" | "products" | "categories" | "styles">(getDefaultTab);
   const sectionDetailsRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to section details when a section is selected
@@ -58,8 +83,7 @@ const EditorSectionDetails = () => {
   // Reset to default tab when section changes
   useEffect(() => {
     if (activeSectionId && activeElementType === "section") {
-      const defaultTab = getDefaultTab();
-      setActiveTab(defaultTab);
+      setActiveTab(getDefaultTab);
     }
   }, [activeSectionId, activeElementType, getDefaultTab]);
 
@@ -195,7 +219,7 @@ const EditorSectionDetails = () => {
           </div>
 
           {activeTab === "content" && hasContent && <SectionContent />}
-          {activeTab === "images" && hasImages && <SectionImageList />}
+          {activeTab === "images" && hasImages && <SectionImageList detectedImages={detectedImages} />}
           {activeTab === "products" && isProductSection && (
             isProductSection ? <ProductSelector /> : <EditorProductList />
           )}
