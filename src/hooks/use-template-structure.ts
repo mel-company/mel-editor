@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { usePageStore } from "../store/editor/page";
+import { usePageStore, restoreSectionComponents } from "../store/editor/page";
 import { useStoreSettingsStore } from "../store/editor/store-settings";
 import { mockTemplate } from "../mock/template";
 import { Navigation1 } from "../mock/template/sections/navigation";
@@ -7,31 +7,62 @@ import { footer_sections } from "../mock/template/sections/footer";
 import { getSectionProps } from "../utils/section-props";
 import { SectionType, NavigationFooterType } from "../types";
 import { resolveComponent } from "../utils/component-registry";
-import { useSSRProducts, useSSRCategories } from "../context/ssr-data-context";
+import { useSSRProducts, useSSRCategories, useSSRData } from "../context/ssr-data-context";
+
+
+interface HydratedSection {
+    id: any;
+    type: string;
+    Component: any;
+    props: any;
+    originalSection: SectionType;
+}
 
 export const useTemplateStructure = () => {
-    const { pages, currentPageId } = usePageStore();
-    const { storeSettings } = useStoreSettingsStore();
+    const { pages: storePages, currentPageId: storeCurrentPageId } = usePageStore();
+    const { storeSettings: storeStoreSettings } = useStoreSettingsStore();
 
-    // Get SSR data (will be empty array if not in SSR context)
+    // Get SSR data
+    const { isSSR, templateConfig } = useSSRData();
     const ssrProducts = useSSRProducts();
     const ssrCategories = useSSRCategories();
 
+    // Determine source of truth: SSR/injected config vs Client Store
+    const rawPages = (isSSR && templateConfig?.pages) ? templateConfig.pages : storePages;
+
+    // Hydrate pages with components if coming from SSR
+    const pages = useMemo(() => {
+        if (isSSR && templateConfig?.pages) {
+            return restoreSectionComponents(rawPages);
+        }
+        return rawPages;
+    }, [rawPages, isSSR, templateConfig]);
+
+    const storeSettings = (isSSR && templateConfig?.storeSettings) ? templateConfig.storeSettings : storeStoreSettings;
+
+    // For SSR, default to the first page if multiple exist
+    const currentPageId = (isSSR && pages.length > 0) ? pages[0].id : storeCurrentPageId;
+
     const structure = useMemo(() => {
         const page = pages.find((p) => p.id === currentPageId);
-        // Merge proper page data with mock template default structure if needed
-        // Assuming mockTemplate provides fallbacks or structure
-        const currentPage = { ...mockTemplate, ...page };
+
+        // Use SSR template if available, otherwise fallback to mock/page merge
+        const templateSource = (isSSR && templateConfig) ? { sections: pages.find(p => p.id === currentPageId)?.sections || [] } : mockTemplate;
+
+        const currentPage = { ...templateSource, ...page };
 
         // 1. Navigation
         let navigation: NavigationFooterType | null = null;
-        if (storeSettings.type !== "restaurant") {
+        // Prioritize SSR settings if available
+        const activeSettings = (isSSR && templateConfig?.storeSettings) ? templateConfig.storeSettings : storeSettings;
+
+        if (activeSettings.type !== "restaurant") {
             navigation = {
                 Component: Navigation1,
                 props: {
-                    logo: storeSettings.logo,
-                    navigationLinks: storeSettings.header?.navigationLinks,
-                    primaryColor: storeSettings.colors?.primary,
+                    logo: activeSettings.logo,
+                    navigationLinks: activeSettings.header?.navigationLinks,
+                    primaryColor: activeSettings.colors?.primary,
                 },
             };
         }
@@ -39,11 +70,11 @@ export const useTemplateStructure = () => {
         // 2. Sections
         const rawSections =
             currentPage?.sections.filter(
-                (s) => s.type !== "navigation" && s.type !== "footer"
+                (s: SectionType) => s.type !== "navigation" && s.type !== "footer"
             ) || [];
 
         const sections = rawSections
-            .map((section) => {
+            .map((section: SectionType) => {
                 // 1. Try standard options-based resolution
                 // 1. Try standard options-based resolution
                 // 1. Try standard options-based resolution
@@ -57,12 +88,13 @@ export const useTemplateStructure = () => {
                     (s) => s.id === section.id || (s.type === section.type && s.section_id === section.section_id)
                 );
 
+
                 if (freshSection && freshSection.options) {
-                    hydratedOptions = freshSection.options.map((freshOption) => {
-                        const storedOption = section.options?.find((so) => so.id === freshOption.id);
+                    hydratedOptions = freshSection.options.map((freshOption: any) => {
+                        const storedOption = section.options?.find((so: any) => so.id === freshOption.id);
                         if (storedOption) {
-                            // Merge: Fresh structure (has photos etc) + Stored values
-                            return { ...freshOption, ...storedOption };
+                            // Merge: Fresh structure (has photos etc) + Stored values, ensure component is preserved
+                            return { ...freshOption, ...storedOption, component: freshOption.component };
                         }
                         // If no stored option exists for this variant, return the fresh default
                         return freshOption;
@@ -70,18 +102,18 @@ export const useTemplateStructure = () => {
                 } else if (section.options) {
                     // Fallback for Custom Sections (not in mockTemplate):
                     // We can only iterate over what we have stored, but we try to hydrate structure from registry
-                    hydratedOptions = section.options.map((storedOption) => {
+                    hydratedOptions = section.options.map((storedOption: any) => {
                         const registryEntry = resolveComponent(section.type, storedOption.id);
                         if (registryEntry) {
                             const { component, defaultOptions } = registryEntry;
-                            return { component, ...defaultOptions, ...storedOption };
+                            return { ...defaultOptions, ...storedOption, component };
                         }
                         return storedOption;
                     });
                 }
 
                 const selected_options = hydratedOptions?.find(
-                    (option) => option.id === section.section_id
+                    (option: any) => option.id === section.section_id
                 );
 
                 if (selected_options && selected_options.component) {
@@ -103,7 +135,7 @@ export const useTemplateStructure = () => {
                     }
 
                     return {
-                        id: section.id || section.section_id,
+                        id: section.target_id || section.id || section.section_id,
                         type: section.type,
                         Component,
                         props,
@@ -140,17 +172,17 @@ export const useTemplateStructure = () => {
                     const props = getSectionProps(virtualSection as any, storeSettings);
 
                     return {
-                        id: section.id || section.section_id,
+                        id: section.target_id || section.id || section.section_id,
                         type: section.type,
                         Component,
-                        props: props || { id: section.id || section.section_id },
+                        props: props || { id: section.target_id || section.id || section.section_id },
                         originalSection: section,
                     };
                 }
 
                 return null;
             })
-            .filter((s): s is NonNullable<typeof s> => s !== null);
+            .filter((s: HydratedSection | null): s is HydratedSection => s !== null);
 
         // 3. Footer
         let footer: NavigationFooterType | null = null;
@@ -205,6 +237,7 @@ export const useTemplateStructure = () => {
             globalStyles,
             storeSettings,
             currentPageId,
+            pages,
         };
     }, [pages, currentPageId, storeSettings, ssrProducts, ssrCategories]);
 

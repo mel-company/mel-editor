@@ -38,8 +38,8 @@ const EditorSectionDetails = () => {
   // 1. DOM scanner detected image elements with data-type="image"
   // 2. OR section defines photos property (indicating it supports images, even if empty array)
   const hasImages = useMemo(() =>
-    detectedImages.length > 0 || (section?.photos !== undefined),
-    [detectedImages.length, section?.photos]
+    detectedImages.length > 0 || (section?.photos !== undefined) || (option?.photos !== undefined),
+    [detectedImages.length, section?.photos, option?.photos]
   );
 
   console.log('[EditorSectionDetails] Debug Info:', {

@@ -93,17 +93,22 @@ export const useStoreSettingsStore = create<Store>()(
       name: "editor-store-settings-storage",
       storage: {
         getItem: (name) => {
+          if (typeof window === 'undefined') return null;
           const str = localStorage.getItem(name);
           return str ? JSON.parse(str) : null;
         },
         setItem: (name, value) => {
+          if (typeof window === 'undefined') return;
           try {
             localStorage.setItem(name, JSON.stringify(value));
           } catch (e) {
             console.error("Local storage is full, failed to save store settings:", e);
           }
         },
-        removeItem: (name) => localStorage.removeItem(name),
+        removeItem: (name) => {
+          if (typeof window === 'undefined') return;
+          localStorage.removeItem(name);
+        },
       },
     }
   )

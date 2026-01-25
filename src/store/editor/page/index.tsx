@@ -34,7 +34,7 @@ const sectionTypesMap: Record<string, any[]> = {
 };
 
 // Function to restore components in sections after loading from localStorage
-const restoreSectionComponents = (pages: PageType[]): PageType[] => {
+export const restoreSectionComponents = (pages: PageType[]): PageType[] => {
   console.log("🔄 Restoring components for pages:", pages.length);
 
   return pages.map((page) => {
@@ -189,6 +189,7 @@ export const usePageStore = create<Store>()(
       name: "editor-pages-storage",
       storage: {
         getItem: (name) => {
+          if (typeof window === 'undefined') return null;
           const str = localStorage.getItem(name);
           if (!str) return null;
           const parsed = JSON.parse(str);
@@ -199,13 +200,17 @@ export const usePageStore = create<Store>()(
           return parsed;
         },
         setItem: (name, value) => {
+          if (typeof window === 'undefined') return;
           try {
             localStorage.setItem(name, JSON.stringify(value));
           } catch (e) {
             console.error("Local storage is full, failed to save pages:", e);
           }
         },
-        removeItem: (name) => localStorage.removeItem(name),
+        removeItem: (name) => {
+          if (typeof window === 'undefined') return;
+          localStorage.removeItem(name)
+        },
       },
     }
   )

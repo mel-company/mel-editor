@@ -75,6 +75,8 @@ export type SectionPropsType = {
  * Content item for editable text/textarea/link fields in sections
  */
 export type ContentItem = {
+  id?: string;
+  label?: string;
   name: string;
   value: string;
   type?: 'text' | 'textarea' | 'link' | 'image';
@@ -112,7 +114,7 @@ export type SectionOptionType = {
     url: string;
   };
   photos?: PhotoItem[];
-  content?: ContentItem[];
+  content?: ContentItem[] | Record<string, string>;
   products?: ProductType[];
   categories?: CategoryType[];
   view_all_link?: string;

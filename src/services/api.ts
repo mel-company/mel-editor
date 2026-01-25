@@ -1,13 +1,8 @@
 // Get API base URL from environment or use default
 const getApiBaseUrl = (): string => {
     try {
-        // @ts-expect-error - Vite environment variables
-        const envUrl = import.meta.env?.VITE_API_BASE_URL;
-        if (envUrl) {
-            return envUrl;
-        }
-        // Default to http (not https) for localhost
-        return 'http://localhost:3000';
+        const envUrl = import.meta.env?.VITE_API_BASE_URL || 'http://localhost:3000';
+        return envUrl;
     } catch {
         return 'http://localhost:3000';
     }
@@ -52,7 +47,7 @@ export interface ApiTemplateResponse {
  */
 export const getActiveTemplates = async (): Promise<ApiTemplateResponse> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/template/active`, {
+        const response = await fetch(`${API_BASE_URL}/template/active`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -87,7 +82,7 @@ export const getActiveTemplates = async (): Promise<ApiTemplateResponse> => {
  */
 export const getTemplateById = async (templateId: string): Promise<ApiTemplateResponse["data"][0] | null> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/template/${templateId}`, {
+        const response = await fetch(`${API_BASE_URL}/template/${templateId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -155,13 +150,13 @@ export const updateTemplate = async (
             is_active: templateData.is_active ?? currentTemplate?.is_active ?? true,
         };
 
-        console.log(`🔄 Updating template: PATCH ${API_BASE_URL}/api/v1/template/${templateId}`, {
+        console.log(`🔄 Updating template: PATCH ${API_BASE_URL}/template/${templateId}`, {
             name: payload.name,
             hasBody: !!payload.body,
             is_active: payload.is_active,
         });
 
-        const response = await fetch(`${API_BASE_URL}/api/v1/template/${templateId}`, {
+        const response = await fetch(`${API_BASE_URL}/template/${templateId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -212,7 +207,7 @@ export const saveTemplate = async (templateData: {
     body: any;
 }): Promise<any> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/template`, {
+        const response = await fetch(`${API_BASE_URL}/template`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -258,7 +253,7 @@ export interface CategoriesResponse {
  */
 export const fetchProducts = async (): Promise<ProductType[]> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/products`, {
+        const response = await fetch(`${API_BASE_URL}/products`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -285,7 +280,7 @@ export const fetchProducts = async (): Promise<ProductType[]> => {
  */
 export const fetchCategories = async (): Promise<CategoryType[]> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/categories`, {
+        const response = await fetch(`${API_BASE_URL}/categories`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

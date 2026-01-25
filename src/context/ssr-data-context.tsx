@@ -1,20 +1,32 @@
 import { createContext, useContext, ReactNode } from 'react';
-import { ProductType, CategoryType } from '../types';
+import { ProductType, CategoryType, TemplateType } from '../types';
 
 export interface SSRData {
     products: ProductType[];
     categories: CategoryType[];
+    template: TemplateType | null;
+    templateConfig?: {
+        pages: any[];
+        storeSettings: any;
+    };
 }
 
 interface SSRDataContextValue {
     products: ProductType[];
     categories: CategoryType[];
+    template: TemplateType | null;
+    templateConfig?: {
+        pages: any[];
+        storeSettings: any;
+    };
     isSSR: boolean;
 }
 
 const SSRDataContext = createContext<SSRDataContextValue>({
     products: [],
     categories: [],
+    template: null,
+    templateConfig: undefined,
     isSSR: false,
 });
 
@@ -28,6 +40,8 @@ export function SSRDataProvider({
     const value: SSRDataContextValue = {
         products: initialData.products || [],
         categories: initialData.categories || [],
+        template: initialData.template || null,
+        templateConfig: initialData.templateConfig,
         isSSR: true,
     };
 
@@ -54,6 +68,15 @@ export function useSSRProducts(): ProductType[] {
 export function useSSRCategories(): CategoryType[] {
     const context = useContext(SSRDataContext);
     return context.categories;
+}
+
+/**
+ * Hook to access SSR template
+ * Returns template from SSR context if available
+ */
+export function useSSRTemplate(): TemplateType | null {
+    const context = useContext(SSRDataContext);
+    return context.template;
 }
 
 /**

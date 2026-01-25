@@ -12,13 +12,13 @@ interface SectionImageListProps {
 }
 
 const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) => {
-  const { handleUploadImage, section, setSection, activeSectionId } =
+  const { handleUploadImage, section, setSection, activeSectionId, option } =
     useSectionDetails();
   const [showModal, setShowModal] = useState(false);
   const [selectedImageName, setSelectedImageName] = useState<string | null>(null);
 
   // Memoize section photos to prevent unnecessary re-renders
-  const sectionPhotos = useMemo(() => section?.photos || [], [section?.photos]);
+  const sectionPhotos = useMemo(() => section?.photos || option?.photos || [], [section?.photos, option?.photos]);
 
   // Check if this is a carousel section
   const isCarousel = useMemo(() =>
@@ -36,8 +36,20 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
     sectionPhotosCount: sectionPhotos.length
   });
 
-  // If no images detected in the DOM, don't show this component
-  if (detectedImages.length === 0) return null;
+  // Combined list of images to render (detected from DOM or from stored/option photos)
+  const imagesToEdit = useMemo(() => {
+    if (detectedImages.length > 0) return detectedImages;
+
+    return sectionPhotos.map((photo, index) => ({
+      name: photo.id || `photo_${index}`,
+      title: photo.label || `Image ${index + 1}`,
+      currentSrc: photo.url || photo.base64Content || "",
+      index
+    }));
+  }, [detectedImages, sectionPhotos]);
+
+  // If no images available at all, don't show
+  if (imagesToEdit.length === 0) return null;
 
   // Helper to find photo data by image name
   const getPhotoByName = useCallback((imageName: string) => {
@@ -109,7 +121,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
 
     const newSlide = {
       id: `slide_${Date.now()}`,
-      label: `شريحة ${detectedImages.length + 1}`,
+      label: `شريحة ${imagesToEdit.length + 1}`,
       url: '',
       base64Content: ''
     };
@@ -120,7 +132,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
       ...section,
       photos: updatedPhotos,
     });
-  }, [section, sectionPhotos, detectedImages.length, setSection]);
+  }, [section, sectionPhotos, imagesToEdit.length, setSection]);
 
   // Helper to delete a slide (for carousel sections)
   const deleteSlide = useCallback((imageName: string) => {
@@ -140,7 +152,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs text-slate-600">
-          عدد الصور: {detectedImages.length}
+          عدد الصور: {imagesToEdit.length}
         </p>
         {isCarousel && (
           <button
@@ -153,7 +165,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
         )}
       </div>
       <div className="flex flex-col gap-3">
-        {detectedImages.map((detectedImage) => {
+        {imagesToEdit.map((detectedImage) => {
           const photo = getPhotoByName(detectedImage.name);
           const photoUrl = photo?.url || photo?.base64Content || detectedImage.currentSrc;
 
@@ -176,7 +188,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
                   >
                     {photoUrl ? "تعديل" : "إضافة مع خيارات"}
                   </button>
-                  {isCarousel && detectedImages.length > 1 && (
+                  {isCarousel && imagesToEdit.length > 1 && (
                     <button
                       onClick={() => deleteSlide(detectedImage.name)}
                       className="text-xs text-red-600 hover:text-red-700 font-medium"
@@ -217,7 +229,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
           setSelectedImageName(null);
         }}
         onConfirm={handleImageConfirm}
-        label={`إضافة صورة ${selectedImageName ? detectedImages.find(img => img.name === selectedImageName)?.title : ""}`}
+        label={`إضافة صورة ${selectedImageName ? imagesToEdit.find(img => img.name === selectedImageName)?.title : ""}`}
       />
     </div>
   );

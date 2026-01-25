@@ -17,15 +17,21 @@ const OurStorySection1 = ({
     <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
-          {photoUrl && (
-            <div className="order-2 md:order-1">
-              <img
-                src={photoUrl}
-                alt={title || "قصتنا"}
-                className="w-full h-auto rounded-2xl shadow-xl object-cover"
-              />
-            </div>
-          )}
+          <div className="order-2 md:order-1 relative">
+            <img
+              src={photoUrl || ""}
+              alt={title || "قصتنا"}
+              className={`w-full h-auto rounded-2xl shadow-xl object-cover ${!photoUrl ? "min-h-[300px] opacity-0" : ""}`}
+              data-type="image"
+              data-title="الصورة"
+              data-name="main_image"
+            />
+            {!photoUrl && (
+              <div className="absolute inset-0 bg-slate-100 rounded-2xl border-2 border-dashed border-slate-300 flex items-center justify-center">
+                <span className="text-slate-400">أضف صورة</span>
+              </div>
+            )}
+          </div>
           <div className="order-1 md:order-2">
             {title && (
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4 sm:mb-6">
@@ -93,15 +99,21 @@ const OurStorySection3 = ({
           </h2>
         )}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {photoUrl && (
-            <div>
-              <img
-                src={photoUrl}
-                alt={title || "قصتنا"}
-                className="w-full h-auto rounded-xl shadow-lg object-cover"
-              />
-            </div>
-          )}
+          <div className="relative">
+            <img
+              src={photoUrl || ""}
+              alt={title || "قصتنا"}
+              className={`w-full h-auto rounded-xl shadow-lg object-cover ${!photoUrl ? "min-h-[300px] opacity-0" : ""}`}
+              data-type="image"
+              data-title="الصورة"
+              data-name="main_image"
+            />
+            {!photoUrl && (
+              <div className="absolute inset-0 bg-slate-100 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center">
+                <span className="text-slate-400">أضف صورة</span>
+              </div>
+            )}
+          </div>
           <div className="flex flex-col justify-center">
             {description && (
               <div
@@ -140,7 +152,7 @@ export const our_story_sections: SectionOptionType[] = [
         value: "نحن متجر متخصص في تقديم أفضل المنتجات والخدمات لعملائنا. بدأنا رحلتنا برؤية واضحة لتقديم تجربة تسوق استثنائية تجمع بين الجودة والسعر المناسب.",
       },
     ],
-    photos: [{ id: "1", label: "الصورة", url: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400" }],
+    photos: [{ id: "main_image", label: "الصورة", url: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400" }],
   },
   {
     id: "2",
@@ -189,7 +201,7 @@ export const our_story_sections: SectionOptionType[] = [
         value: "نحن متجر متخصص في تقديم أفضل المنتجات والخدمات لعملائنا. بدأنا رحلتنا برؤية واضحة لتقديم تجربة تسوق استثنائية تجمع بين الجودة والسعر المناسب.",
       },
     ],
-    photos: [{ id: "1", label: "الصورة", url: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400" }],
+    photos: [{ id: "main_image", label: "الصورة", url: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400" }],
   },
 ];
 

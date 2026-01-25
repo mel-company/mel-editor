@@ -358,7 +358,7 @@ const ContactSection4 = ({ id }: { id?: string }) => {
           تواصل معنا عبر أي من الطرق التالية
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="group relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden">
+          <div className="group relative bg-linear-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm">
@@ -376,7 +376,7 @@ const ContactSection4 = ({ id }: { id?: string }) => {
               </a>
             </div>
           </div>
-          <div className="group relative bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden">
+          <div className="group relative bg-linear-to-br from-green-500 to-green-600 rounded-2xl p-6 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm">
@@ -395,7 +395,7 @@ const ContactSection4 = ({ id }: { id?: string }) => {
               </a>
             </div>
           </div>
-          <div className="group relative bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden">
+          <div className="group relative bg-linear-to-br from-purple-500 to-purple-600 rounded-2xl p-6 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm">
@@ -412,7 +412,7 @@ const ContactSection4 = ({ id }: { id?: string }) => {
               </p>
             </div>
           </div>
-          <div className="group relative bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden">
+          <div className="group relative bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white hover:shadow-2xl hover:scale-105 transition-all duration-300 overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
             <div className="relative z-10">
               <div className="w-14 h-14 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm">
@@ -457,7 +457,7 @@ const ContactSection5 = ({ id }: { id?: string }) => {
             data-title="صورة الخلفية"
             data-name="background"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-purple-50"></div>
+          <div className="absolute inset-0 bg-linear-to-br from-blue-50 to-purple-50"></div>
         </div>
       )}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -524,7 +524,7 @@ const ContactSection5 = ({ id }: { id?: string }) => {
               </div>
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
+                className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg flex items-center justify-center gap-2"
               >
                 <Send className="w-5 h-5" />
                 <span>إرسال الرسالة</span>
@@ -600,7 +600,7 @@ const ContactSection6 = ({ id }: { id?: string }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="flex items-center gap-6 group">
-              <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+              <div className="w-20 h-20 bg-linear-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                 <Mail className="w-10 h-10 text-white" />
               </div>
               <div>
@@ -617,7 +617,7 @@ const ContactSection6 = ({ id }: { id?: string }) => {
               </div>
             </div>
             <div className="flex items-center gap-6 group">
-              <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+              <div className="w-20 h-20 bg-linear-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                 <Phone className="w-10 h-10 text-white" />
               </div>
               <div>
@@ -635,7 +635,7 @@ const ContactSection6 = ({ id }: { id?: string }) => {
               </div>
             </div>
             <div className="flex items-center gap-6 group">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+              <div className="w-20 h-20 bg-linear-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                 <MapPin className="w-10 h-10 text-white" />
               </div>
               <div>
@@ -651,7 +651,7 @@ const ContactSection6 = ({ id }: { id?: string }) => {
               </div>
             </div>
             <div className="flex items-center gap-6 group">
-              <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+              <div className="w-20 h-20 bg-linear-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                 <Clock className="w-10 h-10 text-white" />
               </div>
               <div>
@@ -667,7 +667,7 @@ const ContactSection6 = ({ id }: { id?: string }) => {
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-3xl p-8 sm:p-12">
+          <div className="bg-linear-to-br from-slate-50 to-slate-100 rounded-3xl p-8 sm:p-12">
             <h3 className="text-2xl font-bold text-slate-900 mb-6">أرسل لنا رسالة</h3>
             <form className="space-y-5">
               <div>
@@ -732,7 +732,7 @@ export const contact_sections: SectionOptionType[] = [
     },
     photos: [
       {
-        id: "1",
+        id: "map",
         label: "Background",
         url: "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400",
       },
@@ -755,7 +755,7 @@ export const contact_sections: SectionOptionType[] = [
     },
     photos: [
       {
-        id: "1",
+        id: "background",
         label: "Background",
         url: "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400",
       },

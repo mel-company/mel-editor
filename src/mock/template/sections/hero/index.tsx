@@ -150,7 +150,7 @@ const HeroSection3 = ({
             </>
           )}
           {validPhotos.length > 0 && (
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/40 to-black/20 z-20"></div>
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/40 to-black/20 z-20"></div>
           )}
         </div>
 
@@ -232,7 +232,7 @@ const HeroSection4 = ({
           data-name="fullwidth_image"
           data-title="صورة الخلفية"
         />
-        <div className={`absolute inset-0 ${photoUrl ? "bg-black/50" : "bg-gradient-to-br from-slate-800 to-slate-900"
+        <div className={`absolute inset-0 ${photoUrl ? "bg-black/50" : "bg-linear-to-br from-slate-800 to-slate-900"
           }`}></div>
       </div>
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -331,7 +331,7 @@ export const hero_sections = [
       url: "https://cdn.dribbble.com/userupload/17671963/file/original-3adc590720f59beeb44b8fa8876e4837.jpg?crop=107x0-2529x1816&format=webp&resize=400x300&vertical=center",
     },
     component: HeroSection2,
-    photos: [] as any[], // PhotoItem[] - will be populated when user adds images
+    photos: [{ id: "hero_image", label: "صورة البطل", url: "" }],
     content: [
       {
         id: "title",
@@ -357,7 +357,7 @@ export const hero_sections = [
       url: "https://cdn.dribbble.com/userupload/17671963/file/original-3adc590720f59beeb44b8fa8876e4837.jpg?crop=107x0-2529x1816&format=webp&resize=400x300&vertical=center",
     },
     component: HeroSection3,
-    photos: [] as any[], // PhotoItem[] - will be populated when user adds images
+    photos: [{ id: "carousel_slide_0", label: "شريحة 1", url: "" }],
     content: [
       {
         id: "title",
@@ -383,7 +383,7 @@ export const hero_sections = [
       url: "https://cdn.dribbble.com/userupload/17671963/file/original-3adc590720f59beeb44b8fa8876e4837.jpg?crop=107x0-2529x1816&format=webp&resize=400x300&vertical=center",
     },
     component: HeroSection4,
-    photos: [] as any[], // PhotoItem[] - will be populated when user adds images
+    photos: [{ id: "fullwidth_image", label: "صورة الخلفية", url: "" }],
     content: [
       {
         id: "title",
@@ -409,7 +409,7 @@ export const hero_sections = [
       url: "https://cdn.dribbble.com/userupload/17671963/file/original-3adc590720f59beeb44b8fa8876e4837.jpg?crop=107x0-2529x1816&format=webp&resize=400x300&vertical=center",
     },
     component: HeroSection5,
-    photos: [] as any[], // PhotoItem[] - will be populated when user adds images
+    photos: [{ id: "split_image", label: "صورة القسم", url: "" }],
     content: [
       {
         id: "title",
