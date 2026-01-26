@@ -10,7 +10,13 @@ import {
   convertApiTemplateToTemplateType,
   convertApiPagesToPageTypes,
 } from "../../utils/template-converter";
+import { modernEcommerceTemplate } from "../../mock/templates";
 import { mockProducts } from "../../mock/products";
+
+// ... existing code ...
+
+// Convert API templates to TemplateType
+
 import { hero_sections } from "../../mock/template/sections/hero";
 import { menu_sections } from "../../mock/template/sections/menu";
 import { categories_sections } from "../../mock/template/sections/categories";
@@ -144,9 +150,21 @@ const TemplateSelector = () => {
         const response = await getActiveTemplates();
 
         // Convert API templates to TemplateType
-        const convertedTemplates = response.data.map((apiTemplate) =>
-          convertApiTemplateToTemplateType(apiTemplate)
-        );
+        const convertedTemplates = response.data.map((apiTemplate) => {
+          // Fix for T2 template: Override with local mock data
+          if (apiTemplate.name === "T2" || apiTemplate.name === "Template 2") {
+            return {
+              ...modernEcommerceTemplate,
+              id: apiTemplate.id,
+              title: apiTemplate.name,
+              description: apiTemplate.description || modernEcommerceTemplate.description,
+              thumbnail: {
+                url: apiTemplate.image || modernEcommerceTemplate.thumbnail.url,
+              }
+            };
+          }
+          return convertApiTemplateToTemplateType(apiTemplate);
+        });
 
         setTemplates(convertedTemplates);
       } catch (err) {
@@ -218,6 +236,12 @@ const TemplateSelector = () => {
     try {
       const response = await getActiveTemplates();
       apiTemplateData = response.data.find((t) => t.id === templateId);
+
+      // Fix for T2 template: Ignore API data and force fallback to local override
+      if (apiTemplateData && (apiTemplateData.name === "T2" || apiTemplateData.name === "Template 2")) {
+
+        apiTemplateData = undefined;
+      }
     } catch (err) {
       console.error("Error fetching template details:", err);
     }
@@ -398,23 +422,7 @@ const TemplateSelector = () => {
       });
 
       // Log pages before saving
-      console.log("💾 Saving pages to store:", {
-        pagesCount: initialPages.length,
-        totalSections: initialPages.reduce(
-          (sum, page) => sum + page.sections.length,
-          0
-        ),
-        pages: initialPages.map((page) => ({
-          name: page.name,
-          type: page.type,
-          sectionsCount: page.sections.length,
-          sections: page.sections.map((s) => ({
-            type: s.type,
-            section_id: s.section_id,
-            hasComponent: s.options?.some((o) => o.component) || false,
-          })),
-        })),
-      });
+
 
       // Save template ID to localStorage for later use
       localStorage.setItem("currentTemplateId", templateId);
@@ -426,22 +434,7 @@ const TemplateSelector = () => {
       // Verify pages were saved
       setTimeout(() => {
         const savedPages = usePageStore.getState().pages;
-        console.log("✅ Pages saved to store:", {
-          pagesCount: savedPages.length,
-          totalSections: savedPages.reduce(
-            (sum, page) => sum + page.sections.length,
-            0
-          ),
-          pages: savedPages.map((page) => ({
-            name: page.name,
-            sections: page.sections.map((s) => ({
-              type: s.type,
-              section_id: s.section_id,
-              hasComponent: !!s.options?.find((o) => o.id === s.section_id)
-                ?.component,
-            })),
-          })),
-        });
+
       }, 100);
 
       navigate("/editor");
@@ -632,6 +625,20 @@ const TemplateSelector = () => {
         products: sampleProducts,
       });
       if (homeProducts) homePageSections.push(homeProducts);
+
+      // Add Footer section
+      const homeFooter = createSectionWithVariant("footer", "1", {
+        content: [
+          {
+            id: "text",
+            label: "نص الفوتر",
+            name: "text",
+            type: "textarea",
+            value: "جميع الحقوق محفوظة © 2024",
+          }
+        ]
+      });
+      if (homeFooter) homePageSections.push(homeFooter);
 
       const homePage: PageType = {
         id: crypto.randomUUID(),
@@ -963,27 +970,24 @@ const TemplateSelector = () => {
                     relative group bg-white rounded-3xl overflow-hidden
                     shadow-xl hover:shadow-2xl transition-all duration-300
                     border-2 p-10 text-right transform hover:-translate-y-1
-                    ${
-                      storeSettings.type === "e-commerce"
-                        ? "border-blue-600 ring-4 ring-blue-200 scale-105"
-                        : "border-slate-200 hover:border-blue-400"
+                    ${storeSettings.type === "e-commerce"
+                      ? "border-blue-600 ring-4 ring-blue-200 scale-105"
+                      : "border-slate-200 hover:border-blue-400"
                     }
                   `}
                 >
                   <div className="flex flex-col items-start gap-6">
                     <div
-                      className={`p-5 rounded-2xl transition-colors ${
-                        storeSettings.type === "e-commerce"
-                          ? "bg-blue-600"
-                          : "bg-blue-100 group-hover:bg-blue-200"
-                      }`}
+                      className={`p-5 rounded-2xl transition-colors ${storeSettings.type === "e-commerce"
+                        ? "bg-blue-600"
+                        : "bg-blue-100 group-hover:bg-blue-200"
+                        }`}
                     >
                       <Store
-                        className={`w-10 h-10 ${
-                          storeSettings.type === "e-commerce"
-                            ? "text-white"
-                            : "text-blue-600"
-                        }`}
+                        className={`w-10 h-10 ${storeSettings.type === "e-commerce"
+                          ? "text-white"
+                          : "text-blue-600"
+                          }`}
                       />
                     </div>
 
@@ -1010,27 +1014,24 @@ const TemplateSelector = () => {
                     relative group bg-white rounded-3xl overflow-hidden
                     shadow-xl hover:shadow-2xl transition-all duration-300
                     border-2 p-10 text-right transform hover:-translate-y-1
-                    ${
-                      storeSettings.type === "restaurant"
-                        ? "border-blue-600 ring-4 ring-blue-200 scale-105"
-                        : "border-slate-200 hover:border-blue-400"
+                    ${storeSettings.type === "restaurant"
+                      ? "border-blue-600 ring-4 ring-blue-200 scale-105"
+                      : "border-slate-200 hover:border-blue-400"
                     }
                   `}
                 >
                   <div className="flex flex-col items-start gap-6">
                     <div
-                      className={`p-5 rounded-2xl transition-colors ${
-                        storeSettings.type === "restaurant"
-                          ? "bg-orange-600"
-                          : "bg-orange-100 group-hover:bg-orange-200"
-                      }`}
+                      className={`p-5 rounded-2xl transition-colors ${storeSettings.type === "restaurant"
+                        ? "bg-orange-600"
+                        : "bg-orange-100 group-hover:bg-orange-200"
+                        }`}
                     >
                       <UtensilsCrossed
-                        className={`w-10 h-10 ${
-                          storeSettings.type === "restaurant"
-                            ? "text-white"
-                            : "text-orange-600"
-                        }`}
+                        className={`w-10 h-10 ${storeSettings.type === "restaurant"
+                          ? "text-white"
+                          : "text-orange-600"
+                          }`}
                       />
                     </div>
                     <div>
@@ -1070,10 +1071,9 @@ const TemplateSelector = () => {
                       onClick={() => setStoreType("e-commerce")}
                       className={`
                         flex items-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all duration-200
-                        ${
-                          storeSettings.type === "e-commerce"
-                            ? "bg-blue-600 text-white shadow-lg"
-                            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        ${storeSettings.type === "e-commerce"
+                          ? "bg-blue-600 text-white shadow-lg"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                         }
                       `}
                     >
@@ -1087,10 +1087,9 @@ const TemplateSelector = () => {
                       onClick={() => setStoreType("restaurant")}
                       className={`
                         flex items-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all duration-200
-                        ${
-                          storeSettings.type === "restaurant"
-                            ? "bg-orange-600 text-white shadow-lg"
-                            : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                        ${storeSettings.type === "restaurant"
+                          ? "bg-orange-600 text-white shadow-lg"
+                          : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                         }
                       `}
                     >
@@ -1142,10 +1141,9 @@ const TemplateSelector = () => {
                       relative group bg-white rounded-3xl overflow-hidden
                       shadow-lg hover:shadow-2xl transition-all duration-300
                       border-2 transform hover:-translate-y-1
-                      ${
-                        selectedTemplate === template.id
-                          ? "border-blue-600 ring-4 ring-blue-200 scale-105"
-                          : "border-slate-200 hover:border-blue-400"
+                      ${selectedTemplate === template.id
+                        ? "border-blue-600 ring-4 ring-blue-200 scale-105"
+                        : "border-slate-200 hover:border-blue-400"
                       }
                     `}
                   >
@@ -1217,10 +1215,9 @@ const TemplateSelector = () => {
                         }}
                         className={`
                           w-full py-3.5 rounded-xl font-semibold transition-all duration-200
-                          ${
-                            selectedTemplate === template.id
-                              ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
-                              : "bg-slate-100 text-slate-700 hover:bg-slate-200 hover:shadow-md"
+                          ${selectedTemplate === template.id
+                            ? "bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
+                            : "bg-slate-100 text-slate-700 hover:bg-slate-200 hover:shadow-md"
                           }
                         `}
                       >

@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { StoreType, FileType } from "../../../types";
+import createDbStorage from "../../../utils/db-storage";
 
 type Store = {
   storeSettings: StoreType;
@@ -91,25 +92,7 @@ export const useStoreSettingsStore = create<Store>()(
     }),
     {
       name: "editor-store-settings-storage",
-      storage: {
-        getItem: (name) => {
-          if (typeof window === 'undefined') return null;
-          const str = localStorage.getItem(name);
-          return str ? JSON.parse(str) : null;
-        },
-        setItem: (name, value) => {
-          if (typeof window === 'undefined') return;
-          try {
-            localStorage.setItem(name, JSON.stringify(value));
-          } catch (e) {
-            console.error("Local storage is full, failed to save store settings:", e);
-          }
-        },
-        removeItem: (name) => {
-          if (typeof window === 'undefined') return;
-          localStorage.removeItem(name);
-        },
-      },
+      storage: createJSONStorage(() => createDbStorage()),
     }
   )
 );

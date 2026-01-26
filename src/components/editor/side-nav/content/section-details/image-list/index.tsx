@@ -27,14 +27,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
   );
 
   // Debug logging - only when detectedImages changes
-  console.log('[SectionImageList] Render:', {
-    activeSectionId,
-    detectedImagesCount: detectedImages.length,
-    sectionType: section?.type,
-    sectionId: section?.section_id,
-    isCarousel,
-    sectionPhotosCount: sectionPhotos.length
-  });
+
 
   // Combined list of images to render (detected from DOM or from stored/option photos)
   const imagesToEdit = useMemo(() => {

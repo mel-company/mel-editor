@@ -150,11 +150,7 @@ export const updateTemplate = async (
             is_active: templateData.is_active ?? currentTemplate?.is_active ?? true,
         };
 
-        console.log(`🔄 Updating template: PATCH ${API_BASE_URL}/template/${templateId}`, {
-            name: payload.name,
-            hasBody: !!payload.body,
-            is_active: payload.is_active,
-        });
+
 
         const response = await fetch(`${API_BASE_URL}/template/${templateId}`, {
             method: 'PATCH',
@@ -184,7 +180,7 @@ export const updateTemplate = async (
         }
 
         const data = await response.json();
-        console.log(`✅ Successfully updated template`);
+
         return data;
     } catch (error: any) {
         console.error('Error updating template:', error);

@@ -1,9 +1,21 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TemplateJsonWrapper from "../../components/editor/render/json-wrapper";
 import EditorSideNav from "../../components/editor/side-nav";
+import { Loader2 } from "lucide-react";
 
 const EditorPage = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading delay for better UX
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleNavigate = (view: "editor" | "store" | "dashboard") => {
     if (view === "store") {
@@ -12,6 +24,17 @@ const EditorPage = () => {
       navigate("/dashboard");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+          <p className="text-slate-600 font-medium">جاري تحميل المحرر...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main

@@ -4,12 +4,14 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import { createServer as createViteServer } from 'vite';
 import 'dotenv/config';
+import db from './database.js'; // Import database connection
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProduction = process.argv.includes('--production');
 
 async function createServer() {
     const app = express();
+    app.use(express.json({ limit: '50mb' })); // Parse JSON bodies with increased limit for large store data
 
     let vite;
     if (!isProduction) {
@@ -25,15 +27,30 @@ async function createServer() {
         app.use(express.static(path.resolve(__dirname, 'dist/client')));
     }
 
+    // --- Domain Resolution Layer ---
+    function resolveStore(host) {
+        // Simple mapping for dev verification
+        // localhost:5173 -> store-1 (default)
+        // store2.localhost -> store-2
+        if (host.includes('store2')) {
+            return 'store-2';
+        }
+        return 'store-1'; // Default store
+    }
+
     // --- Data Access Layer ---
-    async function getMockData() {
+    async function getMockData(storeId) {
         if (!isProduction) {
             // In dev, load fresh mocks via Vite to get HMR updates if mocks change
             const mockModule = await vite.ssrLoadModule('/src/mock/server-export.ts');
+
+            // In a real scenario, we would filter mockModule data by storeId here
+            // For now, we return the same mocks but logged the storeId access
+            console.log(`[Server] Fetching data for store: ${storeId}`);
+
             return mockModule;
         } else {
-            // Production fallback (would ideally load from DB or built JSON)
-            // For now, return empty structures or static require if we built them
+            // Production fallback
             return { mockProducts: [], mockCategories: [], mockTemplate: null };
         }
     }
@@ -41,7 +58,9 @@ async function createServer() {
     // --- API Routes ---
     app.get('/api/v1/products', async (req, res) => {
         try {
-            const { mockProducts } = await getMockData();
+            const host = req.headers.host;
+            const storeId = resolveStore(host);
+            const { mockProducts } = await getMockData(storeId);
             res.json({ data: mockProducts });
         } catch (e) {
             console.error('API Error:', e);
@@ -51,7 +70,9 @@ async function createServer() {
 
     app.get('/api/v1/categories', async (req, res) => {
         try {
-            const { mockCategories } = await getMockData();
+            const host = req.headers.host;
+            const storeId = resolveStore(host);
+            const { mockCategories } = await getMockData(storeId);
             res.json({ data: mockCategories });
         } catch (e) {
             console.error('API Error:', e);
@@ -61,7 +82,9 @@ async function createServer() {
 
     app.get('/api/v1/template', async (req, res) => {
         try {
-            const { mockTemplate } = await getMockData();
+            const host = req.headers.host;
+            const storeId = resolveStore(host);
+            const { mockTemplate } = await getMockData(storeId);
             res.json({ data: mockTemplate });
         } catch (e) {
             console.error('API Error:', e);
@@ -69,10 +92,76 @@ async function createServer() {
         }
     });
 
+    // --- Persistence Layer ---
+    app.get('/api/v1/store/:key', (req, res) => {
+        const host = req.headers.host;
+        const storeId = resolveStore(host);
+        const key = req.params.key;
+
+        db.get(`SELECT json FROM stores WHERE store_id = ?`, [storeId], (err, row) => {
+            if (err) {
+                console.error('Database Error:', err);
+                return res.status(500).json({ error: 'Database Error' });
+            }
+            if (!row || !row.json) {
+                return res.json({ data: null });
+            }
+            try {
+                const storeData = JSON.parse(row.json);
+                res.json({ data: storeData[key] || null });
+            } catch (parseErr) {
+                console.error('JSON Parse Error:', parseErr);
+                res.status(500).json({ error: 'Data Corruption' });
+            }
+        });
+    });
+
+    app.post('/api/v1/store/:key', (req, res) => {
+        const host = req.headers.host;
+        const storeId = resolveStore(host);
+        const key = req.params.key;
+        const value = req.body.value;
+
+        // First, get current data to merge
+        db.get(`SELECT json FROM stores WHERE store_id = ?`, [storeId], (err, row) => {
+            if (err) {
+                console.error('Database Read Error:', err);
+                return res.status(500).json({ error: 'Database Error' });
+            }
+
+            let storeData = {};
+            if (row && row.json) {
+                try {
+                    storeData = JSON.parse(row.json);
+                } catch (e) {
+                    console.error('Existing data corrupt, resetting', e);
+                }
+            }
+
+            // Update the specific key
+            storeData[key] = value;
+            const newJson = JSON.stringify(storeData);
+
+            // Upsert the row
+            db.run(`INSERT INTO stores (store_id, template_id, json) VALUES (?, ?, ?)
+                    ON CONFLICT(store_id) DO UPDATE SET json = ?`,
+                [storeId, 'temp-01', newJson, newJson],
+                (updateErr) => {
+                    if (updateErr) {
+                        console.error('Database Write Error:', updateErr);
+                        return res.status(500).json({ error: 'Database Write Error' });
+                    }
+                    res.json({ success: true });
+                }
+            );
+        });
+    });
+
     // --- SSR Handler ---
     // Handle all routes for SSR (Express 5 compatible pattern)
     app.get('/{*path}', async (req, res, next) => {
         const url = req.originalUrl;
+        const host = req.headers.host;
 
         // Skip API requests if they slip through (though app.get above should catch them)
         if (url.startsWith('/api')) {
@@ -80,8 +169,12 @@ async function createServer() {
         }
 
         try {
-            // 1. Fetch SSR data (products, categories, AND template)
-            const { mockProducts, mockCategories, mockTemplate } = await getMockData();
+            // 1. Resolve Store from Domain
+            const storeId = resolveStore(host);
+            console.log(`[SSR] Resolving request for ${host} -> ${storeId}`);
+
+            // 2. Fetch SSR data for this specific store
+            const { mockProducts, mockCategories, mockTemplate } = await getMockData(storeId);
 
             // Construct the SSR payload directly from data source
             // In a real app, we might call our own API functions here or service layer

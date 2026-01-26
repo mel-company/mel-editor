@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { usePageStore, restoreSectionComponents } from "../store/editor/page";
 import { useStoreSettingsStore } from "../store/editor/store-settings";
 import { mockTemplate } from "../mock/template";
-import { Navigation1 } from "../mock/template/sections/navigation";
-import { footer_sections } from "../mock/template/sections/footer";
+// import { Navigation1 } from "../mock/template/sections/navigation";
+// import { footer_sections } from "../mock/template/sections/footer";
 import { getSectionProps } from "../utils/section-props";
 import { SectionType, NavigationFooterType } from "../types";
 import { resolveComponent } from "../utils/component-registry";
@@ -57,14 +57,17 @@ export const useTemplateStructure = () => {
         const activeSettings = (isSSR && templateConfig?.storeSettings) ? templateConfig.storeSettings : storeSettings;
 
         if (activeSettings.type !== "restaurant") {
-            navigation = {
-                Component: Navigation1,
-                props: {
-                    logo: activeSettings.logo,
-                    navigationLinks: activeSettings.header?.navigationLinks,
-                    primaryColor: activeSettings.colors?.primary,
-                },
-            };
+            const navEntry = resolveComponent("navigation", "1");
+            if (navEntry) {
+                navigation = {
+                    Component: navEntry.component,
+                    props: {
+                        logo: activeSettings.logo,
+                        navigationLinks: activeSettings.header?.navigationLinks,
+                        primaryColor: activeSettings.colors?.primary,
+                    },
+                };
+            }
         }
 
         // 2. Sections
@@ -132,6 +135,7 @@ export const useTemplateStructure = () => {
                         if (ssrCategories && ssrCategories.length > 0) {
                             props.categories = ssrCategories;
                         }
+
                     }
 
                     return {
@@ -186,18 +190,55 @@ export const useTemplateStructure = () => {
 
         // 3. Footer
         let footer: NavigationFooterType | null = null;
-        if (
+
+        // 3.1. PROPOSED FIX: Check for explicit footer section in the current page first
+        // This ensures that what is seen in the section list is what is rendered
+        const footerSection = currentPage?.sections.find((s: any) => s.type === "footer");
+
+        if (footerSection) {
+            const footerVariant = footerSection.section_id || "1";
+            const registryEntry = resolveComponent("footer", footerVariant);
+
+            if (registryEntry) {
+                // hydration logic for footer section content
+                // Merge stored content into props
+                const selectedOption = footerSection.options?.find((o: any) => o.id === footerVariant);
+                const extractedProps: any = {};
+
+                if (selectedOption?.content && Array.isArray(selectedOption.content)) {
+                    selectedOption.content.forEach((item: any) => {
+                        if (item.value) extractedProps[item.name] = item.value;
+                    });
+                }
+
+                footer = {
+                    Component: registryEntry.component,
+                    props: {
+                        logo: storeSettings.logo,
+                        text: extractedProps.text || storeSettings.footer?.text,
+                        title: storeSettings.footer?.title,
+                        description: storeSettings.footer?.description,
+                        contactInfo: storeSettings.footer?.contactInfo,
+                        navigationLinks: storeSettings.header?.navigationLinks,
+                        socialLinks: storeSettings.footer?.socialLinks,
+                        styles: storeSettings.footer?.styles,
+                    },
+                };
+            }
+        }
+        // 3.2. Fallback to storeSettings if no footer section is present (Legacy/Global behavior)
+        else if (
             storeSettings.type !== "restaurant" &&
             storeSettings.footer?.showFooter !== false
         ) {
             const footerVariant = storeSettings.footer?.footerVariant || "1";
-            const variantIndex = footerVariant ? parseInt(footerVariant) - 1 : 0;
-            const FooterComponent =
-                footer_sections[variantIndex]?.component || footer_sections[0]?.component;
+            // const variantIndex = footerVariant ? parseInt(footerVariant) - 1 : 0;
+            // Use resolveComponent instead of array index
+            const registryEntry = resolveComponent("footer", footerVariant);
 
-            if (FooterComponent) {
+            if (registryEntry) {
                 footer = {
-                    Component: FooterComponent,
+                    Component: registryEntry.component,
                     props: {
                         logo: storeSettings.logo,
                         text: storeSettings.footer?.text,

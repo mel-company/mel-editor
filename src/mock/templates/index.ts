@@ -4,6 +4,7 @@ import { hero_sections } from "../template/sections/hero";
 import { navigation_sections } from "../template/sections/navigation";
 import { recent_products_sections } from "../template/sections/recent-products";
 import { menu_sections } from "../template/sections/menu";
+import { footer_sections } from "../template/sections/footer";
 import { mockProducts } from "../products";
 
 // Mock data for templates
@@ -240,6 +241,13 @@ export const modernEcommerceTemplate: TemplateType = {
         createProductsSection("2", "أحدث المنتجات", sampleProducts) || recent_products_sections[1],
       ],
       editable: true,
+    },
+    {
+      id: "4",
+      section_id: "1", // Footer - Dark Gradient
+      type: "footer",
+      editable: true,
+      options: footer_sections,
     },
   ],
 };

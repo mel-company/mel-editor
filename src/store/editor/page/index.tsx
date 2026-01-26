@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
+import createDbStorage from "../../../utils/db-storage";
 import { PageType, SectionType } from "../../../types";
 import { navigation_sections } from "../../../mock/template/sections/navigation";
 import { hero_sections } from "../../../mock/template/sections/hero";
@@ -35,7 +36,7 @@ const sectionTypesMap: Record<string, any[]> = {
 
 // Function to restore components in sections after loading from localStorage
 export const restoreSectionComponents = (pages: PageType[]): PageType[] => {
-  console.log("🔄 Restoring components for pages:", pages.length);
+
 
   return pages.map((page) => {
     const restoredSections = page.sections.map((section) => {
@@ -47,7 +48,7 @@ export const restoreSectionComponents = (pages: PageType[]): PageType[] => {
 
       // If section has no options or options array is empty, restore from section definitions
       if (!section.options || section.options.length === 0) {
-        console.log(`📦 Restoring empty options for section type: ${section.type}`);
+
         return {
           ...section,
           options: sectionOptions,
@@ -104,7 +105,7 @@ export const restoreSectionComponents = (pages: PageType[]): PageType[] => {
       return sanitizedSection;
     });
 
-    console.log(`✅ Restored page: ${page.name} with ${restoredSections.length} sections`);
+
 
     return {
       ...page,
@@ -187,30 +188,11 @@ export const usePageStore = create<Store>()(
     }),
     {
       name: "editor-pages-storage",
-      storage: {
-        getItem: (name) => {
-          if (typeof window === 'undefined') return null;
-          const str = localStorage.getItem(name);
-          if (!str) return null;
-          const parsed = JSON.parse(str);
-          // Restore components in pages after loading from localStorage
-          if (parsed?.state?.pages) {
-            parsed.state.pages = restoreSectionComponents(parsed.state.pages);
-          }
-          return parsed;
-        },
-        setItem: (name, value) => {
-          if (typeof window === 'undefined') return;
-          try {
-            localStorage.setItem(name, JSON.stringify(value));
-          } catch (e) {
-            console.error("Local storage is full, failed to save pages:", e);
-          }
-        },
-        removeItem: (name) => {
-          if (typeof window === 'undefined') return;
-          localStorage.removeItem(name)
-        },
+      storage: createJSONStorage(() => createDbStorage()),
+      onRehydrateStorage: () => (state) => {
+        if (state && state.pages) {
+          state.pages = restoreSectionComponents(state.pages);
+        }
       },
     }
   )

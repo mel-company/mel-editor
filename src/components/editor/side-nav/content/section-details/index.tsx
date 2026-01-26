@@ -42,18 +42,7 @@ const EditorSectionDetails = () => {
     [detectedImages.length, section?.photos, option?.photos]
   );
 
-  console.log('[EditorSectionDetails] Debug Info:', {
-    hasImages,
-    hasContent,
-    detectedImagesLength: detectedImages.length,
-    optionContent: option?.content,
-    optionPhotos: option?.photos,
-    sectionPhotos: section?.photos,
-    sectionType: section?.type,
-    sectionId: section?.section_id,
-    isProductSection,
-    isCategorySection
-  });
+
 
   // Determine default tab based on available content
   const getDefaultTab = useMemo(() => {

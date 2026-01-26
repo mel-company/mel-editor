@@ -26,13 +26,7 @@ const RenderTemplate = () => {
   // Debug: Log sections for troubleshooting
   useEffect(() => {
     if (sections) {
-      console.log("📄 Current page sections:", {
-        totalSections: sections.length,
-        sections: sections.map((s) => ({
-          type: s.type,
-          section_id: s.id,
-        })),
-      });
+
     }
   }, [sections]);
 
@@ -222,7 +216,9 @@ const RenderTemplate = () => {
                     } as React.CSSProperties
                   }
                 >
-                  <Component {...props} />
+                  <React.Suspense fallback={<div className="p-8 text-center text-slate-400 bg-slate-50 animate-pulse rounded-lg">Loading Section...</div>}>
+                    <Component {...props} />
+                  </React.Suspense>
                 </div>
               );
             })

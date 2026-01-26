@@ -190,15 +190,7 @@ const convertApiSectionToSectionType = (apiSection: any): SectionType | null => 
     }
   }
 
-  console.log(`🔍 Section conversion:`, {
-    originalId: originalSectionId,
-    mappedId: sectionIdStr,
-    type: sectionType,
-    found: !!selectedOption,
-    optionId: selectedOption?.id,
-    hasComponent: !!selectedOption?.component,
-    availableIds: options.map(o => o.id),
-  });
+
 
   if (!selectedOption) {
     console.error(`❌ No option found for section type ${sectionType}`);
@@ -263,7 +255,7 @@ const convertApiSectionToSectionType = (apiSection: any): SectionType | null => 
     return opt;
   });
 
-  console.log(`✅ Converted section: ${sectionType} (id: ${sectionIdStr}), options: ${allOptions.length}, hasComponent: ${!!mergedOption.component}`);
+
 
   // CRITICAL: section_id MUST match the id of the selected option for rendering to work
   return {
@@ -369,7 +361,7 @@ export const convertApiPagesToPageTypes = (
   apiPages: any[],
   templateId: string
 ): PageType[] => {
-  console.log("🔄 Converting API pages to PageType:", { pagesCount: apiPages.length, templateId });
+
 
   return apiPages
     .filter((apiPage) => {
@@ -382,7 +374,7 @@ export const convertApiPagesToPageTypes = (
     .map((apiPage) => {
       const sections: SectionType[] = [];
 
-      console.log(`📄 Processing page: "${apiPage.title || apiPage.id}" (${apiPage.sections.length} sections)`);
+
 
       // Process each section in the page
       apiPage.sections.forEach((apiSection: any, index: number) => {
@@ -391,11 +383,11 @@ export const convertApiPagesToPageTypes = (
           return;
         }
 
-        console.log(`  📦 Section ${index + 1}: type="${apiSection.type}", id="${apiSection.id}"`);
+
 
         const section = convertApiSectionToSectionType(apiSection);
         if (section) {
-          console.log(`  ✅ Converted successfully: ${section.type} (section_id: ${section.section_id}, options: ${section.options.length})`);
+
           sections.push({
             ...section,
             target_id: crypto.randomUUID(),
@@ -409,7 +401,7 @@ export const convertApiPagesToPageTypes = (
       const pageName = apiPage.title || apiPage.name || apiPage.id || "صفحة";
       const pageType = mapPageType(apiPage.id || apiPage.route || pageName);
 
-      console.log(`✅ Created page: "${pageName}" (${pageType}) with ${sections.length} sections\n`);
+
 
       return {
         id: crypto.randomUUID(),

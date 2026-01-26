@@ -155,7 +155,7 @@ export const getSectionProps = (
     }
 
     if (section.type === 'contact') {
-        console.log("getSectionProps CONTACT:", { sectionId: section.id, props });
+
     }
     return props;
 };

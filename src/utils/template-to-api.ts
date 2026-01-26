@@ -10,15 +10,33 @@ export const convertEditorToApiFormat = (templateId: string) => {
   const { pages } = usePageStore.getState();
   const { storeSettings } = useStoreSettingsStore.getState();
 
-  console.log("🔄 Converting editor state to API format:", {
-    pagesCount: pages.length,
-    totalSections: pages.reduce((sum, page) => sum + page.sections.length, 0),
-  });
 
+  // Find footer section content across all pages
+  let footerSectionContent: any = null;
+  pages.forEach(page => {
+    const footerSection = page.sections.find(s => s.type === "footer");
+    if (footerSection) {
+      const selectedOption = footerSection.options?.find(opt => opt.id === footerSection.section_id);
+      if (selectedOption?.content) {
+        // Helper to safely get content as array
+        // Use the same safegaurd as established earlier for contentItems
+        const items = (Array.isArray(selectedOption.content))
+          ? selectedOption.content
+          : [];
+
+        footerSectionContent = {};
+        items.forEach((item: any) => {
+          if (item.value) {
+            footerSectionContent[item.name] = item.value;
+          }
+        });
+      }
+    }
+  });
   // Convert pages back to API format
   const apiPages = pages.map((page) => {
-    console.log(`📄 Converting page: "${page.name}" with ${page.sections.length} sections`);
-    
+
+
     const apiSections = page.sections
       .filter((section) => {
         // Filter out navigation and footer sections (they're in UI, not pages)
@@ -38,87 +56,93 @@ export const convertEditorToApiFormat = (templateId: string) => {
           return null;
         }
 
-      // Convert section to API format
-      const apiSection: any = {
-        id: section.section_id,
-        type: section.type,
-        enabled: section.editable !== false,
-        style: section.styles || {},
-      };
 
-      // Add content based on section type
-      if (selectedOption.content && Array.isArray(selectedOption.content)) {
-        const contentObj: any = {};
-        selectedOption.content.forEach((item: any) => {
-          if (item.value !== undefined && item.value !== null) {
-            contentObj[item.name] = item.value;
-          }
-        });
-        if (Object.keys(contentObj).length > 0) {
-          apiSection.content = contentObj;
-        }
-      }
+        // Helper to safely get content as array
+        const contentItems = (selectedOption.content && Array.isArray(selectedOption.content))
+          ? selectedOption.content
+          : [];
 
-      // Add photos
-      if (selectedOption.photos && selectedOption.photos.length > 0) {
-        // For carousel sections, convert photos to slides
-        if (section.type === "carouselHero" || section.type === "hero") {
-          apiSection.slides = selectedOption.photos.map((photo: any, index: number) => ({
-            id: photo.id || `slide-${index + 1}`,
-            title: selectedOption.content?.find((c: any) => c.name === "title")?.value || "",
-            subtitle: selectedOption.content?.find((c: any) => c.name === "description")?.value || "",
-            backgroundImage: photo.url || photo.base64Content,
-            style: {
-              color: "#FFFFFF",
-              textShadow: "0 4px 20px rgba(0,0,0,0.6)",
-            },
-            overlay: "rgba(0,0,0,0.45)",
-          }));
-        } else {
-          apiSection.photos = selectedOption.photos;
-        }
-      }
-
-      // Add products if available
-      if (selectedOption.products && selectedOption.products.length > 0) {
-        apiSection.products = selectedOption.products;
-      }
-
-      // Add categories if available
-      if (selectedOption.categories && selectedOption.categories.length > 0) {
-        apiSection.categories = selectedOption.categories;
-      }
-
-      // Add specific properties based on section type
-      if (section.type === "productGrid" || section.type === "recentProducts") {
-        apiSection.request = "getProducts";
-        apiSection.requestParams = {
-          limit: 8,
-          featured: true,
+        // Convert section to API format
+        const apiSection: any = {
+          id: section.section_id,
+          type: section.type,
+          enabled: section.editable !== false,
+          style: section.styles || {},
         };
-      }
 
-      if (section.type === "categoryGrid" || section.type === "categories") {
-        apiSection.request = "getCategories";
-      }
+        // Add content based on section type
+        if (selectedOption.content && Array.isArray(selectedOption.content)) {
+          const contentObj: any = {};
+          selectedOption.content.forEach((item: any) => {
+            if (item.value !== undefined && item.value !== null) {
+              contentObj[item.name] = item.value;
+            }
+          });
+          if (Object.keys(contentObj).length > 0) {
+            apiSection.content = contentObj;
+          }
+        }
 
-      // Add title and subtitle if available
-      const titleContent = selectedOption.content?.find((c: any) => c.name === "title");
-      const descriptionContent = selectedOption.content?.find((c: any) => c.name === "description");
+        // Add photos
+        if (selectedOption.photos && selectedOption.photos.length > 0) {
+          // For carousel sections, convert photos to slides
+          if (section.type === "carouselHero" || section.type === "hero") {
+            apiSection.slides = selectedOption.photos.map((photo: any, index: number) => ({
+              id: photo.id || `slide-${index + 1}`,
+              title: contentItems.find((c: any) => c.name === "title")?.value || "",
+              subtitle: contentItems.find((c: any) => c.name === "description")?.value || "",
+              backgroundImage: photo.url || photo.base64Content,
+              style: {
+                color: "#FFFFFF",
+                textShadow: "0 4px 20px rgba(0,0,0,0.6)",
+              },
+              overlay: "rgba(0,0,0,0.45)",
+            }));
+          } else {
+            apiSection.photos = selectedOption.photos;
+          }
+        }
 
-      if (titleContent?.value) {
-        apiSection.title = titleContent.value;
-      }
-      if (descriptionContent?.value) {
-        apiSection.subtitle = descriptionContent.value;
-      }
+        // Add products if available
+        if (selectedOption.products && selectedOption.products.length > 0) {
+          apiSection.products = selectedOption.products;
+        }
 
-        console.log(`  ✅ Converted section: ${section.type} (id: ${section.section_id})`);
+        // Add categories if available
+        if (selectedOption.categories && selectedOption.categories.length > 0) {
+          apiSection.categories = selectedOption.categories;
+        }
+
+        // Add specific properties based on section type
+        if (section.type === "productGrid" || section.type === "recentProducts") {
+          apiSection.request = "getProducts";
+          apiSection.requestParams = {
+            limit: 8,
+            featured: true,
+          };
+        }
+
+        if (section.type === "categoryGrid" || section.type === "categories") {
+          apiSection.request = "getCategories";
+        }
+
+        // Add title and subtitle if available
+        const titleContent = contentItems.find((c: any) => c.name === "title");
+        const descriptionContent = contentItems.find((c: any) => c.name === "description");
+
+        if (titleContent?.value) {
+          apiSection.title = titleContent.value;
+        }
+        if (descriptionContent?.value) {
+          apiSection.subtitle = descriptionContent.value;
+        }
+
+
         return apiSection;
       })
       .filter(Boolean); // Remove null sections
 
-    console.log(`✅ Page "${page.name}": ${apiSections.length} sections converted`);
+
 
     return {
       id: page.id,
@@ -132,10 +156,7 @@ export const convertEditorToApiFormat = (templateId: string) => {
     };
   });
 
-  console.log("✅ Conversion complete:", {
-    pagesCount: apiPages.length,
-    totalSections: apiPages.reduce((sum, page) => sum + (page.sections?.length || 0), 0),
-  });
+
 
   // Build the complete API body structure
   const apiBody = {
@@ -164,7 +185,7 @@ export const convertEditorToApiFormat = (templateId: string) => {
           links: [{ label: link.label, route: link.url }],
         })) || [],
         bottomBar: {
-          text: storeSettings.footer?.text || "",
+          text: footerSectionContent?.text || storeSettings.footer?.text || "",
           links: [],
         },
       },

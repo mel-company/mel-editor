@@ -31,29 +31,22 @@ const ExportButton = () => {
 
     try {
       setSaving(true);
-      console.log("🔄 Starting save process...");
+
 
       // Convert all pages and sections to API format
-      console.log("📦 Converting editor data to API format...");
+
       const apiData = convertEditorToApiFormat(templateId);
 
-      console.log("💾 Saving template to database:", {
-        templateId,
-        pagesCount: apiData.body.pages.length,
-        totalSections: apiData.body.pages.reduce(
-          (sum: number, page: any) => sum + (page.sections?.length || 0),
-          0
-        ),
-      });
+
 
       // Always update the same template (not create new)
       // Pass body only, name/description/image will be fetched from current template
-      console.log("📤 Sending update request...");
+
       await updateTemplate(templateId, {
         body: apiData.body,
       });
 
-      console.log("✅ Save completed successfully");
+
       alert("✅ تم حفظ جميع التعديلات والأقسام بنجاح في الداتابيس!");
     } catch (error: any) {
       console.error("❌ Error updating template:", error);
@@ -63,7 +56,7 @@ const ExportButton = () => {
       alert(`❌ خطأ في حفظ التعديلات:\n\n${errorMessage}\n\nيرجى:\n1. التحقق من اتصال الإنترنت\n2. التحقق من حالة الخادم\n3. المحاولة مرة أخرى`);
     } finally {
       setSaving(false);
-      console.log("🏁 Save process finished");
+
     }
   };
 
@@ -101,10 +94,10 @@ const ExportButton = () => {
             // Dynamically import to split bundle if needed, or just call directly
             const { generateProjectZip } = await import("../../../../utils/project-exporter");
 
-            console.log("🏗️ Starting project generation...");
+
             await generateProjectZip(templateData);
 
-            console.log("✅ Project zip generated and download triggered");
+
             alert("✅ تم بناء المشروع وتحميله بنجاح!\n\nقم بفك الضغط وتشغيل:\n1. npm install\n2. npm run dev");
           } catch (e) {
             console.error("Build failed", e);
