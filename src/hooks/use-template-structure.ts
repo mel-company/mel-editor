@@ -59,8 +59,17 @@ export const useTemplateStructure = () => {
 
     const storeSettings = (isSSR && templateConfig?.storeSettings) ? templateConfig.storeSettings : storeStoreSettings;
 
-    // For SSR, default to the first page if multiple exist
-    const currentPageId = (isSSR && pages.length > 0) ? pages[0].id : storeCurrentPageId;
+    // For SSR or if store ID is invalid, default to the first available page
+    const currentPageId = useMemo(() => {
+        if (isSSR && pages.length > 0) return pages[0].id;
+
+        const pageExists = pages.some(p => p.id === storeCurrentPageId);
+        if (!pageExists && pages.length > 0) {
+            return pages[0].id;
+        }
+
+        return storeCurrentPageId;
+    }, [isSSR, pages, storeCurrentPageId]);
 
     const structure = useMemo(() => {
         const page = pages.find((p) => p.id === currentPageId);

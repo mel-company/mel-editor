@@ -33,16 +33,18 @@ const SSRDataContext = createContext<SSRDataContextValue>({
 export function SSRDataProvider({
     children,
     initialData,
+    isSSR = true,
 }: {
     children: ReactNode;
     initialData: SSRData;
+    isSSR?: boolean;
 }) {
     const value: SSRDataContextValue = {
         products: initialData.products || [],
         categories: initialData.categories || [],
         template: initialData.template || null,
         templateConfig: initialData.templateConfig,
-        isSSR: true,
+        isSSR: isSSR,
     };
 
     return (

@@ -3,10 +3,20 @@ import { useNavigate } from "react-router-dom";
 import TemplateJsonWrapper from "../../components/editor/render/json-wrapper";
 import EditorSideNav from "../../components/editor/side-nav";
 import { Loader2 } from "lucide-react";
+import { usePageStore } from "../../store/editor/page";
 
 const EditorPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const currentPageId = usePageStore((state) => state.currentPageId);
+
+  useEffect(() => {
+    if (currentPageId) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("pageId", currentPageId);
+      window.history.replaceState({}, "", url);
+    }
+  }, [currentPageId]);
 
   useEffect(() => {
     // Simulate loading delay for better UX

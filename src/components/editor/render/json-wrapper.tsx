@@ -3,6 +3,7 @@ import RenderTemplate from "./index";
 import { reactToJSON } from "../../../utils/react-to-json";
 import { generateCodeFromJSON } from "../../../utils/json-to-code";
 import { useTemplateStructure } from "../../../hooks/use-template-structure";
+import { HydratedSection } from "../../../types";
 
 const TemplateJsonWrapper = () => {
     const { navigation, sections, footer } = useTemplateStructure();
@@ -21,7 +22,7 @@ const TemplateJsonWrapper = () => {
             }
 
             // 2. Sections Nodes
-            const sectionNodes = sections.map((section) => {
+            const sectionNodes = sections.map((section: HydratedSection) => {
                 const { Component, props, id } = section;
                 return <Component key={id} {...props} />;
             });

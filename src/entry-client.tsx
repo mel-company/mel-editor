@@ -17,7 +17,15 @@ if (templateConfig) {
     if (templateConfig.pages) {
         usePageStore.getState().setPages(templateConfig.pages);
         if (templateConfig.pages.length > 0) {
-            usePageStore.getState().setCurrentPageId(templateConfig.pages[0].id);
+            const searchParams = new URLSearchParams(window.location.search);
+            const urlPageId = searchParams.get('pageId');
+            const isValidUrlPageId = urlPageId && templateConfig.pages.some((p: any) => p.id === urlPageId);
+
+            if (isValidUrlPageId && urlPageId) {
+                usePageStore.getState().setCurrentPageId(urlPageId);
+            } else {
+                usePageStore.getState().setCurrentPageId(templateConfig.pages[0].id);
+            }
         }
     }
     if (templateConfig.storeSettings) {
@@ -31,7 +39,7 @@ delete (window as any).__SSR_DATA__;
 hydrateRoot(
     document.getElementById('root')!,
     <React.StrictMode>
-        <SSRDataProvider initialData={ssrData}>
+        <SSRDataProvider initialData={ssrData} isSSR={false}>
             <BrowserRouter>
                 <App />
             </BrowserRouter>

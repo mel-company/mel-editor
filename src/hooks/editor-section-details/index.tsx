@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSectionStore } from "../../store/editor/section";
 import { usePageStore } from "../../store/editor/page";
-import { FileType, SectionOptionType } from "../../types";
+import { FileType, SectionOptionType, HydratedSection } from "../../types";
 import { resolveComponent } from "../../utils/component-registry";
 import { useDomScannerEffect } from "./use-dom-scanner";
 
@@ -19,7 +19,7 @@ const useSectionDetails = () => {
   // but processedSections use id (which is section.id || section.section_id)
   // So we need to match against the original section's target_id
   const processedSection = processedSections?.find(
-    (s) => {
+    (s: HydratedSection) => {
       const original = s.originalSection;
       return original.target_id === activeSectionId ||
         original.id === activeSectionId ||
@@ -34,7 +34,7 @@ const useSectionDetails = () => {
   // Resolution Logic:
   // 1. Try standard options
   let option = section?.options?.find(
-    (option) => option.id === section.section_id
+    (option: SectionOptionType) => option.id === section.section_id
   );
 
   // State to store auto-detected schema from DOM
@@ -133,7 +133,7 @@ const useSectionDetails = () => {
 
   const updateSectionOptions = (option: Partial<SectionOptionType>) => {
     if (!section) return;
-    const newOptions = section.options?.map((op) => {
+    const newOptions = section.options?.map((op: SectionOptionType) => {
       if (op.id === section.section_id) {
         return { ...op, ...option };
       }
@@ -205,7 +205,7 @@ const useSectionDetails = () => {
     };
 
     // Update both options (for immediate view) and content (for persistence/fallback)
-    const newOptions = section.options?.map((op) => {
+    const newOptions = section.options?.map((op: SectionOptionType) => {
       if (op.id === section.section_id) {
         return { ...op, content: newOptionContent };
       }
@@ -248,7 +248,7 @@ const useSectionDetails = () => {
     };
 
     // Update section.photos directly (Primary storage now)
-    const newOptions = section.options?.map((op) => {
+    const newOptions = section.options?.map((op: SectionOptionType) => {
       if (op.id === section.section_id) {
         return { ...op, photos: currentPhotos };
       }
@@ -266,7 +266,7 @@ const useSectionDetails = () => {
     handleTextChange,
     handleUploadImage,
     section,
-    sections: processedSections?.map(s => s.originalSection) || [],
+    sections: processedSections?.map((s: HydratedSection) => s.originalSection) || [],
     setSection,
     removeSection,
     option,
