@@ -4,6 +4,7 @@ import React from "react";
 import { useSectionStore } from "../../../store/editor/section";
 import { usePageStore } from "../../../store/editor/page";
 import { useTemplateStructure } from "../../../hooks/use-template-structure";
+import { HydratedSection } from "../../../types";
 
 const RenderTemplate = () => {
   const {
@@ -42,7 +43,7 @@ const RenderTemplate = () => {
 
     // Small delay to ensure DOM is fully rendered
     const timeoutId = setTimeout(() => {
-      sections.forEach((sectionData) => {
+      sections.forEach((sectionData: HydratedSection) => {
         const { id, originalSection } = sectionData;
         const sectionElement =
           (document.querySelector(
@@ -136,7 +137,7 @@ const RenderTemplate = () => {
               لا توجد أقسام في هذه الصفحة
             </div>
           ) : (
-            sections.map((sectionData) => {
+            sections.map((sectionData: HydratedSection) => {
               const { Component, props, id, originalSection } = sectionData;
               const sectionStyles = originalSection.styles || {};
 

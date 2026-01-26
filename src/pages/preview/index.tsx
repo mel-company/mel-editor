@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PreviewRenderer from "../../components/preview/preview-renderer";
+import createDbStorage from "../../utils/db-storage";
+import { defaultStoreSettings } from "../../store/editor/store-settings";
 
 const PreviewPage = () => {
     const [data, setData] = useState<{ pages: any; storeSettings: any } | null>(
@@ -8,16 +10,76 @@ const PreviewPage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        try {
-            const storedData = localStorage.getItem("built-template-data");
-            if (storedData) {
-                setData(JSON.parse(storedData));
+        const loadData = async () => {
+            try {
+                const storage = createDbStorage();
+
+                // Fetch raw strings from DB
+                const [pagesRaw, settingsRaw] = await Promise.all([
+                    storage.getItem("editor-pages-storage"),
+                    storage.getItem("editor-store-settings-storage")
+                ]);
+
+                let foundData = false;
+
+                if (pagesRaw || settingsRaw) {
+                    let pagesData = null;
+                    let settingsData = null;
+
+                    try { if (pagesRaw) pagesData = JSON.parse(pagesRaw); } catch (e) { console.error("Error parsing pages", e); }
+                    try { if (settingsRaw) settingsData = JSON.parse(settingsRaw); } catch (e) { console.error("Error parsing settings", e); }
+
+                    const pages = pagesData?.state?.pages || [];
+                    const settings = settingsData?.state?.storeSettings || defaultStoreSettings;
+
+                    // Only consider it found if we have at least one valid source or defaulted safely
+                    // We need at least one page usually, but if pagesRaw was present but empty, it's valid empty state.
+                    // If everything is missing, we fall through.
+
+                    if (pagesData || settingsData) {
+                        setData({
+                            pages: pages,
+                            storeSettings: settings
+                        });
+                        foundData = true;
+                    }
+                }
+
+                // Fallback to localStorage if DB empty
+                if (!foundData) {
+                    console.log("No DB data found, trying localStorage fallbacks...");
+
+                    // Try legacy "built" data
+                    const legacyBuild = localStorage.getItem("built-template-data");
+                    if (legacyBuild) {
+                        setData(JSON.parse(legacyBuild));
+                        foundData = true;
+                    } else {
+                        // Try legacy persist keys
+                        const legacyPages = localStorage.getItem("editor-pages-storage");
+                        const legacySettings = localStorage.getItem("editor-store-settings-storage");
+
+                        if (legacyPages && legacySettings) {
+                            const pData = JSON.parse(legacyPages);
+                            const sData = JSON.parse(legacySettings);
+                            if (pData?.state?.pages && sData?.state?.storeSettings) {
+                                setData({
+                                    pages: pData.state.pages,
+                                    storeSettings: sData.state.storeSettings
+                                });
+                                foundData = true;
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to load build data", e);
+            } finally {
+                setLoading(false);
             }
-        } catch (e) {
-            console.error("Failed to load build data", e);
-        } finally {
-            setLoading(false);
-        }
+        };
+
+        loadData();
     }, []);
 
     if (loading) {
@@ -49,17 +111,16 @@ const PreviewPage = () => {
                         </svg>
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                        No Build Found
+                        No Data Found
                     </h2>
                     <p className="text-gray-600 mb-6">
-                        Please go back to the editor and click the <strong>"Build"</strong>{" "}
-                        button to generate a new preview.
+                        Could not load editor data. Please check if your changes are saved.
                     </p>
                     <a
-                        href="/"
+                        href="/editor"
                         className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
-                        Go to Editor
+                        Return to Editor
                     </a>
                 </div>
             </div>

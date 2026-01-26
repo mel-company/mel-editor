@@ -197,3 +197,11 @@ export type NavigationFooterType = {
   Component: React.ComponentType<any>;
   props: Record<string, any>;
 };
+
+export interface HydratedSection {
+  id: any;
+  type: string;
+  Component: React.ComponentType<any>;
+  props: any;
+  originalSection: SectionType;
+}

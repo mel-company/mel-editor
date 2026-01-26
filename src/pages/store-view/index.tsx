@@ -9,7 +9,7 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 const StoreViewPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { pages, currentPageId, storeSettings } = useTemplateStructure();
+  const { pages, currentPageId, storeSettings, isLoading } = useTemplateStructure();
   const { setCurrentPageId } = usePageStore();
   const [viewPageId, setViewPageId] = useState(currentPageId || pages[0]?.id);
   const isCartPage = location.pathname === "/store-view/cart" || location.pathname === "/cart";
@@ -24,6 +24,20 @@ const StoreViewPage = () => {
   const handlePageChange = (pageId: string) => {
     setViewPageId(pageId);
   };
+
+
+
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white" dir="rtl">
+        <div className="flex flex-col items-center">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-gray-500">جاري تحميل المتجر...</p>
+        </div>
+      </div>
+    );
+  }
 
   // If no pages, redirect to template selector
   if (pages.length === 0) {

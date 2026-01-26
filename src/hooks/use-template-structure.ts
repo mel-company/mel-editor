@@ -1,22 +1,15 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { usePageStore, restoreSectionComponents } from "../store/editor/page";
 import { useStoreSettingsStore } from "../store/editor/store-settings";
 import { mockTemplate } from "../mock/template";
 // import { Navigation1 } from "../mock/template/sections/navigation";
 // import { footer_sections } from "../mock/template/sections/footer";
 import { getSectionProps } from "../utils/section-props";
-import { SectionType, NavigationFooterType } from "../types";
+import { SectionType, NavigationFooterType, HydratedSection } from "../types";
 import { resolveComponent } from "../utils/component-registry";
 import { useSSRProducts, useSSRCategories, useSSRData } from "../context/ssr-data-context";
 
 
-interface HydratedSection {
-    id: any;
-    type: string;
-    Component: any;
-    props: any;
-    originalSection: SectionType;
-}
 
 export const useTemplateStructure = () => {
     const { pages: storePages, currentPageId: storeCurrentPageId } = usePageStore();
@@ -26,6 +19,32 @@ export const useTemplateStructure = () => {
     const { isSSR, templateConfig } = useSSRData();
     const ssrProducts = useSSRProducts();
     const ssrCategories = useSSRCategories();
+
+    // Hydration state
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const checkHydration = () => {
+            const isPagesHydrated = usePageStore.persist.hasHydrated();
+            const isSettingsHydrated = useStoreSettingsStore.persist.hasHydrated();
+            if (isPagesHydrated && isSettingsHydrated) {
+                setIsLoading(false);
+            }
+        };
+
+        checkHydration();
+
+        const unsubPages = usePageStore.persist.onFinishHydration(() => checkHydration());
+        const unsubSettings = useStoreSettingsStore.persist.onFinishHydration(() => checkHydration());
+
+        return () => {
+            // Depending on Zustand version, onFinishHydration usually returns unsubscribe
+            if (typeof unsubPages === 'function') unsubPages();
+            if (typeof unsubSettings === 'function') unsubSettings();
+        };
+    }, []);
+
+
 
     // Determine source of truth: SSR/injected config vs Client Store
     const rawPages = (isSSR && templateConfig?.pages) ? templateConfig.pages : storePages;
@@ -282,5 +301,5 @@ export const useTemplateStructure = () => {
         };
     }, [pages, currentPageId, storeSettings, ssrProducts, ssrCategories]);
 
-    return structure;
+    return { ...structure, isLoading };
 };

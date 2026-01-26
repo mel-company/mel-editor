@@ -15,7 +15,7 @@ type Store = {
   setFonts: (fonts: { heading: string; body: string }) => void;
 };
 
-const defaultStoreSettings: StoreType = {
+export const defaultStoreSettings: StoreType = {
   logo: {},
   name: "",
   description: "",
