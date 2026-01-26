@@ -3,10 +3,10 @@ import './index.css';
 import { hydrateRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
-import { SSRDataProvider, SSRData } from './context/ssr-data-context';
+import { SSRDataProvider, SSRData } from './shared/context/ssr-data-context';
 
-import { usePageStore } from './store/editor/page';
-import { useStoreSettingsStore } from './store/editor/store-settings';
+import { usePageStore } from './shared/store/editor/page';
+import { useStoreSettingsStore } from './shared/store/editor/store-settings';
 
 // Get SSR data injected by server
 const fullSSRData: SSRData = (window as any).__SSR_DATA__ || { products: [], categories: [], template: null };

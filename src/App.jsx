@@ -1,15 +1,15 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import TemplateSelector from './pages/template-selector'
-import EditorPage from "./pages/editor";
-import StoreViewPage from "./pages/store-view";
-import Dashboard from "./pages/dashboard";
-import ProductDetailPage from "./pages/product-detail";
-import CartPage from "./pages/cart";
+import TemplateSelector from './editor/pages/template-selector'
+import EditorPage from "./editor/pages/editor";
+import StoreViewPage from "./production/pages/store-view";
+import Dashboard from "./editor/pages/dashboard";
+import ProductDetailPage from "./production/pages/product-detail";
+import CartPage from "./production/pages/cart";
 import '@fontsource/ibm-plex-sans-arabic/400.css';
 import '@fontsource/ibm-plex-sans-arabic/500.css';
 import '@fontsource/ibm-plex-sans-arabic/600.css';
 import '@fontsource/ibm-plex-sans-arabic/700.css';
-import PreviewPage from "./pages/preview";
+import PreviewPage from "./editor/pages/preview";
 
 function App() {
   return (

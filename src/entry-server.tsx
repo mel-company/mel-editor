@@ -3,7 +3,7 @@ import './index.css';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
 import App from './App';
-import { SSRDataProvider, SSRData } from './context/ssr-data-context';
+import { SSRDataProvider, SSRData } from './shared/context/ssr-data-context';
 
 export function render(url: string, ssrData: SSRData) {
     const html = renderToString(
