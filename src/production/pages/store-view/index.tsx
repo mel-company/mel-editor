@@ -9,10 +9,15 @@ import { ArrowLeft, ExternalLink } from "lucide-react";
 const StoreViewPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { pages, currentPageId, storeSettings, isLoading } = useTemplateStructure();
+  const { pages, currentPageId, storeSettings, isLoading: structureLoading } = useTemplateStructure();
   const { setCurrentPageId } = usePageStore();
   const [viewPageId, setViewPageId] = useState(currentPageId || pages[0]?.id);
+  const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
   const isCartPage = location.pathname === "/store-view/cart" || location.pathname === "/cart";
+
+  const isLoading = structureLoading || dataLoading;
 
   useEffect(() => {
     // Set initial page if not set
@@ -20,6 +25,24 @@ const StoreViewPage = () => {
       setViewPageId(pages[0].id);
     }
   }, [pages, viewPageId, isCartPage]);
+
+  useEffect(() => {
+    const fetchGlobalData = async () => {
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          fetch("/api/v1/products").then(r => r.json()),
+          fetch("/api/v1/categories").then(r => r.json())
+        ]);
+        if (productsRes?.data) setProducts(productsRes.data);
+        if (categoriesRes?.data) setCategories(categoriesRes.data);
+      } catch (err) {
+        console.error("Failed to fetch global data in preview", err);
+      } finally {
+        setDataLoading(false);
+      }
+    };
+    fetchGlobalData();
+  }, []);
 
   const handlePageChange = (pageId: string) => {
     setViewPageId(pageId);
@@ -73,27 +96,31 @@ const StoreViewPage = () => {
           </button>
           <span className="text-xs sm:text-sm text-slate-300">عرض المتجر</span>
         </div>
-        <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-300">
-          <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">معاينة المتجر</span>
-          <span className="sm:hidden">معاينة</span>
-        </div>
+
       </div>
 
       {/* Store View or Cart Page */}
-      {isCartPage ? (
-        <div className="min-h-screen">
-          <CartPage />
+      <React.Suspense fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
-      ) : (
-        <StoreView
-          pages={pages}
-          currentPageId={viewPageId}
-          storeSettings={storeSettings}
-          onPageChange={handlePageChange}
-          hideFooter={false}
-        />
-      )}
+      }>
+        {isCartPage ? (
+          <div className="min-h-screen">
+            <CartPage />
+          </div>
+        ) : (
+          <StoreView
+            pages={pages}
+            currentPageId={viewPageId}
+            storeSettings={storeSettings}
+            products={products}
+            categories={categories}
+            onPageChange={handlePageChange}
+            hideFooter={false}
+          />
+        )}
+      </React.Suspense>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { SectionOptionType } from "../../../../types";
+import { SectionOptionType } from "../../../../../shared/types";
 
 export const our_story_sections: SectionOptionType[] = [
     {

@@ -1,4 +1,4 @@
-import { TemplateType } from "../../types";
+import { TemplateType } from "../../../shared/types";
 import { categories_sections } from "./sections/categories";
 import { recent_products_sections } from "./sections/recent-products";
 import { footer_sections } from "./sections/footer";

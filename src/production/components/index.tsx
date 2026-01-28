@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PageType, SectionType, StoreType } from "../../types";
+import { PageType, SectionType, StoreType, ProductType, CategoryType } from "../../shared/types";
 import { Navigation1 } from "../../templates/data/template/sections/navigation";
 import { footer_sections } from "../../templates/data/template/sections/footer";
 
@@ -8,6 +8,8 @@ interface StoreViewProps {
   pages: PageType[];
   currentPageId: string;
   storeSettings: StoreType;
+  products: ProductType[];
+  categories: CategoryType[];
   onPageChange?: (pageId: string) => void;
   hideFooter?: boolean;
 }
@@ -16,6 +18,8 @@ const StoreView = ({
   pages,
   currentPageId,
   storeSettings,
+  products,
+  categories,
   onPageChange,
   hideFooter = false,
 }: StoreViewProps) => {
@@ -131,11 +135,37 @@ const StoreView = ({
                 } as React.CSSProperties
               }
             >
-              <Section section={section} />
+              <Section
+                section={section}
+                products={products}
+                categories={categories}
+              />
             </div>
           );
         })}
       </main>
+
+      {/* Debug Drawer */}
+      {/* <div className="fixed bottom-0 left-0 right-0 bg-black text-white p-4 text-xs h-40 overflow-auto opacity-80 z-50 ltr" dir="ltr">
+        <h3 className="font-bold border-b pb-1 mb-1">Debug Info</h3>
+        <div>Pages Count: {pages.length}</div>
+        <div>Current Page ID: {currentPageId}</div>
+        <div>Sections Count: {sections.length}</div>
+        <div>
+          {sections.map((s, i) => {
+            const selected = s.options?.find(o => o.id === s.section_id);
+            return (
+              <div key={i} className="mb-1">
+                [{i}] Type: {s.type}, ID: {s.section_id},
+                HasOptions: {s.options?.length ? 'Yes' : 'No'},
+                SelectedOption: {selected ? selected.id : 'None'},
+                HasComponent: {selected?.component ? 'YES' : 'NO'},
+                ComponentType: {selected?.component ? typeof selected.component : 'N/A'}
+              </div>
+            )
+          })}
+        </div>
+      </div> */}
 
       {/* Footer - Single footer for all pages */}
       {storeSettings.type !== "restaurant" && !hideFooter && (
@@ -158,7 +188,15 @@ const StoreView = ({
 
 export default StoreView;
 
-const Section = ({ section }: { section: SectionType }) => {
+const Section = ({
+  section,
+  products,
+  categories
+}: {
+  section: SectionType;
+  products: ProductType[];
+  categories: CategoryType[];
+}) => {
   const selected_options = section.options?.find(
     (option) => option.id === section.section_id
   );
@@ -255,6 +293,14 @@ const Section = ({ section }: { section: SectionType }) => {
         props.content = { ...props.content, ...contentOverrides };
       }
     }
+  }
+
+  // Inject global products/categories based on section type ONLY IF empty
+  if ((section.type === "recent-products" || section.type === "recentProducts" || section.type === "products") && (!props.products || props.products.length === 0)) {
+    props.products = products;
+  }
+  if ((section.type === "categories" || section.type === "categoryGrid") && (!props.categories || props.categories.length === 0)) {
+    props.categories = categories;
   }
 
   return <Component {...props} />;

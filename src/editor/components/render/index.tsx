@@ -4,7 +4,7 @@ import React from "react";
 import { useSectionStore } from "../../../shared/store/editor/section";
 import { usePageStore } from "../../../shared/store/editor/page";
 import { useTemplateStructure } from "../../../shared/hooks/use-template-structure";
-import { HydratedSection } from "../../../types";
+import { HydratedSection } from "../../../shared/types";
 
 const RenderTemplate = () => {
   const {

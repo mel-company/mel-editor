@@ -1,4 +1,4 @@
-import { FileType, SectionOptionType } from "../../../../types";
+import { FileType, SectionOptionType } from "../../../../../shared/types";
 import { ShoppingCart, Menu } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";

@@ -1,4 +1,4 @@
-import { CategoryType } from "../../../../types";
+import { CategoryType } from "../../../../../shared/types";
 import React from "react";
 
 // Categories 1: Grid

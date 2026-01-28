@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { resolveStore, getMockData } from './utils.js';
+import { getStoreById } from './database.js';
 
 export function setupSSR(app, vite, isProduction, rootDir) {
     // Handle all routes for SSR
@@ -19,14 +20,45 @@ export function setupSSR(app, vite, isProduction, rootDir) {
             const storeId = resolveStore(host);
             console.log(`[SSR] Resolving request for ${host} -> ${storeId}`);
 
-            // 2. Fetch SSR data for this specific store
-            const { mockProducts, mockCategories, mockTemplate } = await getMockData(storeId, vite, isProduction);
+            // 2. Fetch SSR data
+            let products = [];
+            let categories = [];
+            let templateData = null;
+            let templateConfig = undefined;
 
-            // Construct the SSR payload directly from data source
+            try {
+                const storeData = await getStoreById(storeId);
+                if (storeData) {
+                    products = storeData.products || [];
+                    categories = storeData.categories || [];
+                    templateData = storeData.template || null;
+                    templateConfig = {
+                        pages: storeData.pages || [],
+                        storeSettings: storeData.storeSettings || {}
+                    };
+                    console.log(`[SSR] Loaded data from DB for ${storeId}`);
+                } else {
+                    console.log(`[SSR] No DB data for ${storeId}, using mocks`);
+                    const mocks = await getMockData(storeId, vite, isProduction);
+                    products = mocks.mockProducts || [];
+                    categories = mocks.mockCategories || [];
+                    templateData = mocks.mockTemplate || null;
+                }
+            } catch (err) {
+                console.error('[SSR] Data fetch error:', err);
+                // Fallback to mocks on error? or just empty
+                const mocks = await getMockData(storeId, vite, isProduction);
+                products = mocks.mockProducts || [];
+                categories = mocks.mockCategories || [];
+                templateData = mocks.mockTemplate || null;
+            }
+
+            // Construct the SSR payload
             const ssrData = {
-                products: mockProducts || [],
-                categories: mockCategories || [],
-                template: mockTemplate || null
+                products,
+                categories,
+                template: templateData,
+                templateConfig
             };
 
             // 2. Read index.html

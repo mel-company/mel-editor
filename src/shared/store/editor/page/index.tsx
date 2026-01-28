@@ -9,6 +9,7 @@ import { recent_products_sections } from "../../../../templates/data/template/se
 import { menu_sections } from "../../../../templates/data/template/sections/menu";
 import { our_story_sections } from "../../../../templates/data/template/sections/our-story";
 import { contact_sections } from "../../../../templates/data/template/sections/contact";
+import { resolveComponent } from "../../../utils/component-registry";
 import { footer_sections } from "../../../../templates/data/template/sections/footer";
 
 // Map section types to their section definitions
@@ -57,41 +58,53 @@ export const restoreSectionComponents = (pages: PageType[]): PageType[] => {
 
       // Restore components for each option in the saved section
       const restoredOptions = section.options.map((savedOption) => {
-        // Find the corresponding option definition that contains the component
-        const optionDefinition = sectionOptions.find((opt) => opt.id === savedOption.id);
-        if (optionDefinition && optionDefinition.component) {
-          // Merge saved data (content, photos, products, categories) with the component from section definitions
+        // First try to resolve from registry (preferred method)
+        // Check for specific variant ID
+        const registryEntry = resolveComponent(section.type, savedOption.id);
+
+        if (registryEntry) {
           return {
-            ...optionDefinition, // Start with the full definition (includes all default data)
-            ...savedOption, // Override with saved data (user's edits)
-            component: optionDefinition.component, // Always use component from definitions
-          };
-        } else {
-          console.warn(`⚠️ Option definition not found for section type: ${section.type}, option id: ${savedOption.id}`);
-          // Try to find any option with component as fallback
-          const fallbackOption = sectionOptions.find(opt => opt.component);
-          if (fallbackOption) {
-            return {
-              ...fallbackOption,
-              ...savedOption,
-              component: fallbackOption.component,
-            };
+            ...savedOption,
+            component: registryEntry.component,
           }
         }
+
+        // Fallback to legacy lookups (if any)
+        const optionDefinition = sectionOptions.find((opt) => opt.id === savedOption.id);
+        if (optionDefinition && optionDefinition.component) {
+          // ... (existing logic)
+          return {
+            ...optionDefinition,
+            ...savedOption,
+            component: optionDefinition.component
+          }
+        }
+
         return savedOption;
       });
 
       // Verify at least one option has component
       const hasComponent = restoredOptions.some(opt => opt.component);
       if (!hasComponent) {
-        console.error(`❌ No component found for section type: ${section.type}, using first option with component`);
-        const firstWithComponent = sectionOptions.find(opt => opt.component);
-        if (firstWithComponent) {
-          restoredOptions[0] = {
-            ...firstWithComponent,
-            ...restoredOptions[0],
-            component: firstWithComponent.component,
-          };
+        // Try fallback to registry using section_id if available
+        const fallbackRegistry = resolveComponent(section.type, section.section_id);
+        if (fallbackRegistry) {
+          // Find which option corresponds to section_id
+          const targetOptionIndex = restoredOptions.findIndex(o => o.id === section.section_id);
+          if (targetOptionIndex >= 0) {
+            restoredOptions[targetOptionIndex] = {
+              ...restoredOptions[targetOptionIndex],
+              component: fallbackRegistry.component
+            };
+          } else {
+            // Or if strict mapping failed, just attach to the first option as a last resort check
+            // Ideally we should adhere to section_id match.
+            if (restoredOptions.length > 0) {
+              restoredOptions[0] = { ...restoredOptions[0], component: fallbackRegistry.component };
+            }
+          }
+        } else {
+          console.warn(`⚠️ No component found for section type: ${section.type}`);
         }
       }
 

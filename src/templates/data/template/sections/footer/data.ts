@@ -1,4 +1,6 @@
-export const footer_sections = [
+import { SectionOptionType } from "../../../../../shared/types";
+
+export const footer_sections: SectionOptionType[] = [
     {
         id: "1",
         title: "Footer - Dark Gradient",

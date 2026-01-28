@@ -1,4 +1,4 @@
-import { ProductType } from "../../../../types";
+import { ProductType } from "../../../../../shared/types";
 import React from "react";
 import { ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";

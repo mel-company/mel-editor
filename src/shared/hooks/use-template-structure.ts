@@ -17,8 +17,32 @@ export const useTemplateStructure = () => {
 
     // Get SSR data
     const { isSSR, templateConfig } = useSSRData();
-    const ssrProducts = useSSRProducts();
-    const ssrCategories = useSSRCategories();
+    const ssrProductsFromContext = useSSRProducts();
+    const ssrCategoriesFromContext = useSSRCategories();
+
+    const [clientProducts, setClientProducts] = useState<any[]>([]);
+    const [clientCategories, setClientCategories] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (!isSSR) {
+            const fetchGlobalData = async () => {
+                try {
+                    const [pRes, cRes] = await Promise.all([
+                        fetch("/api/v1/products").then(res => res.json()),
+                        fetch("/api/v1/categories").then(res => res.json())
+                    ]);
+                    if (pRes?.data) setClientProducts(pRes.data);
+                    if (cRes?.data) setClientCategories(cRes.data);
+                } catch (e) {
+                    console.error("Hook fetch error", e);
+                }
+            };
+            fetchGlobalData();
+        }
+    }, [isSSR]);
+
+    const ssrProducts = (ssrProductsFromContext && ssrProductsFromContext.length > 0) ? ssrProductsFromContext : clientProducts;
+    const ssrCategories = (ssrCategoriesFromContext && ssrCategoriesFromContext.length > 0) ? ssrCategoriesFromContext : clientCategories;
 
     // Hydration state
     const [isLoading, setIsLoading] = useState(true);
@@ -123,12 +147,25 @@ export const useTemplateStructure = () => {
                 if (freshSection && freshSection.options) {
                     hydratedOptions = freshSection.options.map((freshOption: any) => {
                         const storedOption = section.options?.find((so: any) => so.id === freshOption.id);
+
+                        // Always try to resolve the component fresh from registry
+                        // This ensures we get the correct lazy-loaded component even if mockTemplate lacks it
+                        const registryEntry = resolveComponent(section.type, freshOption.id);
+                        const resolvedComponent = registryEntry?.component;
+
                         if (storedOption) {
-                            // Merge: Fresh structure (has photos etc) + Stored values, ensure component is preserved
-                            return { ...freshOption, ...storedOption, component: freshOption.component };
+                            // Merge: Fresh structure (has photos etc) + Stored values, ensure component is preserved/updated
+                            return {
+                                ...freshOption,
+                                ...storedOption,
+                                component: resolvedComponent || storedOption.component
+                            };
                         }
-                        // If no stored option exists for this variant, return the fresh default
-                        return freshOption;
+                        // If no stored option exists for this variant, return the fresh default with component attached
+                        return {
+                            ...freshOption,
+                            component: resolvedComponent
+                        };
                     });
                 } else if (section.options) {
                     // Fallback for Custom Sections (not in mockTemplate):
@@ -153,17 +190,16 @@ export const useTemplateStructure = () => {
 
                     if (!props) return null;
 
-                    // Inject SSR data for sections that need products or categories
-                    if (section.type === "recent-products" || section.type === "recentProducts" || section.type === "products") {
+                    // Inject SSR data for sections that need products or categories ONLY IF empty
+                    if ((section.type === "recent-products" || section.type === "recentProducts" || section.type === "products") && (!props.products || props.products.length === 0)) {
                         if (ssrProducts && ssrProducts.length > 0) {
                             props.products = ssrProducts;
                         }
                     }
-                    if (section.type === "categories" || section.type === "categoryGrid") {
+                    if ((section.type === "categories" || section.type === "categoryGrid") && (!props.categories || props.categories.length === 0)) {
                         if (ssrCategories && ssrCategories.length > 0) {
                             props.categories = ssrCategories;
                         }
-
                     }
 
                     return {

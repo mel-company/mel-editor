@@ -1,4 +1,6 @@
-export const hero_sections = [
+import { SectionOptionType } from "../../../../../shared/types";
+
+export const hero_sections: SectionOptionType[] = [
     {
         id: "1",
         title: "Hero - نص فقط",

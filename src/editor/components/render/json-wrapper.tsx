@@ -3,7 +3,7 @@ import RenderTemplate from "./index";
 import { reactToJSON } from "../../../shared/utils/react-to-json";
 import { generateCodeFromJSON } from "../../../shared/utils/json-to-code";
 import { useTemplateStructure } from "../../../shared/hooks/use-template-structure";
-import { HydratedSection } from "../../../types";
+import { HydratedSection } from "../../../shared/types";
 
 const TemplateJsonWrapper = () => {
     const { navigation, sections, footer } = useTemplateStructure();

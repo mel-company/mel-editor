@@ -1,11 +1,30 @@
 export function resolveStore(host) {
-    // Simple mapping for dev verification
-    // localhost:5173 -> store-1 (default)
-    // store2.localhost -> store-2
-    if (host && host.includes('store2')) {
-        return 'store-2';
+    if (!host) return 'store-1';
+    if (!host) return 'demo';
+
+    // Remove port number if present
+    const cleanHost = host.split(':')[0];
+
+    // Check if localhost or IP
+    if (cleanHost === 'localhost' || cleanHost === '127.0.0.1') {
+        return 'demo';
     }
-    return 'store-1'; // Default store
+
+    // Split by dot to find subdomain
+    const parts = cleanHost.split('.');
+
+    // Scenario: subdomain.domain.com (parts.length >= 3)
+    // Scenario: subdomain.localhost (parts.length >= 2) - typically for dev
+
+    if (parts.length > 2 || (parts.length === 2 && parts[1] === 'localhost')) {
+        const subdomain = parts[0];
+        // Reserved subdomains or www could be filtered here if needed
+        if (subdomain === 'www') return 'demo';
+
+        return subdomain;
+    }
+
+    return 'demo'; // Default store (root domain)
 }
 
 export async function getMockData(storeId, vite, isProduction) {

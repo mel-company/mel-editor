@@ -8,7 +8,7 @@ import {
     Twitter,
     Linkedin,
 } from "lucide-react";
-import { FileType } from "../../../../types";
+import { FileType } from "../../../../../shared/types";
 
 interface FooterProps {
     logo?: FileType;

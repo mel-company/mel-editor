@@ -1,7 +1,6 @@
 import { usePageStore } from "../../../../../shared/store/editor/page";
-import { PageType } from "../../../../../types";
-import classNames from "classnames";
-import React from "react";
+import { PageType } from "../../../../../shared/types";
+
 import Divider from "../../../../../shared/components/ui/divider";
 
 const PageList = () => {

@@ -27,7 +27,7 @@ const PreviewRenderer = ({ pages, storeSettings }: PreviewRendererProps) => {
 
     const sections =
         currentPage?.sections.filter(
-            (s) => s.type !== "navigation" && s.type !== "footer"
+            (s: SectionType) => s.type !== "navigation" && s.type !== "footer"
         ) || [];
 
 

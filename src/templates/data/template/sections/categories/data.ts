@@ -1,4 +1,6 @@
-export const categories_sections = [
+import { SectionOptionType } from "../../../../../shared/types";
+
+export const categories_sections: SectionOptionType[] = [
     {
         id: "1",
         title: "Categories - Grid",

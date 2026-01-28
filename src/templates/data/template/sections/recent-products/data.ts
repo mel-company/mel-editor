@@ -1,4 +1,6 @@
-export const recent_products_sections = [
+import { SectionOptionType } from "../../../../../shared/types";
+
+export const recent_products_sections: SectionOptionType[] = [
     {
         id: "1",
         title: "Products - Grid",

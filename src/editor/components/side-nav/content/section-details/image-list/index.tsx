@@ -1,5 +1,5 @@
 import useSectionDetails from "../../../../../hooks/editor-section-details";
-import { FileType } from "../../../../../../types";
+import { FileType, PhotoItem } from "../../../../../../shared/types";
 import FileUploadListItem from "../../../../../../shared/components/ui/file-upload/item";
 import FileUploadBar from "../../../../../../shared/components/ui/file-upload/bar";
 import ImageUploadModal from "../../../../../../shared/components/ui/image-upload-modal";
@@ -18,7 +18,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
   const [selectedImageName, setSelectedImageName] = useState<string | null>(null);
 
   // Memoize section photos to prevent unnecessary re-renders
-  const sectionPhotos = useMemo(() => section?.photos || option?.photos || [], [section?.photos, option?.photos]);
+  const sectionPhotos = useMemo<PhotoItem[]>(() => section?.photos || option?.photos || [], [section?.photos, option?.photos]);
 
   // Check if this is a carousel section
   const isCarousel = useMemo(() =>
@@ -33,7 +33,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
   const imagesToEdit = useMemo(() => {
     if (detectedImages.length > 0) return detectedImages;
 
-    return sectionPhotos.map((photo, index) => ({
+    return sectionPhotos.map((photo: PhotoItem, index) => ({
       name: photo.id || `photo_${index}`,
       title: photo.label || `Image ${index + 1}`,
       currentSrc: photo.url || photo.base64Content || "",

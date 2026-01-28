@@ -2,13 +2,58 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageStore } from "../../../shared/store/editor/page";
 import { useStoreSettingsStore } from "../../../shared/store/editor/store-settings";
-import { FileEdit, Eye, Layout, Store } from "lucide-react";
+import { FileEdit, Eye, Layout, Store, Globe, UploadCloud } from "lucide-react";
+import { publishStore } from "../../../shared/api/production";
+import { useState } from "react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { pages } = usePageStore();
   const { storeSettings } = useStoreSettingsStore();
   const hasPages = pages.length > 0;
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [publishStatus, setPublishStatus] = useState<"idle" | "success" | "error">("idle");
+
+  const handlePublish = async () => {
+    if (!showConfirm) {
+      setShowConfirm(true);
+      setTimeout(() => setShowConfirm(false), 3000);
+      return;
+    }
+
+    setIsPublishing(true);
+    setShowConfirm(false);
+    setPublishStatus("idle");
+
+    try {
+      await publishStore();
+      setPublishStatus("success");
+      setTimeout(() => setPublishStatus("idle"), 3000);
+    } catch (error) {
+      console.error("Publish error:", error);
+      setPublishStatus("error");
+      setTimeout(() => setPublishStatus("idle"), 5000);
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  let publishBtnText = isPublishing ? "جاري النشر..." : "نشر";
+  let publishBtnColor = hasPages && !isPublishing
+    ? "bg-indigo-600 text-white hover:bg-indigo-700"
+    : "bg-slate-200 text-slate-400 cursor-not-allowed";
+
+  if (showConfirm) {
+    publishBtnText = "هل أنت متأكد؟";
+    publishBtnColor = "bg-orange-500 text-white hover:bg-orange-600";
+  } else if (publishStatus === "success") {
+    publishBtnText = "تم النشر!";
+    publishBtnColor = "bg-green-600 text-white";
+  } else if (publishStatus === "error") {
+    publishBtnText = "فشل النشر";
+    publishBtnColor = "bg-red-600 text-white";
+  }
 
   return (
     <div
@@ -60,7 +105,7 @@ const Dashboard = () => {
         )}
 
         {/* Action Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Editor Card */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between mb-4">
@@ -87,41 +132,70 @@ const Dashboard = () => {
             </button>
           </div>
 
-          {/* Store View Card */}
+          {/* Store View Card (Preview) */}
           <div
-            className={`bg-white rounded-xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow ${
-              !hasPages ? "opacity-50" : ""
-            }`}
+            className={`bg-white rounded-xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow ${!hasPages ? "opacity-50" : ""
+              }`}
           >
             <div className="flex items-start justify-between mb-4">
               <div className="p-3 bg-green-100 rounded-lg">
                 <Eye className="w-6 h-6 text-green-600" />
               </div>
-              {hasPages && (
-                <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded">
-                  {pages.length} صفحة
-                </span>
-              )}
             </div>
             <h3 className="text-lg font-bold text-slate-800 mb-2">
-              معاينة المتجر
+              معاينة المسودة
             </h3>
             <p className="text-slate-600 text-sm mb-4">
-              {hasPages
-                ? "شاهد كيف يظهر متجرك للزوار"
-                : "يجب إنشاء صفحات أولاً"}
+              شاهد التغييرات قبل النشر
             </p>
             <button
               onClick={() => navigate("/store-view")}
               disabled={!hasPages}
-              className={`w-full px-4 py-2 rounded-lg transition-colors font-medium ${
-                hasPages
-                  ? "bg-green-600 text-white hover:bg-green-700"
-                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
-              }`}
+              className={`w-full px-4 py-2 rounded-lg transition-colors font-medium ${hasPages
+                ? "bg-green-600 text-white hover:bg-green-700"
+                : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                }`}
             >
-              عرض المتجر
+              معاينة
             </button>
+          </div>
+
+          {/* Production / Publish Card */}
+          <div
+            className={`bg-white rounded-xl shadow-sm p-6 border border-slate-200 hover:shadow-md transition-shadow ${!hasPages ? "opacity-50" : ""
+              }`}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 bg-indigo-100 rounded-lg">
+                <Globe className="w-6 h-6 text-indigo-600" />
+              </div>
+            </div>
+            <h3 className="text-lg font-bold text-slate-800 mb-2">
+              نشر المتجر
+            </h3>
+            <p className="text-slate-600 text-sm mb-4">
+              نشر التغييرات للمتجر الحي
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={handlePublish}
+                disabled={!hasPages || isPublishing}
+                className={`flex-1 px-3 py-2 rounded-lg transition-all duration-200 font-medium text-sm flex items-center justify-center gap-1 ${publishBtnColor}`}
+              >
+                {!isPublishing && publishStatus === "idle" && !showConfirm && <UploadCloud className="w-4 h-4" />}
+                {publishBtnText}
+              </button>
+              <button
+                onClick={() => window.open("/", "_blank")}
+                disabled={!hasPages}
+                className={`px-3 py-2 rounded-lg transition-colors font-medium text-sm border ${hasPages
+                  ? "border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                  : "border-slate-200 text-slate-400 cursor-not-allowed"
+                  }`}
+              >
+                زيارة
+              </button>
+            </div>
           </div>
 
           {/* Templates Card */}
@@ -136,7 +210,7 @@ const Dashboard = () => {
               اختر قالب جديد أو غيّر القالب الحالي
             </p>
             <button
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/templates")}
               className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
             >
               تصفح القوالب

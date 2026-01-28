@@ -1,4 +1,4 @@
-import { ProductType } from "../../../../types";
+import { ProductType, SectionOptionType } from "../../../../../shared/types";
 import React from "react";
 const MenuItems = ({
   content,
@@ -61,7 +61,7 @@ const MenuItemsGrid = ({
   products: ProductType[];
   view_all_link: string;
   photos: Array<{ id: string; label: string; url: string }>;
-  }) => {
+}) => {
   return (
     <div className="container mx-auto px-4 py-12">
       <h2 className="text-4xl font-bold mb-4 text-center">{content.title}</h2>
@@ -74,7 +74,7 @@ const MenuItemsGrid = ({
             <img
               src={product.thumbnail.url}
               alt={product.name}
-              className="w-32 h-32 object-cover flex-shrink-0"
+              className="w-32 h-32 object-cover shrink-0"
             />
             <div className="p-4 flex-1">
               <h3 className="text-xl font-bold mb-2">{product.name}</h3>
@@ -123,7 +123,7 @@ const MenuItemsList = ({
             <img
               src={product.thumbnail.url}
               alt={product.name}
-              className="w-24 h-24 object-cover rounded-lg flex-shrink-0"
+              className="w-24 h-24 object-cover rounded-lg shrink-0"
             />
             <div className="flex-1">
               <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
@@ -149,7 +149,7 @@ const MenuItemsList = ({
   );
 };
 
-export const menu_sections = [
+export const menu_sections: SectionOptionType[] = [
   {
     id: "1",
     title: "Menu Items",

@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { CategoryType, FileType } from "../../../../../../types";
+import { CategoryType, FileType, SectionOptionType } from "../../../../../../shared/types";
 import { mockCategories } from "../../../../../../templates/data/categories";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { Check, X, Search, Tag, Plus, Image as ImageIcon } from "lucide-react";
@@ -48,7 +48,7 @@ const CategorySelector = () => {
       newCategories = [...currentCategories, category];
     }
 
-    const newOptions = section.options?.map((op) => {
+    const newOptions = section.options?.map((op: SectionOptionType) => {
       if (op.id === section.section_id) {
         return { ...op, categories: newCategories };
       }
@@ -75,7 +75,7 @@ const CategorySelector = () => {
     const currentCategories: CategoryType[] = option.categories || [];
     const newCategories = [...currentCategories, newCategory];
 
-    const newOptions = section.options?.map((op) => {
+    const newOptions = section.options?.map((op: SectionOptionType) => {
       if (op.id === section.section_id) {
         return { ...op, categories: newCategories };
       }
@@ -89,7 +89,7 @@ const CategorySelector = () => {
   };
 
   const clearAllSelectedCategories = () => {
-    const newOptions = section.options?.map((op) => {
+    const newOptions = section.options?.map((op: SectionOptionType) => {
       if (op.id === section.section_id) {
         return { ...op, categories: [] };
       }

@@ -1,4 +1,4 @@
-import { CategoryType } from "../types";
+import { CategoryType } from "../../shared/types";
 
 export const mockCategories: CategoryType[] = [
   {
