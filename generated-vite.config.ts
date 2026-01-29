@@ -11,7 +11,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            "@": path.resolve(__dirname, "./src"),
+            "@": path.resolve(__dirname, "./client/src"),
+            "@templates": path.resolve(__dirname, "./templates/ecommerce/retail-v1"),
         },
     },
     build: {
