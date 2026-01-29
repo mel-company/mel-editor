@@ -1,4 +1,4 @@
-import { SectionOptionType } from "@/types";
+import { SectionOptionType } from "@/shared/types";
 
 export const navigation_sections: SectionOptionType[] = [
     {

@@ -97,7 +97,7 @@ export const Navigation1 = ({
           <div className="flex items-center gap-3">
             {/* Shopping Cart */}
             <button
-              onClick={() => navigate("/store-view/cart")}
+              onClick={() => navigate("/cart")}
               className="relative p-2 hover:bg-slate-100 rounded-lg transition-colors group"
               onMouseEnter={(e) => {
                 const icon = e.currentTarget.querySelector("svg");

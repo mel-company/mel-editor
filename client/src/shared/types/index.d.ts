@@ -194,6 +194,7 @@ export type EditorStoreType = {
 };
 
 export type NavigationFooterType = {
+  id: string;
   Component: React.ComponentType<any>;
   props: Record<string, any>;
 };

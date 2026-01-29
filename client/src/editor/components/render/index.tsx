@@ -38,9 +38,17 @@ const RenderTemplate = () => {
   }, [currentPageId, setActiveSectionId, setActiveElementType]);
 
   // Restore saved values from store to DOM after sections render
+  // BUT skip this when actively editing to prevent overriding user changes
   useEffect(() => {
     if (!sections || sections.length === 0) return;
 
+    // Skip restoration if a section is actively selected (being edited)
+    if (activeSectionId && activeElementType === "section") {
+      console.log("Skipping DOM restoration - section is being edited");
+      return;
+    }
+
+    console.log("Running DOM restoration effect");
     // Small delay to ensure DOM is fully rendered
     const timeoutId = setTimeout(() => {
       sections.forEach((sectionData: HydratedSection) => {
@@ -72,7 +80,7 @@ const RenderTemplate = () => {
     }, 150);
 
     return () => clearTimeout(timeoutId);
-  }, [sections, currentPageId]);
+  }, [sections, currentPageId, activeSectionId, activeElementType]);
 
   return (
     <div
@@ -90,7 +98,10 @@ const RenderTemplate = () => {
         {/* Navigation Bar */}
         {navigation && (
           <div
-            onClick={(e) => {
+            onClickCapture={(e) => {
+              // Use capture to catch clicks even if links inside stop propagation
+              // But check if we want to allow default link behavior?
+              // In editor, we usually want to select the component first.
               e.stopPropagation();
               setActiveElementType("navigation");
               setActiveSectionId("");

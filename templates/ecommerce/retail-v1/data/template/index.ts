@@ -22,7 +22,7 @@ export const mockTemplate: TemplateType = {
       id: "0",
       section_id: "1",
       type: "navigation",
-      editable: false,
+      editable: true,
       options: navigation_sections,
     },
     {

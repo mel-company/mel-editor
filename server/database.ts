@@ -105,9 +105,9 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
-export function getStoreById(storeId: string): Promise<any> {
+export function getStore(identifier: string): Promise<any> {
     return new Promise((resolve, reject) => {
-        db.get(`SELECT json FROM stores WHERE store_id = ?`, [storeId], (err, row: any) => {
+        db.get(`SELECT json FROM stores WHERE store_id = ? OR subdomain = ?`, [identifier, identifier], (err, row: any) => {
             if (err) {
                 console.error('Database Error:', err);
                 reject(err);

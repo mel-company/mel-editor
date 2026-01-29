@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import React from "react";
 import EditoNavHeader from "./header";
 import ThemeSide from "./theme";
 import ContentSide from "./content";
@@ -17,9 +16,13 @@ const EditorSideNav = ({
   const isRestaurant = storeSettings.type === "restaurant";
   const [side, setSide] = useState(isRestaurant ? "theme" : "theme");
 
-  // Auto-switch to content tab when a section is selected
+  // Auto-switch to content tab when a section, navigation, or footer is selected
   useEffect(() => {
-    if (activeSectionId && activeElementType === "section" && !isRestaurant) {
+    if (!isRestaurant && (
+      (activeSectionId && activeElementType === "section") ||
+      activeElementType === "navigation" ||
+      activeElementType === "footer"
+    )) {
       setSide("content");
     }
   }, [activeSectionId, activeElementType, isRestaurant]);

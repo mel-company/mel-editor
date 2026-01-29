@@ -143,8 +143,22 @@ const useSectionDetails = () => {
   };
 
   const handleTextChange = (value: string, name: string) => {
-    if (!section) return;
-    if (!option) return;
+    console.log("=== handleTextChange START ===");
+    console.log("Value:", value);
+    console.log("Name:", name);
+    console.log("Section:", section);
+    console.log("Option:", option);
+    console.log("activeSectionId:", activeSectionId);
+    console.log("isCustomComponent:", isCustomComponent);
+
+    if (!section) {
+      console.error("No section found!");
+      return;
+    }
+    if (!option) {
+      console.error("No option found!");
+      return;
+    }
 
     // Update DOM directly using data-name attribute
     if (activeSectionId) {
@@ -152,31 +166,47 @@ const useSectionDetails = () => {
         (document.querySelector(
           `[data-section-instance-id="${activeSectionId}"]`
         ) as HTMLElement | null) || document.getElementById(activeSectionId);
+      console.log("Section element found:", sectionElement);
+
       if (sectionElement) {
         const targetElement = sectionElement.querySelector(`[data-name="${name}"]`);
+        console.log("Target element found:", targetElement);
+
         if (targetElement) {
           const dataType = targetElement.getAttribute("data-type");
+          console.log("Data type:", dataType);
+
           if (dataType === "link") {
             targetElement.setAttribute("href", value);
+            console.log("Updated link href to:", value);
           } else if (dataType === "image") {
             targetElement.setAttribute("src", value);
+            console.log("Updated image src to:", value);
           } else {
             targetElement.textContent = value;
+            console.log("Updated textContent to:", value);
           }
+        } else {
+          console.warn(`No element found with data-name="${name}"`);
         }
+      } else {
+        console.warn(`No section element found with id or data-section-instance-id="${activeSectionId}"`);
       }
     }
 
     // Custom Component Path: Direct update to section.content
     if (isCustomComponent) {
       const currentContent = section.content || {};
-      setSection({
+      const updated = {
         ...section,
         content: {
           ...currentContent,
           [name]: value
         }
-      });
+      };
+      console.log("Updating custom component, new section:", updated);
+      setSection(updated);
+      console.log("=== handleTextChange END (custom component) ===");
       return;
     }
 
@@ -190,12 +220,14 @@ const useSectionDetails = () => {
         }
         return item;
       });
+      console.log("Updated array content:", newOptionContent);
     } else {
       // Fallback for object-based content
       newOptionContent = {
         ...option.content,
         [name]: value,
       };
+      console.log("Updated object content:", newOptionContent);
     }
 
     // Prepare persistence object (Key-Value)
@@ -203,6 +235,7 @@ const useSectionDetails = () => {
       ...(section.content || {}),
       [name]: value
     };
+    console.log("Content for persistence:", contentForPersistence);
 
     // Update both options (for immediate view) and content (for persistence/fallback)
     const newOptions = section.options?.map((op: SectionOptionType) => {
@@ -211,12 +244,17 @@ const useSectionDetails = () => {
       }
       return op;
     });
+    console.log("New options:", newOptions);
 
-    setSection({
+    const updatedSection = {
       ...section,
       options: newOptions,
       content: contentForPersistence
-    });
+    };
+    console.log("Final updated section:", updatedSection);
+
+    setSection(updatedSection);
+    console.log("=== handleTextChange END (standard path) ===");
   };
 
   const handleUploadImage = (file: FileType, index: number) => {

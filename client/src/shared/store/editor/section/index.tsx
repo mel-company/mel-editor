@@ -20,7 +20,12 @@ export const useSectionStore = create<Store>()((set, get) => ({
   activeSectionId: "",
   activeElementType: "",
   setActiveSectionId: (id) =>
-    set(() => ({ activeSectionId: id, activeElementType: "section" })),
+    set(() => ({
+      activeSectionId: id,
+      // Only set activeElementType to "section" if ID is not empty
+      // This prevents overriding navigation/footer selection
+      ...(id ? { activeElementType: "section" as const } : {})
+    })),
   setActiveElementType: (type) =>
     set(() => ({
       activeElementType: type,
@@ -37,7 +42,12 @@ export const useSectionStore = create<Store>()((set, get) => ({
     }
   },
   setSection: (section) => {
+    console.log("=== setSection called ===");
+    console.log("Section to update:", section);
+
     const currentPage = usePageStore.getState().getCurrentPage();
+    console.log("Current page:", currentPage);
+
     if (currentPage) {
       const updatedSections = currentPage.sections.map((s) => {
         // Match by target_id (primary) or fall back to section_id/id
@@ -45,11 +55,24 @@ export const useSectionStore = create<Store>()((set, get) => ({
           ? s.target_id === section.target_id
           : (s.id === section.id || s.section_id === section.section_id);
 
+        if (isMatch) {
+          console.log("Found matching section, updating from:", s);
+          console.log("To:", section);
+        }
+
         return isMatch ? section : s;
       });
+
+      console.log("Updated sections array:", updatedSections);
+      console.log("Calling updatePage...");
+
       usePageStore
         .getState()
         .updatePage({ ...currentPage, sections: updatedSections });
+
+      console.log("=== setSection complete ===");
+    } else {
+      console.error("No current page found!");
     }
   },
   addSection: (section) => {

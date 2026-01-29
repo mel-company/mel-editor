@@ -112,6 +112,7 @@ export const useTemplateStructure = () => {
             const navEntry = resolveComponent("navigation", "1");
             if (navEntry) {
                 navigation = {
+                    id: "navigation",
                     Component: navEntry.component,
                     props: {
                         logo: activeSettings.logo,
@@ -276,6 +277,7 @@ export const useTemplateStructure = () => {
                 }
 
                 footer = {
+                    id: "footer",
                     Component: registryEntry.component,
                     props: {
                         logo: storeSettings.logo,
@@ -302,6 +304,7 @@ export const useTemplateStructure = () => {
 
             if (registryEntry) {
                 footer = {
+                    id: "footer",
                     Component: registryEntry.component,
                     props: {
                         logo: storeSettings.logo,

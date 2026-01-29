@@ -3,7 +3,7 @@ import path from 'node:path';
 import { Express, Request, Response, NextFunction } from 'express';
 import { ViteDevServer } from 'vite';
 import { resolveStore, getMockData } from './utils';
-import { getStoreById } from './database';
+import { getStore } from './database';
 
 export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduction: boolean, rootDir: string) {
     // Handle all routes for SSR
@@ -29,30 +29,89 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
             let templateConfig: any = undefined;
 
             try {
-                const storeData = await getStoreById(storeId);
+                const storeData = await getStore(storeId);
                 if (storeData) {
                     products = storeData.products || [];
                     categories = storeData.categories || [];
                     templateData = storeData.template || null;
+
+                    // Extract pages and settings from Zustand persist format
+                    // The database stores data as: { 'editor-pages-storage': '{"state":{...}}', ... }
+                    // Need to double-parse because Zustand persist stores as JSON string
+                    let pagesStorage = storeData['editor-pages-storage'];
+                    let settingsStorage = storeData['editor-store-settings-storage'];
+
+                    // Parse if they're strings (double-stringified)
+                    if (typeof pagesStorage === 'string') {
+                        try {
+                            pagesStorage = JSON.parse(pagesStorage);
+                        } catch (e) {
+                            console.error('[SSR] Error parsing pagesStorage:', e);
+                            pagesStorage = null;
+                        }
+                    }
+                    if (typeof settingsStorage === 'string') {
+                        try {
+                            settingsStorage = JSON.parse(settingsStorage);
+                        } catch (e) {
+                            console.error('[SSR] Error parsing settingsStorage:', e);
+                            settingsStorage = null;
+                        }
+                    }
+
+                    // Zustand persist wraps the state in a 'state' property
+                    let pages = pagesStorage?.state?.pages || storeData.pages || [];
+                    const storeSettings = settingsStorage?.state?.storeSettings || storeData.storeSettings || {};
+
+                    // If no pages in database, load from mock template as fallback
+                    if (!pages || pages.length === 0) {
+                        console.log(`[SSR] No pages in DB for ${storeId}, loading from mock template`);
+                        const mocks = await getMockData(storeId, vite, isProduction);
+
+                        // mockTemplate has sections, but we need pages
+                        // Create a default home page from the template sections
+                        if (mocks.mockTemplate?.sections) {
+                            pages = [{
+                                id: 'home',
+                                name: 'الصفحة الرئيسية',
+                                type: 'home' as const,
+                                sections: mocks.mockTemplate.sections.map((section: any) => ({
+                                    ...section,
+                                    target_id: section.id || section.section_id
+                                }))
+                            }];
+                        } else {
+                            pages = [];
+                        }
+                    }
+
                     templateConfig = {
-                        pages: storeData.pages || [],
-                        storeSettings: storeData.storeSettings || {}
+                        pages,
+                        storeSettings
                     };
-                    console.log(`[SSR] Loaded data from DB for ${storeId}`);
+                    console.log(`[SSR] Loaded data from DB for ${storeId}: ${pages.length} pages found`);
                 } else {
                     console.log(`[SSR] No DB data for ${storeId}, using mocks`);
                     const mocks = await getMockData(storeId, vite, isProduction);
                     products = mocks.mockProducts || [];
                     categories = mocks.mockCategories || [];
                     templateData = mocks.mockTemplate || null;
+                    templateConfig = {
+                        pages: mocks.mockTemplate?.pages || [],
+                        storeSettings: {}
+                    };
                 }
             } catch (err) {
                 console.error('[SSR] Data fetch error:', err);
-                // Fallback to mocks on error? or just empty
+                // Fallback to mocks on error
                 const mocks = await getMockData(storeId, vite, isProduction);
                 products = mocks.mockProducts || [];
                 categories = mocks.mockCategories || [];
                 templateData = mocks.mockTemplate || null;
+                templateConfig = {
+                    pages: mocks.mockTemplate?.pages || [],
+                    storeSettings: {}
+                };
             }
 
             // Construct the SSR payload

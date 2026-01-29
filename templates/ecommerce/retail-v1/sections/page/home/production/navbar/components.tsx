@@ -4,7 +4,7 @@ import { ShoppingCart, Menu } from "lucide-react";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCartStore } from "@/shared/store/cart";
-import { FileType } from "@/types";
+import { FileType } from "@/shared/types";
 
 interface NavigationLink {
     id: string;
@@ -99,7 +99,7 @@ export const Navigation1 = ({
                     <div className="flex items-center gap-3">
                         {/* Shopping Cart */}
                         <button
-                            onClick={() => navigate("/store-view/cart")}
+                            onClick={() => navigate("/cart")}
                             className="relative p-2 hover:bg-slate-100 rounded-lg transition-colors group"
                             onMouseEnter={(e) => {
                                 const icon = e.currentTarget.querySelector("svg");

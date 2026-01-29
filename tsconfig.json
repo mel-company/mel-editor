@@ -4,6 +4,9 @@
         "paths": {
             "@templates/*": [
                 "templates/ecommerce/retail-v1/*"
+            ],
+            "@/*": [
+                "client/src/*"
             ]
         },
         "target": "ES2020",

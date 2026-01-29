@@ -20,7 +20,7 @@ function App() {
             <Route path="/templates" element={<TemplateSelector />} />
             <Route path="/editor" element={<EditorPage />} />
             <Route path="/store-view" element={<StoreViewPage />} />
-            <Route path="/store-view/cart" element={<StoreViewPage />} />
+            <Route path="/cart" element={<StoreViewPage />} />
             <Route path="/product/:productId" element={<ProductDetailPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/debug/stores" element={<DebugStoresPage />} />

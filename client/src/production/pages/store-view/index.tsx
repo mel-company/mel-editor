@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTemplateStructure } from "../../../shared/hooks/use-template-structure";
-import { usePageStore } from "../../../shared/store/editor/page";
 import StoreView from "../../components";
 import CartPage from "../cart";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, } from "lucide-react";
 
 const StoreViewPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { pages, currentPageId, storeSettings, isLoading: structureLoading } = useTemplateStructure();
-  const { setCurrentPageId } = usePageStore();
   const [viewPageId, setViewPageId] = useState(currentPageId || pages[0]?.id);
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
-  const isCartPage = location.pathname === "/store-view/cart" || location.pathname === "/cart";
+  const isCartPage = location.pathname === "/cart";
 
   const isLoading = structureLoading || dataLoading;
 
