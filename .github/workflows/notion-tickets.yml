@@ -132,8 +132,10 @@ jobs:
           fi
         }
         
-        # Process commits - write to file to avoid shell interpretation of backticks
-        echo '${{ steps.changes.outputs.commits }}' > /tmp/commits.txt
+        # Process commits - use heredoc with quoted delimiter to prevent ALL shell interpretation
+        cat << 'COMMITS_EOF' > /tmp/commits.txt
+        ${{ steps.changes.outputs.commits }}
+        COMMITS_EOF
         created_tickets=0
         
         while IFS='|' read -r commit_hash commit_message author_name author_email; do
