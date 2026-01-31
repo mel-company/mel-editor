@@ -3,7 +3,7 @@ import { CategoryType } from "@/shared/types";
 export const mockCategories: CategoryType[] = [
   {
     id: "1",
-    name: "ملابس",
+    name: "ملابسv",
     thumbnail: {
       url: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=200",
     },
