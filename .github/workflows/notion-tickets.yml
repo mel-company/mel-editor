@@ -37,28 +37,8 @@ jobs:
           local commit_hash="$1"
           local commit_message="$2"
           
-          # Get commit details and escape special characters
-          commit_diff=$(git show --stat --pretty=format:"%B" "$commit_hash" | sed 's/"/\\"/g' | tr '\n' ' ')
-          safe_commit_message=$(echo "$commit_message" | sed 's/"/\\"/g' | tr '\n' ' ')
-          
-          # AI analysis with DeepSeek
-          response=$(curl -s -X POST "https://api.deepseek.com/v1/chat/completions" \
-            -H "Authorization: Bearer ${{ secrets.DEEPSEEK_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "model": "deepseek-chat",
-              "messages": [{
-                "role": "system",
-                "content": "Return JSON: title, description, priority, stack, estimated_hours. No markdown."
-              }, {
-                "role": "user", 
-                "content": "Commit: '"$safe_commit_message"' Changes: '"$commit_diff"'"
-              }],
-              "temperature": 0.1
-            }')
-          
-          # Extract content field safely with jq fallback
-          echo "$response" | jq -r '.choices[0].message.content' 2>/dev/null || echo '{"title":"'"$safe_commit_message"'","description":"AI analysis failed","priority":"Medium","stack":"Backend","estimated_hours":4}'
+          # Test with simple JSON to verify escaping works
+          echo '{"title":"Test ticket","description":"Testing escaping","priority":"High","stack":"Web Editor","estimated_hours":2}'
         }
         
         # Function to create Notion page via curl
@@ -73,14 +53,14 @@ jobs:
           
           # Parse AI response (fallback to defaults if AI fails)
           if echo "$ai_analysis" | jq -e '.title' >/dev/null 2>&1; then
-            clean_title=$(echo "$ai_analysis" | jq -r '.title' | cut -c1-80)
-            description=$(echo "$ai_analysis" | jq -r '.description')
-            priority=$(echo "$ai_analysis" | jq -r '.priority')
-            stack=$(echo "$ai_analysis" | jq -r '.stack')
+            clean_title=$(echo "$ai_analysis" | jq -r '.title' | cut -c1-80 | sed 's/"/\\"/g')
+            description=$(echo "$ai_analysis" | jq -r '.description' | sed 's/"/\\"/g')
+            priority=$(echo "$ai_analysis" | jq -r '.priority' | sed 's/"/\\"/g')
+            stack=$(echo "$ai_analysis" | jq -r '.stack' | sed 's/"/\\"/g')
             estimated_hours=$(echo "$ai_analysis" | jq -r '.estimated_hours')
           else
             # Fallback to original logic
-            clean_title=$(echo "$commit_message" | sed -E 's/^(feat|fix|docs|style|refactor|test|chore)[\(\)]*\s*[:\-]\s*//' | sed -E 's/^\w+[\(\)]*\s*[:\-]\s*//' | sed 's/.*/\U&/' | sed 's/./\L&/' | cut -c1-80)
+            clean_title=$(echo "$commit_message" | sed -E 's/^(feat|fix|docs|style|refactor|test|chore)[\(\)]*\s*[:\-]\s*//' | sed -E 's/^\w+[\(\)]*\s*[:\-]\s*//' | sed 's/.*/\U&/' | sed 's/./\L&/' | cut -c1-80 | sed 's/"/\\"/g')
             description="Commit: $commit_message"
             priority="Medium"
             stack="Backend"
