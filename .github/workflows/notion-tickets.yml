@@ -78,19 +78,7 @@ jobs:
           fi
           
           # Create page
-          page_data='{
-            "parent": {"database_id": "2cfac610-a640-8002-9365-d99a2c917326"},
-            "properties": {
-              "Project name": {
-                "title": [{"text": {"content": "'"$clean_title"'"}}]
-              },
-              "Status": {"status": {"name": "In progress"}},
-              "Priority": {"select": {"name": "'"$priority"'"}},
-              "Stack": {"select": {"name": "'"$stack"'"}},
-              "Start date": {"date": {"start": "'$(date +%Y-%m-%d)'"}},
-              "Assignee": {"people": [{"id": "'"$user_id"'"}]}
-            }
-          }'
+          page_data='{"parent": {"database_id": "2cfac610-a640-8002-9365-d99a2c917326"}, "properties": {"Project name": {"title": [{"text": {"content": "'"$clean_title"'"}}]}, "Status": {"status": {"name": "In progress"}}, "Priority": {"select": {"name": "'"$priority"'"}}, "Stack": {"select": {"name": "'"$stack"'"}}, "Start date": {"date": {"start": "'$(date +%Y-%m-%d)'"}}, "Assignee": {"people": [{"id": "'"$user_id"'"}]}}}'
           
           response=$(curl -s -X POST "https://api.notion.com/v1/pages" \
             -H "Authorization: Bearer ${{ secrets.NOTION_API_KEY }}" \
