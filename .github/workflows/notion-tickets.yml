@@ -144,7 +144,7 @@ jobs:
             # Escape commit message to prevent shell interpretation
             safe_commit_message=$(echo "$commit_message" | sed 's/"/\\"/g' | sed 's/`/\\`/g' | sed 's/\$/\\$/g')
             if create_notion_page "$commit_hash" "$safe_commit_message" "$author_name" "$author_email"; then
-              ((created_tickets++))
+              created_tickets=$((created_tickets + 1))
             fi
           fi
         done < /tmp/commits.txt
