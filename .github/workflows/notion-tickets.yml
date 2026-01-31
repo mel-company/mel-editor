@@ -99,6 +99,14 @@ jobs:
           safe_stack=$(echo "$stack" | sed 's/"/\\"/g')
           safe_user_id=$(echo "$user_id" | sed 's/"/\\"/g')
           
+          # Debug: Show what we're working with
+          echo "DEBUG: clean_title=$clean_title"
+          echo "DEBUG: priority=$priority"
+          echo "DEBUG: stack=$stack"
+          echo "DEBUG: safe_title=$safe_title"
+          echo "DEBUG: safe_priority=$safe_priority"
+          echo "DEBUG: safe_stack=$safe_stack"
+          
           page_data='{"parent": {"database_id": "2cfac610-a640-8002-9365-d99a2c917326"}, "properties": {"Project name": {"title": [{"text": {"content": "'"$safe_title"'"}}]}, "Status": {"status": {"name": "In progress"}}, "Priority": {"select": {"name": "'"$safe_priority"'"}}, "Stack": {"select": {"name": "'"$safe_stack"'"}}, "Start date": {"date": {"start": "'$(date +%Y-%m-%d)'"}}, "Assignee": {"people": [{"id": "'"$safe_user_id"'"}]}}}'
           
           response=$(curl -s -X POST "https://api.notion.com/v1/pages" \
