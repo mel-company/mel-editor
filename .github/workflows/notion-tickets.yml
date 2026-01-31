@@ -93,7 +93,13 @@ jobs:
           fi
           
           # Create page with AI-enhanced data
-          page_data='{"parent": {"database_id": "2cfac610-a640-8002-9365-d99a2c917326"}, "properties": {"Project name": {"title": [{"text": {"content": "'"$clean_title"'"}}]}, "Status": {"status": {"name": "In progress"}}, "Priority": {"select": {"name": "'"$priority"'"}}, "Stack": {"select": {"name": "'"$stack"'"}}, "Start date": {"date": {"start": "'$(date +%Y-%m-%d)'"}}, "Assignee": {"people": [{"id": "'"$user_id"'"}]}}}'
+          # Escape variables to prevent shell interpretation
+          safe_title=$(echo "$clean_title" | sed 's/"/\\"/g')
+          safe_priority=$(echo "$priority" | sed 's/"/\\"/g')
+          safe_stack=$(echo "$stack" | sed 's/"/\\"/g')
+          safe_user_id=$(echo "$user_id" | sed 's/"/\\"/g')
+          
+          page_data='{"parent": {"database_id": "2cfac610-a640-8002-9365-d99a2c917326"}, "properties": {"Project name": {"title": [{"text": {"content": "'"$safe_title"'"}}]}, "Status": {"status": {"name": "In progress"}}, "Priority": {"select": {"name": "'"$safe_priority"'"}}, "Stack": {"select": {"name": "'"$safe_stack"'"}}, "Start date": {"date": {"start": "'$(date +%Y-%m-%d)'"}}, "Assignee": {"people": [{"id": "'"$safe_user_id"'"}]}}}'
           
           response=$(curl -s -X POST "https://api.notion.com/v1/pages" \
             -H "Authorization: Bearer ${{ secrets.NOTION_API_KEY }}" \
