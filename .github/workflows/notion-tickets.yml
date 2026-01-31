@@ -48,15 +48,16 @@ jobs:
               "model": "deepseek-chat",
               "messages": [{
                 "role": "system",
-                "content": "Analyze this commit and return JSON with: title (clean, business-focused), description (what changed and why), priority (High/Medium/Low), stack (Backend/Web Editor/Mobile App/Dashboard), estimated_hours (number). Return only valid JSON."
+                "content": "Analyze this commit and return JSON with: title, description, priority, stack, estimated_hours. Return only valid JSON without markdown formatting."
               }, {
                 "role": "user", 
-                "content": "Commit: '"$commit_message"'\\n\\nChanges:\\n'"$commit_diff"'"
+                "content": "Commit: '"$commit_message"' Changes: '"$commit_diff"'"
               }],
               "temperature": 0.1
             }')
           
-          echo "$analysis" | grep -o '"content":"[^"]*' | cut -d'"' -f4
+          # Extract JSON content safely
+          echo "$analysis" | grep -o '"content":"[^"]*' | cut -d'"' -f4 | sed 's/\\"/"/g' | sed 's/\\n/ /g'
         }
         
         # Function to create Notion page via curl
