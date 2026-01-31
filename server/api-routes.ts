@@ -145,7 +145,7 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
                 try {
                     const css = await generateStyles(value);
                     const fileName = `store-${storeId}-${Date.now()}.css`;
-                    const styleUrl = await uploadFile(fileName, css, 'text/css');
+                    const styleUrl = await uploadFile(fileName, css);
                     storeData.styleUrl = styleUrl;
                     console.log(styleUrl)
                 } catch (styleErr) {
@@ -198,7 +198,7 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
                 try {
                     const css = await generateStyles(storeData.storeSettings);
                     const fileName = `store-${row.store_id}-${Date.now()}.css`;
-                    const styleUrl = await uploadFile(fileName, css, 'text/css');
+                    const styleUrl = await uploadFile(fileName, css);
                     storeData.storeSettings.styleUrl = styleUrl;
 
                     // Update DB with new styleUrl
@@ -243,7 +243,7 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
                 try {
                     const css = await generateStyles(storeData.storeSettings);
                     const fileName = `store-${row.store_id}-${Date.now()}.css`;
-                    const styleUrl = await uploadFile(fileName, css, 'text/css');
+                    const styleUrl = await uploadFile(fileName, css);
                     storeData.styleUrl = styleUrl; // Deprecated: keep for back-compat if needed
                     storeData.storeSettings.styleUrl = styleUrl; // Store inside settings
                 } catch (styleErr) {
