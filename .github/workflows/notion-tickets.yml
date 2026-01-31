@@ -137,7 +137,9 @@ jobs:
         
         while IFS='|' read -r commit_hash commit_message author_name author_email; do
           if [ -n "$commit_hash" ]; then
-            if create_notion_page "$commit_hash" "$commit_message" "$author_name" "$author_email"; then
+            # Escape commit message to prevent shell interpretation
+            safe_commit_message=$(echo "$commit_message" | sed 's/"/\\"/g' | sed 's/`/\\`/g' | sed 's/\$/\\$/g')
+            if create_notion_page "$commit_hash" "$safe_commit_message" "$author_name" "$author_email"; then
               ((created_tickets++))
             fi
           fi
