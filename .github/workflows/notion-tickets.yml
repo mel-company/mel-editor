@@ -132,7 +132,8 @@ jobs:
           fi
         }
         
-        # Process commits
+        # Process commits - write to file to avoid shell interpretation of backticks
+        echo '${{ steps.changes.outputs.commits }}' > /tmp/commits.txt
         created_tickets=0
         
         while IFS='|' read -r commit_hash commit_message author_name author_email; do
@@ -143,7 +144,7 @@ jobs:
               ((created_tickets++))
             fi
           fi
-        done <<< "${{ steps.changes.outputs.commits }}"
+        done < /tmp/commits.txt
         
         echo ""
         echo "🎉 Created $created_tickets tickets in Notion!"
