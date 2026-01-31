@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { X, Upload, Image as ImageIcon, Eye } from "lucide-react";
 import { FileType, ProductType, CategoryType } from "../../../types";
-import { useFileUpload } from "../../../hooks/use-file-upload";
+import { useR2Upload } from "../../../hooks/use-r2-upload";
 import { mockProducts } from "@templates/data/products";
 import { mockCategories } from "@templates/data/categories";
 
@@ -23,14 +23,13 @@ const ImageUploadModal = ({
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
-  const { fileState, handleFileChange, clear } = useFileUpload({
+  const { uploadState, handleFileChange, clear } = useR2Upload({
     onUpload: () => {},
     maxSizeMB: 5,
     acceptedTypes: ["image/*"],
   });
 
-  const displayImage =
-    fileState.file?.base64Content || fileState.file?.url;
+  const displayImage = uploadState.file?.url;
 
   // Get categories from store settings or use mock
   const categories = mockCategories || [];
@@ -49,8 +48,8 @@ const ImageUploadModal = ({
   };
 
   const handleConfirm = () => {
-    if (fileState.file) {
-      onConfirm(fileState.file);
+    if (uploadState.file) {
+      onConfirm(uploadState.file);
       handleClose();
     }
   };
@@ -91,8 +90,21 @@ const ImageUploadModal = ({
                   accept="image/*"
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   onChange={handleFileChange}
+                  disabled={uploadState.isLoading}
                 />
-                {displayImage ? (
+                {uploadState.isLoading ? (
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-700 mb-1">
+                        جاري الرفع...
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {uploadState.uploadProgress}% مكتمل
+                      </p>
+                    </div>
+                  </div>
+                ) : displayImage ? (
                   <div className="relative group">
                     <img
                       src={displayImage}
@@ -125,7 +137,12 @@ const ImageUploadModal = ({
                   </div>
                 )}
               </div>
-              {displayImage && (
+              {uploadState.error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-sm text-red-600">{uploadState.error}</p>
+                </div>
+              )}
+              {displayImage && !uploadState.isLoading && (
                 <button
                   onClick={handleNext}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"

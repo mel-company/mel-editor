@@ -1,6 +1,6 @@
 import { FileType } from "../../../../types";
 import { Loader2, Image as ImageIcon } from "lucide-react";
-import { useFileUpload } from "../../../../hooks/use-file-upload";
+import { useR2Upload } from "../../../../hooks/use-r2-upload";
 import classNames from "classnames";
 
 interface FileUploadInputProps {
@@ -14,32 +14,31 @@ const FileUploadListItem = ({
   value,
   onChange,
 }: FileUploadInputProps) => {
-  const { fileState, handleFileChange } = useFileUpload({
-    initialValue: value,
+  const { uploadState, handleFileChange } = useR2Upload({
     onUpload: onChange,
     maxSizeMB: 5,
     acceptedTypes: ["image/*"],
   });
 
-  // Use base64Content only, as blob URLs expire and can't be restored after page reload
+  // Use URL from R2 upload, fallback to existing value
   const displayImage =
-    fileState.file?.base64Content ||
-    value?.base64Content ||
-    value?.url; // Fallback to url only if base64 is not available
+    uploadState.file?.url ||
+    value?.url ||
+    value?.base64Content; // Fallback for legacy data
 
   return (
     <div
       className={classNames(
         "w-full relative flex items-center justify-between bg-slate-50 p-1 rounded-lg",
         "border border-transparent hover:border-slate-100 transition-colors",
-        fileState.error ? "border-red-300 bg-red-50" : ""
+        uploadState.error ? "border-red-300 bg-red-50" : ""
       )}
     >
       <p className="sub-title mx-1">{label || "اسم الملف"}</p>
       <div className="flex items-center gap-1.5 uppercase">
         <p className="text-slate-800">{label || "اسم الملف"}</p>
         <div className="w-9 h-8 border border-slate-200 bg-slate-100 max-h-9 max-w-9 flex items-center justify-center aspect-square rounded-md overflow-hidden">
-          {fileState.isLoading ? (
+          {uploadState.isLoading ? (
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
           ) : (
             <>
@@ -60,8 +59,8 @@ const FileUploadListItem = ({
             </>
           )}
 
-          {fileState.error && (
-            <p className="text-xs text-red-500 mt-1">{fileState.error}</p>
+          {uploadState.error && (
+            <p className="text-xs text-red-500 mt-1">{uploadState.error}</p>
           )}
         </div>
         <input
@@ -69,7 +68,7 @@ const FileUploadListItem = ({
           accept="image/*"
           className="absolute w-full h-full inset-0 opacity-0 cursor-pointer z-10"
           onChange={handleFileChange}
-          disabled={fileState.isLoading}
+          disabled={uploadState.isLoading}
         />
       </div>
     </div>

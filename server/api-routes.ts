@@ -4,9 +4,18 @@ import db from './database';
 import { resolveStore, getMockData } from './utils';
 import crypto from 'node:crypto';
 import { generateStyles } from './services/style-generator';
-import { uploadFile } from './services/storage';
+import { uploadFile, uploadFileToR2, isR2Available } from './services/storage';
+import multer from 'multer';
 
 export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, isProduction: boolean) {
+    // Configure multer for local file uploads
+    const upload = multer({ 
+        dest: 'client/public/uploads/',
+        limits: {
+            fileSize: 10 * 1024 * 1024, // 10MB
+        }
+    });
+
     // --- API Routes ---
     app.get('/api/v1/products', async (req: Request, res: Response) => {
         try {
@@ -258,6 +267,54 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
         });
     });
 
+    // Unified upload endpoint - uploads to R2 if configured, otherwise saves locally
+    app.post('/api/v1/upload', upload.single('file'), async (req: Request, res: Response) => {
+        try {
+            if (!req.file) {
+                return res.status(400).json({ error: 'No file uploaded' });
+            }
+
+            const fs = await import('node:fs');
+            const fileBuffer = await fs.promises.readFile(req.file.path);
+            
+            // Extract store ID from subdomain or request body
+            const storeId = req.body.storeId || resolveStore(req.get('host') || '');
+            console.log('📤 Upload - storeId:', storeId, 'host:', req.get('host'));
+            
+            let fileUrl: string;
+            
+            if (isR2Available()) {
+                // Upload to R2
+                try {
+                    fileUrl = await uploadFileToR2(
+                        req.file.originalname,
+                        fileBuffer,
+                        req.file.mimetype,
+                        storeId
+                    );
+                    // Clean up temp file after R2 upload
+                    await fs.promises.unlink(req.file.path);
+                    console.log('✅ File uploaded to R2:', fileUrl);
+                } catch (r2Error) {
+                    console.error('R2 upload failed, falling back to local:', r2Error);
+                    // Fall back to local storage
+                    fileUrl = `/uploads/${req.file.filename}`;
+                }
+            } else {
+                // Local storage fallback
+                fileUrl = `/uploads/${req.file.filename}`;
+                console.log('📁 File saved locally:', fileUrl);
+            }
+            
+            res.json({
+                success: true,
+                fileUrl,
+            });
+        } catch (error) {
+            console.error('Upload error:', error);
+            res.status(500).json({ error: 'Failed to upload file' });
+        }
+    });
 
     // NEW: Debug List Stores
     app.get('/api/v1/debug/stores', (_req: Request, res: Response) => {
