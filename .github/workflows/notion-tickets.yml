@@ -32,6 +32,33 @@ jobs:
         
     - name: Create Notion tickets
       run: |
+        # Function to analyze commit with AI
+        analyze_commit() {
+          local commit_hash="$1"
+          local commit_message="$2"
+          
+          # Get commit details
+          commit_diff=$(git show --stat --pretty=format:"%B" "$commit_hash")
+          
+          # AI analysis with DeepSeek
+          analysis=$(curl -s -X POST "https://api.deepseek.com/v1/chat/completions" \
+            -H "Authorization: Bearer ${{ secrets.DEEPSEEK_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "deepseek-chat",
+              "messages": [{
+                "role": "system",
+                "content": "Analyze this commit and return JSON with: title (clean, business-focused), description (what changed and why), priority (High/Medium/Low), stack (Backend/Web Editor/Mobile App/Dashboard), estimated_hours (number). Return only valid JSON."
+              }, {
+                "role": "user", 
+                "content": "Commit: '"$commit_message"'\\n\\nChanges:\\n'"$commit_diff"'"
+              }],
+              "temperature": 0.1
+            }')
+          
+          echo "$analysis" | grep -o '"content":"[^"]*' | cut -d'"' -f4
+        }
+        
         # Function to create Notion page via curl
         create_notion_page() {
           local commit_hash="$1"
@@ -39,26 +66,32 @@ jobs:
           local author_name="$3"
           local author_email="$4"
           
-          # Clean title (remove common prefixes)
-          clean_title=$(echo "$commit_message" | sed -E 's/^(feat|fix|docs|style|refactor|test|chore)[\(\)]*\s*[:\-]\s*//' | sed -E 's/^\w+[\(\)]*\s*[:\-]\s*//' | sed 's/.*/\U&/' | sed 's/./\L&/' | cut -c1-80)
+          # Get AI analysis
+          ai_analysis=$(analyze_commit "$commit_hash" "$commit_message")
           
-          # Determine priority
-          if echo "$commit_message" | grep -qiE "(urgent|critical|hotfix|feat|feature|add)"; then
-            priority="High"
+          # Parse AI response (fallback to defaults if AI fails)
+          if echo "$ai_analysis" | grep -q '"title"'; then
+            clean_title=$(echo "$ai_analysis" | grep -o '"title":"[^"]*' | cut -d'"' -f4 | cut -c1-80)
+            description=$(echo "$ai_analysis" | grep -o '"description":"[^"]*' | cut -d'"' -f4)
+            priority=$(echo "$ai_analysis" | grep -o '"priority":"[^"]*' | cut -d'"' -f4)
+            stack=$(echo "$ai_analysis" | grep -o '"stack":"[^"]*' | cut -d'"' -f4)
+            estimated_hours=$(echo "$ai_analysis" | grep -o '"estimated_hours":[0-9]*' | cut -d':' -f2)
           else
+            # Fallback to original logic
+            clean_title=$(echo "$commit_message" | sed -E 's/^(feat|fix|docs|style|refactor|test|chore)[\(\)]*\s*[:\-]\s*//' | sed -E 's/^\w+[\(\)]*\s*[:\-]\s*//' | sed 's/.*/\U&/' | sed 's/./\L&/' | cut -c1-80)
+            description="Commit: $commit_message"
+            priority="Medium"
+            stack="Backend"
+            estimated_hours="4"
+          fi
+          
+          # Validate priority
+          if [[ "$priority" != "High" && "$priority" != "Medium" && "$priority" != "Low" ]]; then
             priority="Medium"
           fi
           
-          # Determine stack
-          if echo "$commit_message" | grep -qiE "(api|server|backend)"; then
-            stack="Backend"
-          elif echo "$commit_message" | grep -qiE "(frontend|client|ui)"; then
-            stack="Web Editor"
-          elif echo "$commit_message" | grep -qiE "(mobile|app)"; then
-            stack="Mobile App"
-          elif echo "$commit_message" | grep -qiE "(dashboard)"; then
-            stack="Dashboard"
-          else
+          # Validate stack
+          if [[ "$stack" != "Backend" && "$stack" != "Web Editor" && "$stack" != "Mobile App" && "$stack" != "Dashboard" ]]; then
             stack="Backend"
           fi
           
@@ -77,7 +110,7 @@ jobs:
             return 0
           fi
           
-          # Create page
+          # Create page with AI-enhanced data
           page_data='{"parent": {"database_id": "2cfac610-a640-8002-9365-d99a2c917326"}, "properties": {"Project name": {"title": [{"text": {"content": "'"$clean_title"'"}}]}, "Status": {"status": {"name": "In progress"}}, "Priority": {"select": {"name": "'"$priority"'"}}, "Stack": {"select": {"name": "'"$stack"'"}}, "Start date": {"date": {"start": "'$(date +%Y-%m-%d)'"}}, "Assignee": {"people": [{"id": "'"$user_id"'"}]}}}'
           
           response=$(curl -s -X POST "https://api.notion.com/v1/pages" \
@@ -88,7 +121,8 @@ jobs:
           
           if echo "$response" | grep -q '"object":"page"'; then
             url=$(echo "$response" | grep -o '"url":"[^"]*' | cut -d'"' -f4)
-            echo "✅ Created ticket: $clean_title"
+            echo "✅ Created AI-enhanced ticket: $clean_title"
+            echo "   Priority: $priority | Stack: $stack | Hours: $estimated_hours"
             echo "   $url"
             return 0
           else
