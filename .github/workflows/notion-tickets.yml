@@ -49,16 +49,21 @@ jobs:
           local author_email="$4"
           
           # Get AI analysis
+          echo "DEBUG: Getting AI analysis for commit $commit_hash"
           ai_analysis=$(analyze_commit "$commit_hash" "$commit_message")
+          echo "DEBUG: AI analysis result: $ai_analysis"
           
           # Parse AI response (fallback to defaults if AI fails)
+          echo "DEBUG: Attempting to parse AI response"
           if echo "$ai_analysis" | jq -e '.title' >/dev/null 2>&1; then
+            echo "DEBUG: AI response is valid JSON"
             clean_title=$(echo "$ai_analysis" | jq -r '.title' | cut -c1-80 | sed 's/"/\\"/g')
             description=$(echo "$ai_analysis" | jq -r '.description' | sed 's/"/\\"/g')
             priority=$(echo "$ai_analysis" | jq -r '.priority' | sed 's/"/\\"/g')
             stack=$(echo "$ai_analysis" | jq -r '.stack' | sed 's/"/\\"/g')
             estimated_hours=$(echo "$ai_analysis" | jq -r '.estimated_hours')
           else
+            echo "DEBUG: AI response is not valid JSON, using fallback"
             # Fallback to original logic
             clean_title=$(echo "$commit_message" | sed -E 's/^(feat|fix|docs|style|refactor|test|chore)[\(\)]*\s*[:\-]\s*//' | sed -E 's/^\w+[\(\)]*\s*[:\-]\s*//' | sed 's/.*/\U&/' | sed 's/./\L&/' | cut -c1-80 | sed 's/"/\\"/g')
             description="Commit: $commit_message"
