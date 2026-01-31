@@ -1,0 +1,188 @@
+name: Create Notion Tickets from Commits
+
+on:
+  push:
+    branches: [ main, master, pipeline ]
+  workflow_dispatch:
+
+jobs:
+  create-notion-tickets:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Get changed files and commits
+      id: changes
+      run: |
+        # Get commits since last push (avoid duplicates)
+        if [ "${{ github.event_name }}" == "push" ]; then
+          COMMITS=$(git log --since="${{ github.event.before }}" --pretty=format:"%H|%s|%an|%ae" --no-merges)
+        else
+          # For workflow dispatch, get last 24 hours
+          COMMITS=$(git log --since="24 hours ago" --pretty=format:"%H|%s|%an|%ae" --no-merges)
+        fi
+        
+        echo "commits<<EOF" >> $GITHUB_OUTPUT
+        echo "$COMMITS" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+    - name: Create Notion tickets
+      run: |
+        # Install dependencies
+        npm install -g notion-client
+        
+        # Create Python script for Notion API
+        cat > create_tickets.py << 'EOF'
+        import json
+        import requests
+        import re
+        from datetime import datetime
+        
+        # Configuration
+        NOTION_API_KEY = "${{ secrets.NOTION_API_KEY }}"
+        DATABASE_ID = "2cfac610-a640-8002-9365-d99a2c917326"
+        
+        # Headers for Notion API
+        headers = {
+            "Authorization": f"Bearer {NOTION_API_KEY}",
+            "Content-Type": "application/json",
+            "Notion-Version": "2022-06-28"
+        }
+        
+        # User mapping (GitHub email to Notion user ID)
+        USER_MAPPING = {
+            "hey@alihammad.net": "18ed872b-594c-81c7-85d8-00024f4f0dab",
+            "hassan.21.adnan@gmail.com": "3ab360ba-713d-42c9-b935-d04fae4aed4d"
+        }
+        
+        # Priority mapping from commit patterns
+        def get_priority(commit_message):
+            message_lower = commit_message.lower()
+            if any(word in message_lower for word in ['urgent', 'critical', 'hotfix']):
+                return "High"
+            elif any(word in message_lower for word in ['feat', 'feature', 'add']):
+                return "High"
+            else:
+                return "Medium"
+        
+        # Stack mapping from commit patterns
+        def get_stack(commit_message):
+            message_lower = commit_message.lower()
+            if any(word in message_lower for word in ['api', 'server', 'backend']):
+                return "Backend"
+            elif any(word in message_lower for word in ['frontend', 'client', 'ui']):
+                return "Web Editor"
+            elif any(word in message_lower for word in ['mobile', 'app']):
+                return "Mobile App"
+            elif any(word in message_lower for word in ['dashboard']):
+                return "Dashboard"
+            else:
+                return "Backend"
+        
+        # Clean commit message for title
+        def clean_title(commit_message):
+            # Remove common prefixes
+            patterns = [
+                r'^(feat|fix|docs|style|refactor|test|chore)[\(\)]*\s*[:\-]\s*',
+                r'^\w+[\(\)]*\s*[:\-]\s*',
+                r'^(merge|revert)\s*[:\-]\s*'
+            ]
+            
+            cleaned = commit_message
+            for pattern in patterns:
+                cleaned = re.sub(pattern, '', cleaned, flags=re.IGNORECASE)
+            
+            # Capitalize first letter
+            cleaned = cleaned.strip().capitalize()
+            
+            # Limit length
+            if len(cleaned) > 80:
+                cleaned = cleaned[:77] + "..."
+            
+            return cleaned
+        
+        # Create Notion page
+        def create_notion_page(commit_hash, commit_message, author_name, author_email):
+            # Check if page already exists
+            search_response = requests.post(
+                "https://api.notion.com/v1/search",
+                headers=headers,
+                json={"query": commit_hash[:8]}
+            )
+            
+            if search_response.status_code == 200 and search_response.json().get("results"):
+                print(f"Page for commit {commit_hash[:8]} already exists, skipping...")
+                return None
+            
+            # Get user ID (default to Ali)
+            user_id = USER_MAPPING.get(author_email, "18ed872b-594c-81c7-85d8-00024f4f0dab")
+            
+            # Prepare page data
+            page_data = {
+                "parent": {"database_id": DATABASE_ID},
+                "properties": {
+                    "Project name": {
+                        "title": [{"text": {"content": clean_title(commit_message)}}]
+                    },
+                    "Status": {"status": {"name": "In progress"}},
+                    "Priority": {"select": {"name": get_priority(commit_message)}},
+                    "Stack": {"select": {"name": get_stack(commit_message)}},
+                    "Start date": {"date": {"start": datetime.now().strftime("%Y-%m-%d")}}
+                }
+            }
+            
+            # Add assignee if user is found
+            if user_id:
+                page_data["properties"]["Assignee"] = {
+                    "people": [{"id": user_id}]
+                }
+            
+            # Create page
+            response = requests.post(
+                "https://api.notion.com/v1/pages",
+                headers=headers,
+                json=page_data
+            )
+            
+            if response.status_code == 200:
+                page_data = response.json()
+                print(f"✅ Created ticket: {clean_title(commit_message)}")
+                return page_data["url"]
+            else:
+                print(f"❌ Failed to create ticket: {response.text}")
+                return None
+        
+        # Main execution
+        if __name__ == "__main__":
+            commits_data = """${{ steps.changes.outputs.commits }}"""
+            
+            if not commits_data.strip():
+                print("No new commits found")
+                exit(0)
+            
+            created_tickets = []
+            
+            for line in commits_data.strip().split('\n'):
+                if line.strip():
+                    commit_hash, commit_message, author_name, author_email = line.split('|', 3)
+                    
+                    url = create_notion_page(commit_hash, commit_message, author_name, author_email)
+                    if url:
+                        created_tickets.append(url)
+            
+            print(f"\n🎉 Created {len(created_tickets)} tickets in Notion!")
+            for url in created_tickets:
+                print(f"  {url}")
+        EOF
+        
+        # Run the script
+        python3 create_tickets.py
+        
+    - name: Summary
+      run: |
+        echo "🎯 Notion ticket creation completed!"
+        echo "📝 Check your Mel database for new tickets"
