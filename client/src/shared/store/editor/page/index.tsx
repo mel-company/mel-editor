@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import createDbStorage from "../../../utils/db-storage";
-import { PageType, SectionType } from "../../../types";
+import { PageType } from "../../../types";
 import { navigation_sections } from "@templates/data/template/sections/navigation";
 import { hero_sections } from "@templates/data/template/sections/hero";
 import { categories_sections } from "@templates/data/template/sections/categories";
@@ -49,10 +49,18 @@ export const restoreSectionComponents = (pages: PageType[]): PageType[] => {
 
       // If section has no options or options array is empty, restore from section definitions
       if (!section.options || section.options.length === 0) {
+        // Map section options to include resolved components
+        const optionsWithComponents = sectionOptions.map((option) => {
+          const registryEntry = resolveComponent(section.type, option.id);
+          return {
+            ...option,
+            component: registryEntry ? registryEntry.component : undefined
+          };
+        });
 
         return {
           ...section,
-          options: sectionOptions,
+          options: optionsWithComponents,
         };
       }
 

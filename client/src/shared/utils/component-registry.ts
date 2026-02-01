@@ -4,6 +4,7 @@ import { footer_sections } from "@templates/data/template/sections/footer";
 import { our_story_sections } from "@templates/data/template/sections/our-story";
 import { contact_sections } from "@templates/data/template/sections/contact";
 import { navigation_sections } from "@templates/sections/page/home/production/navbar";
+import { hero_sections } from "@templates/data/template/sections/hero";
 import { lazy } from "react";
 
 // Type definition for the registry
@@ -26,57 +27,73 @@ const registry: ComponentRegistryType = {};
 // Navigation
 registry["navigation:1"] = {
     component: lazy(() => import("@templates/sections/page/home/production/navbar/components").then(m => ({ default: m.Navigation1 }))),
+    defaultOptions: navigation_sections.find(s => s.id === "1")
 };
 
 // Hero Sections
 registry["hero:1"] = {
     component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection1 }))),
+    defaultOptions: hero_sections.find(s => s.id === "1")
 };
 registry["hero:2"] = {
     component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection2 }))),
+    defaultOptions: hero_sections.find(s => s.id === "2")
 };
 registry["hero:3"] = {
     component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection3 }))),
+    defaultOptions: hero_sections.find(s => s.id === "3")
 };
 registry["hero:4"] = {
     component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection4 }))),
+    defaultOptions: hero_sections.find(s => s.id === "4")
 };
 registry["hero:5"] = {
     component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection5 }))),
+    defaultOptions: hero_sections.find(s => s.id === "5")
 };
 
 // Categories Sections
 registry["categories:1"] = {
     component: lazy(() => import("@templates/data/template/sections/categories/components").then(m => ({ default: m.CategoriesSection }))),
+    defaultOptions: categories_sections.find(s => s.id === "1")
 };
 registry["categories:2"] = {
     component: lazy(() => import("@templates/data/template/sections/categories/components").then(m => ({ default: m.CategoriesSection2 }))),
+    defaultOptions: categories_sections.find(s => s.id === "2")
 };
 registry["categories:3"] = {
     component: lazy(() => import("@templates/data/template/sections/categories/components").then(m => ({ default: m.CategoriesSection3 }))),
+    defaultOptions: categories_sections.find(s => s.id === "3")
 };
 registry["categories:4"] = {
     component: lazy(() => import("@templates/data/template/sections/categories/components").then(m => ({ default: m.CategoriesSection4 }))),
+    defaultOptions: categories_sections.find(s => s.id === "4")
 };
 registry["categories:5"] = {
     component: lazy(() => import("@templates/data/template/sections/categories/components").then(m => ({ default: m.CategoriesSection5 }))),
+    defaultOptions: categories_sections.find(s => s.id === "5")
 };
 
 // Recent Products Sections
 registry["recent-products:1"] = {
     component: lazy(() => import("@templates/data/template/sections/recent-products/components").then(m => ({ default: m.RecentProducts }))),
+    defaultOptions: recent_products_sections.find(s => s.id === "1")
 };
 registry["recent-products:2"] = {
     component: lazy(() => import("@templates/data/template/sections/recent-products/components").then(m => ({ default: m.RecentProductsCarousel }))),
+    defaultOptions: recent_products_sections.find(s => s.id === "2")
 };
 registry["recent-products:3"] = {
     component: lazy(() => import("@templates/data/template/sections/recent-products/components").then(m => ({ default: m.RecentProductsLarge }))),
+    defaultOptions: recent_products_sections.find(s => s.id === "3")
 };
 registry["recent-products:4"] = {
     component: lazy(() => import("@templates/data/template/sections/recent-products/components").then(m => ({ default: m.RecentProductsCompact }))),
+    defaultOptions: recent_products_sections.find(s => s.id === "4")
 };
 registry["recent-products:5"] = {
     component: lazy(() => import("@templates/data/template/sections/recent-products/components").then(m => ({ default: m.RecentProductsList }))),
+    defaultOptions: recent_products_sections.find(s => s.id === "5")
 };
 
 // CamelCase alias for T2 template compatibility
@@ -89,12 +106,15 @@ registry["recentProducts:5"] = registry["recent-products:5"];
 // Footer Sections
 registry["footer:1"] = {
     component: lazy(() => import("@templates/data/template/sections/footer/components").then(m => ({ default: m.Footer1 }))),
+    defaultOptions: footer_sections.find(s => s.id === "1")
 };
 registry["footer:2"] = {
     component: lazy(() => import("@templates/data/template/sections/footer/components").then(m => ({ default: m.FooterSection2 }))),
+    defaultOptions: footer_sections.find(s => s.id === "2")
 };
 registry["footer:3"] = {
     component: lazy(() => import("@templates/data/template/sections/footer/components").then(m => ({ default: m.FooterSection3 }))),
+    defaultOptions: footer_sections.find(s => s.id === "3")
 };
 
 // Contact Sections

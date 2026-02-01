@@ -57,7 +57,7 @@ export const CategoriesSection2 = ({ categories, content }: { categories: Catego
         return (
             <div className="container mx-auto px-4 py-12">
                 {content?.title && (
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center">{content.title}</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center" data-type="text" data-name="title" data-title="العنوان">{content.title}</h2>
                 )}
                 <div className="text-center text-slate-500 py-12">
                     لا توجد تصنيفات لعرضها
@@ -69,7 +69,7 @@ export const CategoriesSection2 = ({ categories, content }: { categories: Catego
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             {content?.title && (
-                <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">{content.title}</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center" data-type="text" data-name="title" data-title="العنوان">{content.title}</h2>
             )}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
                 {categories.map((category, index) => {
@@ -113,7 +113,7 @@ export const CategoriesSection3 = ({ categories, content }: { categories: Catego
         return (
             <div className="container mx-auto px-4 py-12">
                 {content?.title && (
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center">{content.title}</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center" data-type="text" data-name="title" data-title="العنوان">{content.title}</h2>
                 )}
                 <div className="text-center text-slate-500 py-12">
                     لا توجد تصنيفات لعرضها
@@ -125,7 +125,7 @@ export const CategoriesSection3 = ({ categories, content }: { categories: Catego
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             {content?.title && (
-                <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">{content.title}</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8" data-type="text" data-name="title" data-title="العنوان">{content.title}</h2>
             )}
             <div className="overflow-x-auto pb-4 -mx-4 sm:mx-0 px-4 sm:px-0">
                 <div className="flex gap-3 sm:gap-4 w-max">
@@ -171,7 +171,7 @@ export const CategoriesSection4 = ({ categories, content }: { categories: Catego
         return (
             <div className="container mx-auto px-4 py-12">
                 {content?.title && (
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center">{content.title}</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center" data-type="text" data-name="title" data-title="العنوان">{content.title}</h2>
                 )}
                 <div className="text-center text-slate-500 py-12">
                     لا توجد تصنيفات لعرضها
@@ -183,7 +183,7 @@ export const CategoriesSection4 = ({ categories, content }: { categories: Catego
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             {content?.title && (
-                <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center">{content.title}</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-center" data-type="text" data-name="title" data-title="العنوان">{content.title}</h2>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                 {categories.map((category, index) => {
@@ -227,7 +227,7 @@ export const CategoriesSection5 = ({ categories, content }: { categories: Catego
         return (
             <div className="container mx-auto px-4 py-12">
                 {content?.title && (
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center">{content.title}</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold mb-8 text-center" data-type="text" data-name="title" data-title="العنوان">{content.title}</h2>
                 )}
                 <div className="text-center text-slate-500 py-12">
                     لا توجد تصنيفات لعرضها
@@ -239,7 +239,7 @@ export const CategoriesSection5 = ({ categories, content }: { categories: Catego
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             {content?.title && (
-                <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">{content.title}</h2>
+                <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8" data-type="text" data-name="title" data-title="العنوان">{content.title}</h2>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {categories.map((category, index) => {

@@ -263,8 +263,12 @@ const Section = ({
     }
   }
 
-  if (restOptions.photos && !Array.isArray(restOptions.photos)) {
-    props = { ...props, ...restOptions.photos };
+  // Handle photos - prioritize section.photos (user uploads) over restOptions.photos (mock defaults)
+  const photos = section.photos || restOptions.photos;
+  if (photos && !Array.isArray(photos)) {
+    props = { ...props, ...photos };
+  } else if (photos) {
+    props.photos = photos;
   }
 
   // Merge user overrides from section.content

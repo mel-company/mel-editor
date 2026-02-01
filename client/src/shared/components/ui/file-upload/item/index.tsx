@@ -1,11 +1,12 @@
 import { FileType } from "../../../../types";
-import { Loader2, Image as ImageIcon } from "lucide-react";
+import { Loader2, Image as ImageIcon, XIcon } from "lucide-react";
 import { useR2Upload } from "../../../../hooks/use-r2-upload";
 import classNames from "classnames";
 
 interface FileUploadInputProps {
   label?: string;
   value: FileType;
+  deleteSlide?: (e: any) => void;
   onChange: (file: FileType) => void;
 }
 
@@ -13,6 +14,7 @@ const FileUploadListItem = ({
   label,
   value,
   onChange,
+  deleteSlide
 }: FileUploadInputProps) => {
   const { uploadState, handleFileChange } = useR2Upload({
     onUpload: onChange,
@@ -29,17 +31,26 @@ const FileUploadListItem = ({
   return (
     <div
       className={classNames(
-        "w-full relative flex items-center justify-between bg-slate-50 p-1 rounded-lg",
+        "w-full relative flex items-center justify-between gap-1 bg-slate-50 p-1 rounded-lg",
         "border border-transparent hover:border-slate-100 transition-colors",
         uploadState.error ? "border-red-300 bg-red-50" : ""
       )}
     >
-      <p className="sub-title mx-1">{label || "اسم الملف"}</p>
-      <div className="flex items-center gap-1.5 uppercase">
-        <p className="text-slate-800">{label || "اسم الملف"}</p>
-        <div className="w-9 h-8 border border-slate-200 bg-slate-100 max-h-9 max-w-9 flex items-center justify-center aspect-square rounded-md overflow-hidden">
+      <button
+        onClick={deleteSlide}
+        className="text-xs cursor-pointer z-10 hover:bg-slate-200 p-1 transition-colors rounded-full text-slate-600 hover:text-slate-700"
+      >
+        <XIcon className="w-3.5 h-3.5" />
+      </button>
+      <div className="flex items-center gap-1.5 uppercase relative">
+        <div className="flex flex-col gap-0.5">
+          <p className="sub-title mx-1">{"اسم الملف"}</p>
+          <p className="text-slate-800 text-xs line-clamp-1">{label ?? ""}</p>
+        </div>
+
+        <div className="w-9 h-9 border border-slate-200 bg-slate-100 max-h-9 max-w-9 min-h-9 min-w-9 flex items-center justify-center aspect-square rounded-md overflow-hidden">
           {uploadState.isLoading ? (
-            <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+            <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />
           ) : (
             <>
               {displayImage ? (

@@ -33,15 +33,24 @@ export const OurStorySection1 = ({
                     </div>
                     <div className="order-1 md:order-2">
                         {title && (
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4 sm:mb-6">
+                            <h2 
+                                className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4 sm:mb-6"
+                                data-type="text"
+                                data-name="title"
+                                data-title="العنوان"
+                            >
                                 {title}
                             </h2>
                         )}
                         {description && (
-                            <div
-                                className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed space-y-4"
-                                dangerouslySetInnerHTML={{ __html: description.replace(/\n/g, "<br />") }}
-                            />
+                            <p
+                                className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed whitespace-pre-line"
+                                data-type="textarea"
+                                data-name="description"
+                                data-title="الوصف"
+                            >
+                                {description}
+                            </p>
                         )}
                     </div>
                 </div>
@@ -62,15 +71,24 @@ export const OurStorySection2 = ({
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
             <div className="max-w-4xl mx-auto text-center">
                 {title && (
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 sm:mb-8">
+                    <h2 
+                        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 sm:mb-8"
+                        data-type="text"
+                        data-name="title"
+                        data-title="العنوان"
+                    >
                         {title}
                     </h2>
                 )}
                 {description && (
-                    <div
-                        className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed space-y-4"
-                        dangerouslySetInnerHTML={{ __html: description.replace(/\n/g, "<br />") }}
-                    />
+                    <p
+                        className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed whitespace-pre-line"
+                        data-type="textarea"
+                        data-name="description"
+                        data-title="الوصف"
+                    >
+                        {description}
+                    </p>
                 )}
             </div>
         </section>
@@ -93,7 +111,12 @@ export const OurStorySection3 = ({
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
             <div className="max-w-5xl mx-auto">
                 {title && (
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-8 sm:mb-12 text-center">
+                    <h2 
+                        className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-8 sm:mb-12 text-center"
+                        data-type="text"
+                        data-name="title"
+                        data-title="العنوان"
+                    >
                         {title}
                     </h2>
                 )}
@@ -115,10 +138,14 @@ export const OurStorySection3 = ({
                     </div>
                     <div className="flex flex-col justify-center">
                         {description && (
-                            <div
-                                className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed space-y-4"
-                                dangerouslySetInnerHTML={{ __html: description.replace(/\n/g, "<br />") }}
-                            />
+                            <p
+                                className="text-sm sm:text-base md:text-lg text-slate-600 leading-relaxed whitespace-pre-line"
+                                data-type="textarea"
+                                data-name="description"
+                                data-title="الوصف"
+                            >
+                                {description}
+                            </p>
                         )}
                     </div>
                 </div>

@@ -33,7 +33,14 @@ export const RecentProducts = ({
     return (
         <div className="container mx-auto px-4 py-12">
             <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-bold">{content.title}</h2>
+                <h2 
+                    className="text-3xl font-bold"
+                    data-type="text"
+                    data-name="title"
+                    data-title="العنوان"
+                >
+                    {content.title}
+                </h2>
                 {view_all_link && (
                     <a
                         href={view_all_link}
@@ -163,7 +170,14 @@ export const RecentProductsCarousel = ({
     return (
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-                <h2 className="text-2xl sm:text-3xl font-bold">{content.title}</h2>
+                <h2 
+                    className="text-2xl sm:text-3xl font-bold"
+                    data-type="text"
+                    data-name="title"
+                    data-title="العنوان"
+                >
+                    {content.title}
+                </h2>
                 {view_all_link && (
                     <a
                         href={view_all_link}
@@ -297,7 +311,14 @@ export const RecentProductsLarge = ({
     return (
         <div className="container mx-auto px-4 py-12">
             <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-bold">{content.title}</h2>
+                <h2 
+                    className="text-3xl font-bold"
+                    data-type="text"
+                    data-name="title"
+                    data-title="العنوان"
+                >
+                    {content.title}
+                </h2>
                 {view_all_link && (
                     <a
                         href={view_all_link}
@@ -422,7 +443,14 @@ export const RecentProductsCompact = ({
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">{content.title}</h2>
+                <h2 
+                    className="text-2xl font-bold"
+                    data-type="text"
+                    data-name="title"
+                    data-title="العنوان"
+                >
+                    {content.title}
+                </h2>
                 {view_all_link && (
                     <a
                         href={view_all_link}
@@ -537,7 +565,14 @@ export const RecentProductsList = ({
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">{content.title}</h2>
+                <h2 
+                    className="text-2xl font-bold"
+                    data-type="text"
+                    data-name="title"
+                    data-title="العنوان"
+                >
+                    {content.title}
+                </h2>
                 {view_all_link && (
                     <a
                         href={view_all_link}

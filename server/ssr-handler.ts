@@ -4,8 +4,10 @@ import { Express, Request, Response, NextFunction } from 'express';
 import { ViteDevServer } from 'vite';
 import { resolveStore, getMockData } from './utils';
 import { getStore } from './database';
-
 export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduction: boolean, rootDir: string) {
+    // Import restoreSectionComponents from client code
+    let restoreSectionComponents: any;
+    
     // Handle all routes for SSR
     // Note: The path pattern might depend on Express version, keeping original
     app.get(/(.*)/, async (req: Request, res: Response, next: NextFunction) => {
@@ -18,6 +20,12 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
         }
 
         try {
+            // Import restoreSectionComponents if not already loaded
+            if (!restoreSectionComponents) {
+                const module = await import('../client/src/shared/store/editor/page/index.tsx');
+                restoreSectionComponents = module.restoreSectionComponents;
+            }
+            
             // 1. Resolve Store from Domain
             const storeId = resolveStore(host);
             console.log(`[SSR] Resolving request for ${host} -> ${storeId}`);
@@ -63,6 +71,16 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                     let pages = pagesStorage?.state?.pages || storeData.pages || [];
                     const storeSettings = settingsStorage?.state?.storeSettings || storeData.storeSettings || {};
 
+                    // Restore section components (add options with components)
+                    if (pages && pages.length > 0) {
+                        console.log(`[SSR] Before restore: Page has ${pages[0].sections?.length || 0} sections`);
+                        console.log(`[SSR] First section has options:`, !!pages[0].sections?.[0]?.options);
+                        pages = restoreSectionComponents(pages);
+                        console.log(`[SSR] After restore: Page has ${pages[0].sections?.length || 0} sections`);
+                        console.log(`[SSR] First section now has options:`, !!pages[0].sections?.[0]?.options);
+                        console.log(`[SSR] First section options count:`, pages[0].sections?.[0]?.options?.length || 0);
+                    }
+
                     // If no pages in database, load from mock template as fallback
                     if (!pages || pages.length === 0) {
                         console.log(`[SSR] No pages in DB for ${storeId}, loading from mock template`);
@@ -80,6 +98,8 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                                     target_id: section.id || section.section_id
                                 }))
                             }];
+                            // Restore components for mock template pages too
+                            pages = restoreSectionComponents(pages);
                         } else {
                             pages = [];
                         }
@@ -96,8 +116,15 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                     products = mocks.mockProducts || [];
                     categories = mocks.mockCategories || [];
                     templateData = mocks.mockTemplate || null;
+                    
+                    let noDbPages = mocks.mockTemplate?.pages || [];
+                    // Restore components for no DB data pages too
+                    if (noDbPages.length > 0) {
+                        noDbPages = restoreSectionComponents(noDbPages);
+                    }
+                    
                     templateConfig = {
-                        pages: mocks.mockTemplate?.pages || [],
+                        pages: noDbPages,
                         storeSettings: {}
                     };
                 }
@@ -108,8 +135,15 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                 products = mocks.mockProducts || [];
                 categories = mocks.mockCategories || [];
                 templateData = mocks.mockTemplate || null;
+                
+                let fallbackPages = mocks.mockTemplate?.pages || [];
+                // Restore components for fallback pages too
+                if (fallbackPages.length > 0) {
+                    fallbackPages = restoreSectionComponents(fallbackPages);
+                }
+                
                 templateConfig = {
-                    pages: mocks.mockTemplate?.pages || [],
+                    pages: fallbackPages,
                     storeSettings: {}
                 };
             }

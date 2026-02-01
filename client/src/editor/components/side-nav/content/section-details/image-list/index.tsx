@@ -29,8 +29,21 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
   // Debug logging - only when detectedImages changes
 
 
-  // Combined list of images to render (detected from DOM or from stored/option photos)
+  // Combined list of images to render
+  // For carousel sections, always use sectionPhotos since we manage slides through the store
+  // For other sections, use detected images from DOM
   const imagesToEdit = useMemo(() => {
+    // For carousel sections, prioritize sectionPhotos for proper add/delete functionality
+    if (isCarousel && sectionPhotos.length > 0) {
+      return sectionPhotos.map((photo: PhotoItem, index) => ({
+        name: photo.id || `photo_${index}`,
+        title: photo.label || `شريحة ${index + 1}`,
+        currentSrc: photo.url || photo.base64Content || "",
+        index
+      }));
+    }
+
+    // For non-carousel sections, use DOM-detected images if available
     if (detectedImages.length > 0) return detectedImages;
 
     return sectionPhotos.map((photo: PhotoItem, index) => ({
@@ -39,7 +52,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
       currentSrc: photo.url || photo.base64Content || "",
       index
     }));
-  }, [detectedImages, sectionPhotos]);
+  }, [detectedImages, sectionPhotos, isCarousel]);
 
   // If no images available at all, don't show
   if (imagesToEdit.length === 0) return null;
@@ -49,8 +62,8 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
     return sectionPhotos.find((photo) => photo.id === imageName || photo.label === imageName);
   }, [sectionPhotos]);
 
-  // Helper to update a specific image by name
-  const handleImageUpload = useCallback((file: FileType, imageName: string) => {
+  // Helper to update a specific image by index
+  const handleImageUpload = useCallback((file: FileType, imageName: string, imageIndex: number) => {
     if (!section) return;
 
     // Convert FileType to PhotoItem
@@ -61,18 +74,14 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
       base64Content: file.base64Content,
     };
 
-    // Update or add the photo in the section.photos array
-    const existingIndex = sectionPhotos.findIndex(
-      (photo) => photo.id === imageName || photo.label === imageName
-    );
-
-    let updatedPhotos;
-    if (existingIndex >= 0) {
-      // Update existing photo
-      updatedPhotos = [...sectionPhotos];
-      updatedPhotos[existingIndex] = newPhoto;
+    let updatedPhotos = [...sectionPhotos];
+    
+    // Use index to update the correct photo
+    if (imageIndex >= 0 && imageIndex < sectionPhotos.length) {
+      // Update existing photo at the specific index
+      updatedPhotos[imageIndex] = newPhoto;
     } else {
-      // Add new photo
+      // Add new photo if index is out of bounds
       updatedPhotos = [...sectionPhotos, newPhoto];
     }
 
@@ -102,47 +111,80 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
 
   const handleImageConfirm = useCallback((file: FileType) => {
     if (selectedImageName) {
-      handleImageUpload(file, selectedImageName);
+      const selectedIndex = imagesToEdit.findIndex(img => img.name === selectedImageName);
+      handleImageUpload(file, selectedImageName, selectedIndex);
       setShowModal(false);
       setSelectedImageName(null);
     }
-  }, [selectedImageName, handleImageUpload]);
+  }, [selectedImageName, handleImageUpload, imagesToEdit]);
 
   // Helper to add a new slide (for carousel sections)
   const addNewSlide = useCallback(() => {
     if (!section) return;
 
+    // Get photos from section.photos or option.photos
+    const currentPhotos = Array.isArray(section.photos) && section.photos.length > 0
+      ? [...section.photos]
+      : Array.isArray(option?.photos)
+        ? [...option.photos]
+        : [];
+
     const newSlide = {
       id: `slide_${Date.now()}`,
-      label: `شريحة ${imagesToEdit.length + 1}`,
+      label: `شريحة ${currentPhotos.length + 1}`,
       url: '',
       base64Content: ''
     };
 
-    const updatedPhotos = [...sectionPhotos, newSlide];
+    const updatedPhotos = [...currentPhotos, newSlide];
+
+    // Update both section.photos and options
+    const newOptions = section.options?.map((op: any) => {
+      if (op.id === section.section_id) {
+        return { ...op, photos: updatedPhotos };
+      }
+      return op;
+    });
 
     setSection({
       ...section,
       photos: updatedPhotos,
+      options: newOptions,
     });
-  }, [section, sectionPhotos, imagesToEdit.length, setSection]);
+  }, [section, option, setSection]);
 
-  // Helper to delete a slide (for carousel sections)
-  const deleteSlide = useCallback((imageName: string) => {
-    if (!section) return;
+  // Helper to delete a slide (for carousel sections) - uses index for reliable deletion
+  const deleteSlide = useCallback((imageIndex: number) => {
+    if (!section || imageIndex < 0) return;
+    
+    // Get photos from section.photos or option.photos
+    const currentPhotos = Array.isArray(section.photos) && section.photos.length > 0
+      ? [...section.photos]
+      : Array.isArray(option?.photos)
+        ? [...option.photos]
+        : [];
+    
+    if (imageIndex >= currentPhotos.length) return;
 
-    const updatedPhotos = sectionPhotos.filter(
-      (photo) => photo.id !== imageName && photo.label !== imageName
-    );
+    const updatedPhotos = currentPhotos.filter((_, index) => index !== imageIndex);
+
+    // Update both section.photos and options (like handleUploadImage does)
+    const newOptions = section.options?.map((op: any) => {
+      if (op.id === section.section_id) {
+        return { ...op, photos: updatedPhotos };
+      }
+      return op;
+    });
 
     setSection({
       ...section,
       photos: updatedPhotos,
+      options: newOptions,
     });
-  }, [section, sectionPhotos, setSection]);
+  }, [section, option, setSection]);
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between mb-2">
         <p className="text-xs text-slate-600">
           عدد الصور: {imagesToEdit.length}
@@ -157,7 +199,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
           </button>
         )}
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1.5">
         {imagesToEdit.map((detectedImage) => {
           const photo = getPhotoByName(detectedImage.name);
           const photoUrl = photo?.url || photo?.base64Content || detectedImage.currentSrc;
@@ -165,32 +207,9 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
           return (
             <div
               key={detectedImage.name}
-              className="border border-slate-200 rounded-lg p-3 bg-white"
+              className="border border-slate-200 rounded-lg bg-white"
             >
-              <div className="mb-2 flex items-center justify-between">
-                <label className="text-xs font-semibold text-slate-700">
-                  {detectedImage.title}
-                </label>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setSelectedImageName(detectedImage.name);
-                      setShowModal(true);
-                    }}
-                    className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-                  >
-                    {photoUrl ? "تعديل" : "إضافة مع خيارات"}
-                  </button>
-                  {isCarousel && imagesToEdit.length > 1 && (
-                    <button
-                      onClick={() => deleteSlide(detectedImage.name)}
-                      className="text-xs text-red-600 hover:text-red-700 font-medium"
-                    >
-                      حذف
-                    </button>
-                  )}
-                </div>
-              </div>
+              
 
               {photoUrl ? (
                 <FileUploadListItem
@@ -200,13 +219,18 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
                     name: detectedImage.title,
                     url: photoUrl,
                   }}
-                  onChange={(file) => handleImageUpload(file, detectedImage.name)}
+                  deleteSlide={(e) =>{
+                    e.stopPropagation();
+                    e.preventDefault();
+                    deleteSlide(detectedImage.index)
+                   }}
+                  onChange={(file) => handleImageUpload(file, detectedImage.name, detectedImage.index)}
                 />
               ) : (
                 <FileUploadBar
-                  label=""
+                  label="رفع صورة"
                   value={{}}
-                  onChange={(file) => handleImageUpload(file, detectedImage.name)}
+                  onChange={(file) => handleImageUpload(file, detectedImage.name, detectedImage.index)}
                 />
               )}
             </div>

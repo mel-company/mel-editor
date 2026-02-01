@@ -12,12 +12,22 @@ export const HeroSection1 = ({
     return (
         <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 min-h-[50vh] sm:min-h-[60vh] flex flex-col items-center justify-center text-center">
             {title && (
-                <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-slate-900 px-4">
+                <h1 
+                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 text-slate-900 px-4"
+                    data-type="text"
+                    data-name="title"
+                    data-title="العنوان"
+                >
                     {title}
                 </h1>
             )}
             {description && (
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-600 max-w-3xl px-4">
+                <p 
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl text-slate-600 max-w-3xl px-4"
+                    data-type="textarea"
+                    data-name="description"
+                    data-title="الوصف"
+                >
                     {description}
                 </p>
             )}
@@ -41,12 +51,22 @@ export const HeroSection2 = ({
         <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 min-h-[60vh] sm:min-h-[70vh] flex flex-col md:flex-row items-center justify-center gap-6 sm:gap-8 md:gap-12">
             <div className="flex-1 flex flex-col gap-4 sm:gap-6 w-full md:w-auto">
                 {title && (
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900">
+                    <h1 
+                        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900"
+                        data-type="text"
+                        data-name="title"
+                        data-title="العنوان"
+                    >
                         {title}
                     </h1>
                 )}
                 {description && (
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600 leading-relaxed">
+                    <p 
+                        className="text-sm sm:text-base md:text-lg lg:text-xl text-slate-600 leading-relaxed"
+                        data-type="textarea"
+                        data-name="description"
+                        data-title="الوصف"
+                    >
                         {description}
                     </p>
                 )}
@@ -194,12 +214,22 @@ export const HeroSection3 = ({
 
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
                 {title && (
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6 drop-shadow-2xl px-4">
+                    <h1 
+                        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6 drop-shadow-2xl px-4"
+                        data-type="text"
+                        data-name="title"
+                        data-title="العنوان"
+                    >
                         {title}
                     </h1>
                 )}
                 {description && (
-                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 max-w-3xl mx-auto drop-shadow-lg leading-relaxed px-4">
+                    <p 
+                        className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 max-w-3xl mx-auto drop-shadow-lg leading-relaxed px-4"
+                        data-type="textarea"
+                        data-name="description"
+                        data-title="الوصف"
+                    >
                         {description}
                     </p>
                 )}
@@ -237,12 +267,22 @@ export const HeroSection4 = ({
             </div>
             <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
                 {title && (
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-white">
+                    <h1 
+                        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-white"
+                        data-type="text"
+                        data-name="title"
+                        data-title="العنوان"
+                    >
                         {title}
                     </h1>
                 )}
                 {description && (
-                    <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto">
+                    <p 
+                        className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto"
+                        data-type="textarea"
+                        data-name="description"
+                        data-title="الوصف"
+                    >
                         {description}
                     </p>
                 )}
@@ -267,12 +307,22 @@ export const HeroSection5 = ({
         <header className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 min-h-[60vh] sm:min-h-[70vh] grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-center">
             <div className="flex flex-col gap-4 sm:gap-6">
                 {title && (
-                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900">
+                    <h1 
+                        className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900"
+                        data-type="text"
+                        data-name="title"
+                        data-title="العنوان"
+                    >
                         {title}
                     </h1>
                 )}
                 {description && (
-                    <p className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed">
+                    <p 
+                        className="text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed"
+                        data-type="textarea"
+                        data-name="description"
+                        data-title="الوصف"
+                    >
                         {description}
                     </p>
                 )}

@@ -71,17 +71,18 @@ export const useTemplateStructure = () => {
 
 
     // Determine source of truth: SSR/injected config vs Client Store
-    const rawPages = (isSSR && templateConfig?.pages) ? templateConfig.pages : storePages;
+    // Use templateConfig if available (from SSR hydration), otherwise use client store
+    const rawPages = templateConfig?.pages ? templateConfig.pages : storePages;
 
-    // Hydrate pages with components if coming from SSR
+    // Hydrate pages with components if coming from SSR or templateConfig
     const pages = useMemo(() => {
-        if (isSSR && templateConfig?.pages) {
+        if (templateConfig?.pages) {
             return restoreSectionComponents(rawPages);
         }
         return rawPages;
-    }, [rawPages, isSSR, templateConfig]);
+    }, [rawPages, templateConfig]);
 
-    const storeSettings = (isSSR && templateConfig?.storeSettings) ? templateConfig.storeSettings : storeStoreSettings;
+    const storeSettings = templateConfig?.storeSettings ? templateConfig.storeSettings : storeStoreSettings;
 
     // For SSR or if store ID is invalid, default to the first available page
     const currentPageId = useMemo(() => {
@@ -140,8 +141,9 @@ export const useTemplateStructure = () => {
                 // Strategy: Use fresh section definition as the source of truth for WHICH options exist.
                 // This ensures that even if the stored section is missing a variant (e.g. "Hero 2"), 
                 // it becomes available because we iterate over the FRESH list.
+                // Match by type only to get the options array, since DB sections may have different section_id
                 const freshSection = mockTemplate.sections.find(
-                    (s) => s.id === section.id || (s.type === section.type && s.section_id === section.section_id)
+                    (s) => s.id === section.id || s.type === section.type
                 );
 
 
@@ -187,7 +189,9 @@ export const useTemplateStructure = () => {
 
                 if (selected_options && selected_options.component) {
                     const Component = selected_options.component as any;
-                    const props = getSectionProps(section, storeSettings);
+                    // Pass section with hydrated options to getSectionProps
+                    const hydratedSection = { ...section, options: hydratedOptions };
+                    const props = getSectionProps(hydratedSection, storeSettings);
 
                     if (!props) return null;
 
