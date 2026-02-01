@@ -98,7 +98,8 @@ const useSectionDetails = () => {
       // Hydrate scanned items from section.content if available (persistence)
       // But prefer scanned DOM values if section.content is empty/undefined
       const hydratedScannedItems = scannedSchema.map(item => {
-        if (section?.content && section.content[item.name] !== undefined && section.content[item.name] !== "") {
+        // Use persisted content value if it exists (including empty strings)
+        if (section?.content && item.name in section.content) {
           return { ...item, value: section.content[item.name] };
         }
         // Use scanned value from DOM (which contains initial values)
