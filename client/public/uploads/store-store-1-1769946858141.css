@@ -1,0 +1,21 @@
+
+:root {
+  --primary-color: #4272FF;
+  --secondary-color: #ACBA12;
+  --text-color: #1D293D;
+  --heading-font: Arial;
+  --body-font: Arial;
+}
+
+body {
+  font-family: var(--body-font);
+  color: var(--text-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--heading-font);
+  color: var(--text-color);
+}
+
+/* Add other base styles or generated utility classes here */
+    

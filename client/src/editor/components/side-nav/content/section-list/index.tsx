@@ -16,7 +16,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { ListChevronsUpDown } from "lucide-react";
 import { useSectionStore } from "../../../../../shared/store/editor/section";
 import { usePageStore } from "../../../../../shared/store/editor/page";
-import { SectionType } from "../../../../../types";
+import { SectionType, SectionOptionType } from "../../../../../shared/types";
 import classNames from "classnames";
 import Divider from "../../../../../shared/components/ui/divider";
 
@@ -79,11 +79,11 @@ const EditorSectionList = () => {
             onDragEnd={handleDragEnd}
           >
             <SortableContext
-              items={sections.map((section) => section.target_id)}
+              items={sections.map((section) => section.target_id).filter((id): id is string => id !== undefined)}
               strategy={verticalListSortingStrategy}
             >
               <div className="w-full h-full gap-2 flex flex-col">
-                {sections.map((section, index) => {
+                {sections.map((section) => {
                   return (
                     <SectionItem key={section?.target_id} section={section} />
                   );
@@ -108,7 +108,7 @@ const SectionItem = ({ section }: { section: SectionType }) => {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: section.target_id });
+  } = useSortable({ id: section.target_id ?? "" });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -118,13 +118,13 @@ const SectionItem = ({ section }: { section: SectionType }) => {
   };
 
   const option = section?.options?.find(
-    (option) => option?.id === section?.section_id
+    (option: SectionOptionType) => option?.id === section?.section_id
   );
   return (
     <div
       ref={setNodeRef}
       style={style}
-      onClick={() => setActiveSectionId(section.target_id)}
+      onClick={() => section.target_id && setActiveSectionId(section.target_id)}
       className={classNames(
         `w-full border-e-8 transition-all group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${
           isDragging ? "shadow-lg" : ""

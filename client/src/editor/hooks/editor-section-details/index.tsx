@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
-import { useSectionStore } from "../../../shared/store/editor/section";
-import { usePageStore } from "../../../shared/store/editor/page";
-import { FileType, SectionOptionType, HydratedSection } from "../../../shared/types";
+ import { useSectionStore } from "../../../shared/store/editor/section";
+ import { FileType, SectionOptionType, HydratedSection } from "../../../shared/types";
 import { resolveComponent } from "../../../shared/utils/component-registry";
 import { useDomScannerEffect } from "./use-dom-scanner";
 
@@ -132,17 +130,7 @@ const useSectionDetails = () => {
     deleteSection(activeSectionId);
   };
 
-  const updateSectionOptions = (option: Partial<SectionOptionType>) => {
-    if (!section) return;
-    const newOptions = section.options?.map((op: SectionOptionType) => {
-      if (op.id === section.section_id) {
-        return { ...op, ...option };
-      }
-      return op;
-    });
-    setSection({ ...section, options: newOptions });
-  };
-
+  
   const handleTextChange = (value: string, name: string) => {
     console.log("=== handleTextChange START ===");
     console.log("Value:", value);

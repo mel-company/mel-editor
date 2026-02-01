@@ -1,9 +1,8 @@
 import { useState } from "react";
-import React from "react";
-import { useSectionStore } from "../../../../shared/store/editor/section";
+ import { useSectionStore } from "../../../../shared/store/editor/section";
 import { usePageStore } from "../../../../shared/store/editor/page";
 import { mockTemplate } from "@templates/data/template";
-import { SectionType, PageType } from "../../../../types";
+import { SectionType, PageType } from "../../../../shared/types";
 import classNames from "classnames";
 import { Plus, Eye, X } from "lucide-react";
 import Divider from "../../../../shared/components/ui/divider";
@@ -98,7 +97,7 @@ const ElementsSide = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 h-full overflow-y-auto">
+    <div className="flex flex-col gap-4 h-full overflow-y-auto overflow-x-visible">
       {/* Add Section Form */}
       <div className="editor-nav-section">
         <Divider />
