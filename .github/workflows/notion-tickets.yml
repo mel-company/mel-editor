@@ -20,7 +20,13 @@ jobs:
       run: |
         # Get commits since last push (avoid duplicates)
         if [ "${{ github.event_name }}" == "push" ]; then
-          COMMITS=$(git log --since="${{ github.event.before }}" --pretty=format:"%H|%s|%an|%ae" --no-merges)
+          # Use commit range: from before commit to current
+          if [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
+            COMMITS=$(git log ${{ github.event.before }}..${{ github.sha }} --pretty=format:"%H|%s|%an|%ae" --no-merges)
+          else
+            # First push to branch, get only the head commit
+            COMMITS=$(git log -1 --pretty=format:"%H|%s|%an|%ae" --no-merges)
+          fi
         else
           # For workflow dispatch, get last 24 hours
           COMMITS=$(git log --since="24 hours ago" --pretty=format:"%H|%s|%an|%ae" --no-merges)
@@ -32,13 +38,48 @@ jobs:
         
     - name: Create Notion tickets
       run: |
-        # Function to analyze commit with AI
+        # Function to analyze commit with DeepSeek AI
         analyze_commit() {
           local commit_hash="$1"
           local commit_message="$2"
           
-          # Test with simple JSON to verify escaping works
-          echo '{"title":"Test ticket","description":"Testing escaping","priority":"High","stack":"Web Editor","estimated_hours":2}'
+          # Get changed files for this commit
+          local changed_files=$(git diff-tree --no-commit-id --name-only -r "$commit_hash" 2>/dev/null | head -20 | tr '\n' ', ')
+          
+          # Escape for JSON
+          local escaped_message=$(echo "$commit_message" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | sed 's/\t/\\t/g' | tr '\n' ' ')
+          local escaped_files=$(echo "$changed_files" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
+          
+          # Call DeepSeek API
+          local ai_response=$(curl -s -X POST "https://api.deepseek.com/chat/completions" \
+            -H "Authorization: Bearer ${{ secrets.DEEPSEEK_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "model": "deepseek-chat",
+              "messages": [
+                {
+                  "role": "system",
+                  "content": "You analyze git commits and generate Notion ticket data. Return ONLY valid JSON with no markdown. Each response has: title (clear task description, max 80 chars), description (detailed explanation), priority (High/Medium/Low), stack (Backend/Web Editor/Mobile App/Dashboard), estimated_hours (1-8)."
+                },
+                {
+                  "role": "user",
+                  "content": "Commit: '"$escaped_message"'\nChanged files: '"$escaped_files"'\n\nGenerate ticket as JSON: {\"title\": \"\", \"description\": \"\", \"priority\": \"\", \"stack\": \"\", \"estimated_hours\": 0}"
+                }
+              ],
+              "temperature": 0.3,
+              "max_tokens": 500
+            }')
+          
+          # Extract content from DeepSeek response
+          local content=$(echo "$ai_response" | jq -r '.choices[0].message.content // empty' 2>/dev/null)
+          
+          if [ -n "$content" ] && echo "$content" | jq -e '.title' >/dev/null 2>&1; then
+            echo "$content"
+          else
+            # Fallback if AI fails
+            local clean_title=$(echo "$commit_message" | sed -E 's/^(feat|fix|docs|style|refactor|test|chore)[\(\)a-zA-Z]*\s*[:\-]\s*//' | cut -c1-80)
+            echo '{"title":"'"$clean_title"'","description":"Commit: '"$escaped_message"'","priority":"Medium","stack":"Backend","estimated_hours":2}'
+          fi
         }
         
         # Function to create Notion page via curl
