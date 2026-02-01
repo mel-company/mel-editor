@@ -59,14 +59,14 @@ jobs:
               "messages": [
                 {
                   "role": "system",
-                  "content": "You analyze git commits and generate Notion ticket data. Return ONLY valid JSON with no markdown. Each response has: title (clear task description, max 80 chars), description (detailed explanation), priority (High/Medium/Low), stack (Backend/Web Editor/Mobile App/Dashboard), estimated_hours (1-8)."
+                  "content": "You are a project manager analyzing git commits to create Notion tickets. IMPORTANT RULES:\n1. NEVER copy the commit message directly - rewrite it as a clear, actionable task title\n2. Title should be a professional task name (e.g., \"Implement user authentication flow\" not \"feat: add auth\")\n3. Description should explain WHAT was done and WHY it matters, in 2-3 sentences\n4. Infer the stack from file paths: client/src = Web Editor, server/ = Backend, mobile/ = Mobile App\n5. Return ONLY valid JSON, no markdown or code blocks"
                 },
                 {
                   "role": "user",
-                  "content": "Commit: '"$escaped_message"'\nChanged files: '"$escaped_files"'\n\nGenerate ticket as JSON: {\"title\": \"\", \"description\": \"\", \"priority\": \"\", \"stack\": \"\", \"estimated_hours\": 0}"
+                  "content": "Commit message: '"$escaped_message"'\nFiles changed: '"$escaped_files"'\n\nCreate a Notion ticket. Rewrite the commit as a professional task. Return JSON:\n{\"title\": \"[Clear task title, NOT the commit message]\", \"description\": \"[2-3 sentence explanation of the work]\", \"priority\": \"High|Medium|Low\", \"stack\": \"Backend|Web Editor|Mobile App|Dashboard\", \"estimated_hours\": 1-8}"
                 }
               ],
-              "temperature": 0.3,
+              "temperature": 0.7,
               "max_tokens": 500
             }')
           
