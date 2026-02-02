@@ -75,7 +75,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
     };
 
     let updatedPhotos = [...sectionPhotos];
-    
+
     // Use index to update the correct photo
     if (imageIndex >= 0 && imageIndex < sectionPhotos.length) {
       // Update existing photo at the specific index
@@ -156,14 +156,14 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
   // Helper to delete a slide (for carousel sections) - uses index for reliable deletion
   const deleteSlide = useCallback((imageIndex: number) => {
     if (!section || imageIndex < 0) return;
-    
+
     // Get photos from section.photos or option.photos
     const currentPhotos = Array.isArray(section.photos) && section.photos.length > 0
       ? [...section.photos]
       : Array.isArray(option?.photos)
         ? [...option.photos]
         : [];
-    
+
     if (imageIndex >= currentPhotos.length) return;
 
     const updatedPhotos = currentPhotos.filter((_, index) => index !== imageIndex);
@@ -209,7 +209,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
               key={detectedImage.name}
               className="border border-slate-200 rounded-lg bg-white"
             >
-              
+
 
               {photoUrl ? (
                 <FileUploadListItem
@@ -219,17 +219,22 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
                     name: detectedImage.title,
                     url: photoUrl,
                   }}
-                  deleteSlide={(e) =>{
+                  deleteSlide={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
                     deleteSlide(detectedImage.index)
-                   }}
+                  }}
                   onChange={(file) => handleImageUpload(file, detectedImage.name, detectedImage.index)}
                 />
               ) : (
                 <FileUploadBar
                   label="رفع صورة"
                   value={{}}
+                  deleteSlide={isCarousel ? (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    deleteSlide(detectedImage.index);
+                  } : undefined}
                   onChange={(file) => handleImageUpload(file, detectedImage.name, detectedImage.index)}
                 />
               )}

@@ -42,8 +42,8 @@ const FileUploadListItem = ({
       >
         <XIcon className="w-3.5 h-3.5" />
       </button>
-      <div className="flex items-center gap-1.5 uppercase relative">
-        <div className="flex flex-col gap-0.5">
+      <div className="flex items-center gap-1.5 uppercase relative  w-full">
+        <div className="flex flex-col gap-0.5 grow">
           <p className="sub-title mx-1">{"اسم الملف"}</p>
           <p className="text-slate-800 text-xs line-clamp-1">{label ?? ""}</p>
         </div>

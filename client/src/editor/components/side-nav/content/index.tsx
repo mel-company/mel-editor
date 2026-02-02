@@ -4,7 +4,7 @@ import EditorSectionList from "./section-list";
 
 const ContentSide = () => {
   return (
-    <div className="flex flex-col h-svh justify-bet ween max-h-screen">
+    <div className="flex flex-col max-h-screen h-screen justify-between">
       <div className="flex flex-col gr ow gap-2 overflow-y-auto no-scrollbar pb-8 mt-8">
         <PageList />
         <EditorSectionDetails />

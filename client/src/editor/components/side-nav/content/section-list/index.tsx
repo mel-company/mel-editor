@@ -14,18 +14,32 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ListChevronsUpDown, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSectionStore } from "../../../../../shared/store/editor/section";
 import { usePageStore } from "../../../../../shared/store/editor/page";
 import { SectionType, SectionOptionType } from "../../../../../shared/types";
+import AddSectionBtn from "./add-section-btn";
 import classNames from "classnames";
 
 const EditorSectionList = () => {
-  const { getSections, setSections } = useSectionStore();
+  const { getSections, setSections, activeSectionId } = useSectionStore();
   const { getCurrentPage } = usePageStore();
   const currentPage = getCurrentPage();
   const sections = getSections();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(!!activeSectionId);
+  const prevActiveSectionId = useRef(activeSectionId);
+
+  useEffect(() => {
+    // Only auto-collapse when going from no selection to having one
+    if (!prevActiveSectionId.current && activeSectionId) {
+      setIsCollapsed(true);
+    }
+    // Only auto-expand when going from selection to none
+    if (prevActiveSectionId.current && !activeSectionId) {
+      setIsCollapsed(false);
+    }
+    prevActiveSectionId.current = activeSectionId;
+  }, [activeSectionId]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -51,18 +65,18 @@ const EditorSectionList = () => {
   };
 
   return (
-    <div className="flex flex-col justify-end pb-2 sticky bottom-0 z-10 bg-white">
+    <div className="flex flex-col justify-end sticky bottom-0 z-10 bg-white" style={!isCollapsed ? { boxShadow: "0px -4px 8px -2px rgba(0, 0, 0, 0.025)" } : { boxShadow: "none" }}>
       <div className="editor-nav-section">
         <div className="h-px bg-slate-100 w-full" />
 
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex items-center justify-between my-2 w-full hover:bg-slate-50 rounded-md transition-colors"
+          className="flex items-center justify-between my-2 w-full rounded-md transition-colors"
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <ChevronDown
               size={16}
-              className={`text-slate-400 transition-transform duration-200 ${isCollapsed ? "-rotate-90" : ""}`}
+              className={`text-slate-400 transition-transform duration-300 ${isCollapsed ? "-rotate-90" : ""}`}
             />
             <h3 className="title">{"الاقسام"}</h3>
           </div>
@@ -73,13 +87,9 @@ const EditorSectionList = () => {
           )}
         </button>
         <div
-          className={`overflow-hidden transition-all duration-200 ${isCollapsed ? "max-h-0" : "max-h-[500px]"}`}
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? "max-h-0" : "max-h-[500px]"}`}
         >
-          {currentPage && (
-            <p className="text-xs text-slate-500 mb-3">
-              أقسام صفحة: <span className="font-medium text-slate-700">{currentPage.name}</span>
-            </p>
-          )}
+
           {sections.length === 0 ? (
             <div className="p-4 bg-slate-50 rounded-lg text-center">
               <p className="text-xs text-slate-500">
@@ -106,6 +116,12 @@ const EditorSectionList = () => {
               </SortableContext>
             </DndContext>
           )}
+        </div>
+        <div className={classNames("transition-all duration-300 ease-in-out", {
+          "opacity-100 h-10": !isCollapsed,
+          "opacity-0 h-0 overflow-hidden": isCollapsed,
+        })}>
+          <AddSectionBtn />
         </div>
       </div>
     </div>

@@ -104,7 +104,7 @@ const EditorSectionDetails = () => {
 
 
         {/* Tabs for different content types - Better organized */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <p className="text-xs text-slate-600 mb-2 font-medium">اختر ما تريد تعديله:</p>
           <div className="grid grid-cols-2 gap-2">
             {hasContent && (
@@ -166,54 +166,34 @@ const EditorSectionDetails = () => {
               <span className="text-xs font-medium">التصميم</span>
             </button>
           </div>
-        </div>
+        </div> */}
 
         <Divider />
 
         {/* Content based on active tab - With clear header */}
         <ActiveSectionWrapper>
           <div className="mb-3">
-            <div className="flex items-center gap-2 px-2 py-1 bg-slate-50 rounded-lg">
-              {activeTab === "content" && (
-                <>
-                  <Type className="w-4 h-4 text-blue-600" />
-                  <h4 className="text-sm font-semibold text-slate-800">تعديل النصوص</h4>
-                </>
-              )}
-              {activeTab === "images" && (
-                <>
-                  <Image className="w-4 h-4 text-blue-600" />
-                  <h4 className="text-sm font-semibold text-slate-800">تعديل الصور</h4>
-                </>
-              )}
-              {activeTab === "products" && (
-                <>
-                  <Package className="w-4 h-4 text-blue-600" />
-                  <h4 className="text-sm font-semibold text-slate-800">تعديل المنتجات</h4>
-                </>
-              )}
-              {activeTab === "categories" && (
-                <>
-                  <Tag className="w-4 h-4 text-blue-600" />
-                  <h4 className="text-sm font-semibold text-slate-800">تعديل التصنيفات</h4>
-                </>
-              )}
-              {activeTab === "styles" && (
-                <>
-                  <Settings className="w-4 h-4 text-blue-600" />
-                  <h4 className="text-sm font-semibold text-slate-800">تعديل التصميم</h4>
-                </>
-              )}
-            </div>
+            {/* <div className="flex items-center gap-2 px-2 py-1 bg-slate-50 rounded-lg">
+              <Type className="w-4 h-4 text-blue-600" />
+              <h4 className="text-sm font-semibold text-slate-800">تعديل النصوص</h4>
+              <Image className="w-4 h-4 text-blue-600" />
+              <h4 className="text-sm font-semibold text-slate-800">تعديل الصور</h4>
+              <Package className="w-4 h-4 text-blue-600" />
+              <h4 className="text-sm font-semibold text-slate-800">تعديل المنتجات</h4>
+              <Tag className="w-4 h-4 text-blue-600" />
+              <h4 className="text-sm font-semibold text-slate-800">تعديل التصنيفات</h4>
+              <Settings className="w-4 h-4 text-blue-600" />
+              <h4 className="text-sm font-semibold text-slate-800">تعديل التصميم</h4>
+            </div> */}
           </div>
 
-          {activeTab === "content" && hasContent && <SectionContent />}
-          {activeTab === "images" && hasImages && <SectionImageList detectedImages={detectedImages} />}
-          {activeTab === "products" && isProductSection && (
+          {hasContent && <SectionContent />}
+          {hasImages && <SectionImageList detectedImages={detectedImages} />}
+          {isProductSection && (
             isProductSection ? <ProductSelector /> : <EditorProductList />
           )}
-          {activeTab === "categories" && isCategorySection && <CategorySelector />}
-          {activeTab === "styles" && <SectionStyles />}
+          {isCategorySection && <CategorySelector />}
+          {/* {activeTab === "styles" && <SectionStyles />} */}
         </ActiveSectionWrapper>
       </div>
     );
