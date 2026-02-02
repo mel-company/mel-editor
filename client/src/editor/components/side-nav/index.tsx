@@ -28,7 +28,7 @@ const EditorSideNav = ({
   }, [activeSectionId, activeElementType, isRestaurant]);
 
   return (
-    <article className="p-4 editor pb-0 bg-white flex flex-col gap-2.5 w-64 h-screen sticky top-0 start-0 z-50">
+    <article className="p-4 editor pb-2.5 bg-white flex flex-col gap-2.5 w-64 min-w-64 max-h-svh h-svh overflow-y-hidden no-scrollbar sticky top-0 start-0 z-50">
       <EditoNavHeader
         side={side}
         setSide={setSide}

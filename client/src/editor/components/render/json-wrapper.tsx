@@ -56,6 +56,7 @@ const TemplateJsonWrapper = () => {
         }
     }, [navigation, sections, footer]);
 
+
     return (
         <div className="relative w-full h-full">
             {/* Actual Render */}

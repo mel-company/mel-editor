@@ -13,18 +13,19 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ListChevronsUpDown } from "lucide-react";
+import { ListChevronsUpDown, ChevronDown } from "lucide-react";
+import { useState } from "react";
 import { useSectionStore } from "../../../../../shared/store/editor/section";
 import { usePageStore } from "../../../../../shared/store/editor/page";
 import { SectionType, SectionOptionType } from "../../../../../shared/types";
 import classNames from "classnames";
-import Divider from "../../../../../shared/components/ui/divider";
 
 const EditorSectionList = () => {
   const { getSections, setSections } = useSectionStore();
   const { getCurrentPage } = usePageStore();
   const currentPage = getCurrentPage();
   const sections = getSections();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -50,48 +51,62 @@ const EditorSectionList = () => {
   };
 
   return (
-    <div className="h-full flex flex-col justify-end mb-4">
+    <div className="flex flex-col justify-end pb-2 sticky bottom-0 z-10 bg-white">
       <div className="editor-nav-section">
-        <Divider />
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="title">{"الاقسام"}</h3>
+        <div className="h-px bg-slate-100 w-full" />
+
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="flex items-center justify-between my-2 w-full hover:bg-slate-50 rounded-md transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <ChevronDown
+              size={16}
+              className={`text-slate-400 transition-transform duration-200 ${isCollapsed ? "-rotate-90" : ""}`}
+            />
+            <h3 className="title">{"الاقسام"}</h3>
+          </div>
           {currentPage && (
             <span className="text-xs text-slate-500">
               ({sections.length} قسم)
             </span>
           )}
-        </div>
-        {currentPage && (
-          <p className="text-xs text-slate-500 mb-3">
-            أقسام صفحة: <span className="font-medium text-slate-700">{currentPage.name}</span>
-          </p>
-        )}
-        {sections.length === 0 ? (
-          <div className="p-4 bg-slate-50 rounded-lg text-center">
-            <p className="text-xs text-slate-500">
-              لا توجد أقسام في هذه الصفحة
+        </button>
+        <div
+          className={`overflow-hidden transition-all duration-200 ${isCollapsed ? "max-h-0" : "max-h-[500px]"}`}
+        >
+          {currentPage && (
+            <p className="text-xs text-slate-500 mb-3">
+              أقسام صفحة: <span className="font-medium text-slate-700">{currentPage.name}</span>
             </p>
-          </div>
-        ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={sections.map((section) => section.target_id).filter((id): id is string => id !== undefined)}
-              strategy={verticalListSortingStrategy}
+          )}
+          {sections.length === 0 ? (
+            <div className="p-4 bg-slate-50 rounded-lg text-center">
+              <p className="text-xs text-slate-500">
+                لا توجد أقسام في هذه الصفحة
+              </p>
+            </div>
+          ) : (
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              <div className="w-full h-full gap-2 flex flex-col">
-                {sections.map((section) => {
-                  return (
-                    <SectionItem key={section?.target_id} section={section} />
-                  );
-                })}
-              </div>
-            </SortableContext>
-          </DndContext>
-        )}
+              <SortableContext
+                items={sections.map((section) => section.target_id).filter((id): id is string => id !== undefined)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="w-full h-full gap-2 flex flex-col">
+                  {sections.map((section) => {
+                    return (
+                      <SectionItem key={section?.target_id} section={section} />
+                    );
+                  })}
+                </div>
+              </SortableContext>
+            </DndContext>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -126,8 +141,7 @@ const SectionItem = ({ section }: { section: SectionType }) => {
       style={style}
       onClick={() => section.target_id && setActiveSectionId(section.target_id)}
       className={classNames(
-        `w-full border-e-8 transition-all group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${
-          isDragging ? "shadow-lg" : ""
+        `w-full border-e-8 transition-all group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${isDragging ? "shadow-lg" : ""
         }`,
         {
           "border-slate-200": activeSectionId !== section.target_id,

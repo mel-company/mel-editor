@@ -4,12 +4,12 @@ import EditorSectionList from "./section-list";
 
 const ContentSide = () => {
   return (
-    <div className="flex flex-col gap-4 h-svh justify-between">
-      <div className="flex flex-col gap-2 overflow-y-auto">
+    <div className="flex flex-col h-svh justify-bet ween max-h-screen">
+      <div className="flex flex-col gr ow gap-2 overflow-y-auto no-scrollbar pb-8 mt-8">
         <PageList />
         <EditorSectionDetails />
       </div>
-      
+
       <EditorSectionList />
     </div>
   );

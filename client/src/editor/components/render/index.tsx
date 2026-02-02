@@ -92,7 +92,7 @@ const RenderTemplate = () => {
       className="w-full h-full flex items-center justify-center cursor-default"
     >
       <div
-        className="w-full h-full max-h-[90vh] max-w-11/12 overflow-y-auto overflow-x-hidden bg-white rounded-2xl flex flex-col"
+        className="h-full max-h-[90vh] w-10/12 lg:w-9/12 xl:w-11/12 max-w-11/12 overflow-y-auto overflow-x-hidden bg-white rounded-2xl flex flex-col mt-6"
         style={globalStyles}
       >
         {/* Navigation Bar */}
