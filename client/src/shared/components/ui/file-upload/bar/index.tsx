@@ -11,18 +11,13 @@ interface FileUploadInputProps {
   onChange: (file: FileType) => void;
 }
 
-const FileUploadBar = ({ label, value, onChange, deleteSlide }: FileUploadInputProps) => {
+const FileUploadBar = ({ label, onChange, deleteSlide }: FileUploadInputProps) => {
   const { uploadState, handleFileChange } = useR2Upload({
     onUpload: onChange,
     maxSizeMB: 5,
     acceptedTypes: ["image/*"],
   });
 
-  // Use URL from R2 upload, fallback to existing value
-  const displayImage =
-    uploadState.file?.url ||
-    value?.url ||
-    value?.base64Content; // Fallback for legacy data
 
   return (
     <div
