@@ -1,5 +1,5 @@
 import { FileType } from "../../../../types";
-import { Upload, XIcon, Loader2, Image as ImageIcon } from "lucide-react";
+import { Upload, XIcon, Loader2, } from "lucide-react";
 import React from "react";
 import { useR2Upload } from "../../../../hooks/use-r2-upload";
 import classNames from "classnames";

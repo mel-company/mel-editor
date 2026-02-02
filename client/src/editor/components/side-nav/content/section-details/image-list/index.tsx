@@ -12,8 +12,7 @@ interface SectionImageListProps {
 }
 
 const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) => {
-  const { handleUploadImage, section, setSection, activeSectionId, option } =
-    useSectionDetails();
+  const { section, setSection, activeSectionId, option } = useSectionDetails();
   const [showModal, setShowModal] = useState(false);
   const [selectedImageName, setSelectedImageName] = useState<string | null>(null);
 

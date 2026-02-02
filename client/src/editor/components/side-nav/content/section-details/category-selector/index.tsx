@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { CategoryType, FileType, SectionOptionType } from "../../../../../../shared/types";
 import { mockCategories } from "@templates/data/categories";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
-import { Check, X, Search, Tag, Plus, Image as ImageIcon } from "lucide-react";
+import { Check, X, Search, Tag } from "lucide-react";
 import classNames from "classnames";
 import FileUploadBar from "../../../../../../shared/components/ui/file-upload/bar";
 
@@ -28,14 +28,7 @@ const CategorySelector = () => {
     );
   }, [searchTerm]);
 
-  // Get all available categories (combine selected and mock)
-  const allCategories = useMemo(() => {
-    const selected = option.categories || [];
-    const mock = mockCategories.filter(
-      (c) => !selected.some((s: CategoryType) => s.id === c.id)
-    );
-    return [...selected, ...mock];
-  }, [option.categories]);
+
 
   const toggleCategory = (category: CategoryType) => {
     const currentCategories: CategoryType[] = option.categories || [];
@@ -191,7 +184,7 @@ const CategorySelector = () => {
                       }
                     )}
                   >
-                    <div className="w-16 h-16 border-2 border-slate-200 bg-slate-100 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-16 h-16 border-2 border-slate-200 bg-slate-100 rounded-lg overflow-hidden shrink-0">
                       {category.thumbnail?.url || category.thumbnail?.base64Content ? (
                         <img
                           src={category.thumbnail.url || category.thumbnail.base64Content}
@@ -211,7 +204,7 @@ const CategorySelector = () => {
                     </div>
                     <div
                       className={classNames(
-                        "w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0",
+                        "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0",
                         {
                           "bg-blue-600 border-blue-600": isSelected,
                           "border-slate-300": !isSelected,
@@ -237,7 +230,7 @@ const CategorySelector = () => {
               key={category.id}
               className="flex items-center gap-2 p-2 bg-slate-50 rounded-md border border-slate-200"
             >
-              <div className="w-8 h-8 border border-slate-200 bg-slate-100 rounded overflow-hidden flex-shrink-0">
+              <div className="w-8 h-8 border border-slate-200 bg-slate-100 rounded overflow-hidden shrink-0">
                 {category.thumbnail?.url || category.thumbnail?.base64Content ? (
                   <img
                     src={category.thumbnail.url || category.thumbnail.base64Content}
