@@ -6,11 +6,15 @@ const DeleteSection = () => {
   const ref = React.useRef<HTMLDialogElement>(null);
   const { removeSection, section } = useSectionDetails();
 
+  const removable = !!section?.editable
+
+  if (!removable) return null
+
   return (
     <>
       <button
-        disabled={!section?.editable}
-        onClick={() => section?.editable && ref.current?.showModal()}
+        disabled={!removable}
+        onClick={() => removable && ref.current?.showModal()}
         className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 disabled:hover:bg-slate-50 disabled:opacity-70 disabled:cursor-not-allowed active:bg-slate-50 transition-colors cursor-pointer"
       >
         <Trash2 size={16} strokeWidth={1} />

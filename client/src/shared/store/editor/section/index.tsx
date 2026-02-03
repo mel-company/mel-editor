@@ -9,7 +9,7 @@ type Store = {
   setActiveElementType: (
     type: "section" | "navigation" | "footer" | ""
   ) => void;
-  getSections: () => SectionType[];
+  getSections: (props?: { onlyEditable?: boolean }) => SectionType[];
   setSections: (sections: SectionType[]) => void;
   setSection: (section: SectionType) => void;
   addSection: (section: SectionType) => void;
@@ -31,8 +31,13 @@ export const useSectionStore = create<Store>()((set, get) => ({
       activeElementType: type,
       activeSectionId: type === "section" ? get().activeSectionId : "",
     })),
-  getSections: () => {
+  getSections: ({ onlyEditable } = {}) => {
     const currentPage = usePageStore.getState().getCurrentPage();
+    if (onlyEditable) {
+      // TODO: Implement logic to filter editable sections
+      const filteredSections = currentPage?.sections?.filter((section) => !!section.editable);
+      return filteredSections || [];
+    }
     return currentPage?.sections || [];
   },
   setSections: (sections) => {

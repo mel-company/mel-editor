@@ -18,14 +18,14 @@ import { useState, useEffect, useRef } from "react";
 import { useSectionStore } from "../../../../../shared/store/editor/section";
 import { usePageStore } from "../../../../../shared/store/editor/page";
 import { SectionType, SectionOptionType } from "../../../../../shared/types";
-import AddSectionBtn from "./add-section-btn";
+import NewSectionBtn from "./new-section-btn";
 import classNames from "classnames";
 
 const EditorSectionList = () => {
   const { getSections, setSections, activeSectionId } = useSectionStore();
   const { getCurrentPage } = usePageStore();
   const currentPage = getCurrentPage();
-  const sections = getSections();
+  const sections = getSections({ onlyEditable: true });
   const [isCollapsed, setIsCollapsed] = useState(!!activeSectionId);
   const prevActiveSectionId = useRef(activeSectionId);
 
@@ -86,7 +86,7 @@ const EditorSectionList = () => {
         )}
       </button>
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? "max-h-0" : "max-h-[500px]"}`}
+        className={`transition-all duration-300 ease-in-out ${isCollapsed ? "max-h-0 overflow-hidden" : "max-h-[500px] overflow-y-auto"}`}
       >
 
         {sections.length === 0 ? (
@@ -116,12 +116,11 @@ const EditorSectionList = () => {
           </DndContext>
         )}
       </div>
-      <div className={classNames("transition-all duration-300 ease-in-out overflow-hidden", {
-        "opacity-100 h-10 mt-2": !isCollapsed,
-        "opacity-0 h-0": isCollapsed,
-      })}>
-        <AddSectionBtn />
-      </div>
+      {!isCollapsed && (
+        <div className="mt-2">
+          <NewSectionBtn />
+        </div>
+      )}
     </div>
   );
 };
@@ -176,23 +175,30 @@ const SectionItem = ({ section }: { section: SectionType }) => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={classNames(
-        `w-full border-e-8 transition-all group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${isDragging ? "shadow-lg" : ""
+        `w-full transition-all bg-slate-50/70 group py-2 px-1 rounded-lg flex items-center justify-end relative cursor-pointer select-none ${isDragging ? "shadow-lg bg-slate-50" : "hover:bg-slate-50/50"
         }`,
         {
-          "border-slate-200": activeSectionId !== section.target_id,
-          "border-blue-500": activeSectionId === section.target_id,
+          "bg-slate-50": activeSectionId === section.target_id,
         }
       )}
     >
-      <div
-        {...attributes}
-        {...listeners}
-        className="p-1.5 bg-white transition-all text-slate-400 hover:text-slate-500 rounded-md cursor-col-resize touch-none"
-      >
-        <ListChevronsUpDown size={16} />
+      <div className={classNames("h-full absolute w-2.5 rounded-e-full top-0 end-0 transition-colors", {
+        "bg-linear-45 from-blue-400 to-blue-500": activeSectionId === section.target_id,
+        "bg-slate-100": activeSectionId !== section.target_id,
+      })} />
+
+      <div className="flex items-center gap-2 w-full group">
+        <div
+          {...attributes}
+          {...listeners}
+          className="p-1.5 rounded-md text-slate-400 hover:text-slate-500 cursor-grab touch-none bg-white"
+        >
+          <ListChevronsUpDown size={16} />
+        </div>
+        <span className="text-xs select-none w-full">{option?.title}</span>
       </div>
-      <span className="text-xs select-none">{option?.title}</span>
       <div
+        style={{ top: thumbPos.top, left: thumbPos.left }}
         className={classNames(
           "fixed pointer-events-none rounded-xl overflow-hidden bg-slate-100 z-100 -translate-y-1/2 -translate-x-[calc(100%+1rem)] transition-opacity duration-300",
           {
@@ -200,10 +206,11 @@ const SectionItem = ({ section }: { section: SectionType }) => {
             "opacity-0": !isHovered,
           }
         )}
-        style={{ top: thumbPos.top, left: thumbPos.left }}
       >
         <img className="w-32" src={option?.thumbnail?.url} alt="" />
       </div>
+
+
     </div>
   );
 };

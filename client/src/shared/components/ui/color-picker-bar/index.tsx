@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ColorPicker } from "react-color-palette";
 import "react-color-palette/css";
 
@@ -64,6 +64,8 @@ const ColorPickerBar = ({
   const hexValue = value || "#000000";
   const rgb = hexToRgb(hexValue);
   const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [pickerPos, setPickerPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
 
   const [color, setColor] = useState({
     hex: hexValue,
@@ -104,9 +106,40 @@ const ColorPickerBar = ({
   }, [color?.hex]);
 
   const isOpen = open === label;
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  // Close picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen &&
+        containerRef.current &&
+        pickerRef.current &&
+        !containerRef.current.contains(event.target as Node) &&
+        !pickerRef.current.contains(event.target as Node)
+      ) {
+        setOpen("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen, setOpen]);
+
+  const handleOpen = () => {
+    if (isOpen) {
+      setOpen("");
+    } else {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setPickerPos({ top: rect.top + rect.height / 2, left: rect.left });
+      }
+      setOpen(label);
+    }
+  };
 
   return (
-    <div className="flex flex-col gap-2 select-none p-2 rounded-lg w-full bg-slate-50 relative">
+    <div ref={containerRef} className="flex flex-col gap-2 select-none p-2 rounded-lg w-full bg-slate-50 relative">
       <div className="flex items-center justify-between gap-1.5">
         <label className="text-xs text-slate-600 font-medium grow">
           {label}
@@ -116,21 +149,23 @@ const ColorPickerBar = ({
           {value || "#000000"}
         </p>
         <button
-          onClick={() => setOpen(isOpen ? "" : label)}
+          onClick={handleOpen}
           className="w-7 h-7 rounded-md border border-slate-200 cursor-pointer active:scale-90 transition-transform duration-200 ease-in-out"
           style={{ backgroundColor: value || "#000000" }}
         />
       </div>
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-lg shadow-xl border border-slate-200 p-2">
-          <ColorPicker
-            color={color}
-            onChange={setColor}
-            hideInput={["rgb", "hsv"]}
-            height={140}
-          />
-        </div>
-      )}
+      <div
+        ref={pickerRef}
+        className={`fixed z-50 rounded-lg shadow-xl -translate-y-1/2 -translate-x-[calc(100%+0.5rem)] transition-opacity duration-150 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        style={{ top: pickerPos.top, left: pickerPos.left }}
+      >
+        <ColorPicker
+          color={color}
+          onChange={setColor}
+          hideInput={["rgb", "hsv"]}
+          height={140}
+        />
+      </div>
     </div>
   );
 };

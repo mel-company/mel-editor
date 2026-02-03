@@ -2,6 +2,7 @@ import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { SectionPropsComponent } from "../../section-props";
 import React from "react";
 import { FileText, Mail } from "lucide-react";
+import Divider from "@/shared/components/ui/divider";
 
 const SectionContent = () => {
   const { option } = useSectionDetails();
@@ -63,18 +64,20 @@ const SectionContent = () => {
     if (items.length === 0) return null;
     const Icon = icon;
     return (
-      <div className="space-y-3">
+      <div className="editor-nav-section">
+        <h3 className="title">{"شريط التنقل"}</h3>
         <div className="flex items-center gap-2 text-slate-500 px-1">
           <Icon className="w-4 h-4" />
           <span className="text-xs font-bold uppercase tracking-wider">{title}</span>
         </div>
         <div className="space-y-3">
           {items.map((item) => (
-            <div key={`${item.id}-${item.name}`} className="border border-slate-200 rounded-lg p-3 bg-white shadow-sm hover:border-blue-300 transition-colors">
+            <div key={`${item.id}-${item.name}`} className="rounded-lg">
               <SectionPropsComponent {...item} label={item.label || getFieldLabel(item.name)} />
             </div>
           ))}
         </div>
+        <Divider />
       </div>
     );
   };
@@ -84,7 +87,6 @@ const SectionContent = () => {
       {renderGroup("العناوين", categorizedContent.headings, FileText)}
       {renderGroup("معلومات الاتصال", categorizedContent.contact, Mail)}
       {renderGroup("النصوص", categorizedContent.text, FileText)}
-      {/* Re-use FileText or import LinkIcon if valid */}
       {renderGroup("أخرى", [...categorizedContent.links, ...categorizedContent.other], FileText)}
     </div>
   );

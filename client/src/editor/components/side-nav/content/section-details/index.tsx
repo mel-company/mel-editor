@@ -70,13 +70,7 @@ const EditorSectionDetails = () => {
           <SectionVariants />
         </div>
 
-
-
-
-
         <Divider />
-
-
 
         {hasContent && <SectionContent />}
         {hasImages && <SectionImageList detectedImages={detectedImages} />}

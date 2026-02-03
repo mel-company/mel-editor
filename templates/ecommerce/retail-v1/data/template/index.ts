@@ -22,7 +22,7 @@ export const mockTemplate: TemplateType = {
       id: "0",
       section_id: "1",
       type: "navigation",
-      editable: true,
+      editable: false,
       options: navigation_sections,
     },
     {
@@ -67,7 +67,7 @@ export const mockTemplate: TemplateType = {
       type: "footer",
       view_all_link: "",
       options: footer_sections,
-      editable: true,
+      editable: false,
     },
     {
       id: "5",
