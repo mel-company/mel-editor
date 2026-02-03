@@ -65,7 +65,6 @@ const SectionContent = () => {
     const Icon = icon;
     return (
       <div className="editor-nav-section">
-        <h3 className="title">{"شريط التنقل"}</h3>
         <div className="flex items-center gap-2 text-slate-500 px-1">
           <Icon className="w-4 h-4" />
           <span className="text-xs font-bold uppercase tracking-wider">{title}</span>
