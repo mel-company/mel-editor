@@ -6,7 +6,7 @@ import Divider from "../../../../shared/components/ui/divider";
 
 const ThemeSide = () => {
   return (
-    <div className="flex flex-col gap-4 h-full overflow-x-hidden">
+    <div className="flex flex-col gap-4">
       <EditorStoreSettings />
       {/* <Divider /> */}
       {/* <EditorThemeStore /> */}

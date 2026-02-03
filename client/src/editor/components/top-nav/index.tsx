@@ -116,7 +116,7 @@ const EditorTopNav = () => {
     }, [currentPageId]);
 
     return (
-        <header className="bg-white absolute top-0 left-0 right-0 p-2 text-sm font-medium w-full flex gap-1 items-center justify-end overflow-hidden" >
+        <header className="bg-white absolute top-0 left-0 right-64 p-2 text-sm font-medium flex gap-1 items-center justify-end overflow-hidden z-40" >
             {/* <TemplateJsonWrapper /> */}
             <PublishButton />
             <SaveBtn />

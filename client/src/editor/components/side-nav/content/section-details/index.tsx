@@ -11,7 +11,7 @@ import useSectionDetails from "../../../../hooks/editor-section-details";
 import { useDomImageScanner } from "../../../../hooks/editor-section-details/use-dom-image-scanner";
 import { useSectionStore } from "../../../../../shared/store/editor/section";
 import Divider from "../../../../../shared/components/ui/divider";
-import { useEffect, useRef, useMemo } from "react";
+import { useMemo } from "react";
 
 const EditorSectionDetails = () => {
   const { option, section } = useSectionDetails();
@@ -42,20 +42,6 @@ const EditorSectionDetails = () => {
 
 
 
-  const sectionDetailsRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to section details when a section is selected
-  useEffect(() => {
-    if (activeSectionId && activeElementType === "section" && sectionDetailsRef.current) {
-      // Small delay to ensure DOM is updated
-      setTimeout(() => {
-        sectionDetailsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    }
-  }, [activeSectionId, activeElementType]);
 
   // Reset to default tab when section changes
 
@@ -72,7 +58,7 @@ const EditorSectionDetails = () => {
 
   // Show section details if section is selected
   return (
-    <div className="editor-nav-section" ref={sectionDetailsRef}>
+    <div className="editor-nav-section">
       {/* Header with section name */}
       <ActiveSectionWrapper>
         <div className="mb-4">

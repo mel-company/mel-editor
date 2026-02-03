@@ -3,6 +3,7 @@ import EditoNavHeader from "./header";
 import ThemeSide from "./theme";
 import ContentSide from "./content";
 import ElementsSide from "./elements";
+import EditorSectionList from "./content/section-list";
 import { useStoreSettingsStore } from "../../../shared/store/editor/store-settings";
 import { useSectionStore } from "../../../shared/store/editor/section";
 
@@ -28,24 +29,27 @@ const EditorSideNav = ({
   }, [activeSectionId, activeElementType, isRestaurant]);
 
   return (
-    <article className="p-4 editor pb-2.5 bg-white flex flex-col gap-2.5 w-64 min-w-64 max-h-svh h-svh overflow-y-hidden no-scrollbar sticky top-0 start-0 z-50">
+    <article className="p-4 editor pb-2.5 bg-white flex flex-col gap-2.5 w-64 min-w-64 h-full overflow-hidden no-scrollbar shrink-0 z-50">
       <EditoNavHeader
         side={side}
         setSide={setSide}
         onNavigate={onNavigate}
         isRestaurant={isRestaurant}
       />
-      {isRestaurant ? (
-        // Restaurant: Only show theme (colors)
-        <ThemeSide />
-      ) : // E-commerce: Show all options
-        side === "content" ? (
-          <ContentSide />
-        ) : side === "elements" ? (
-          <ElementsSide />
-        ) : (
+      <div className="flex-1 min-h-0 overflow-y-auto no-scrollbar">
+        {isRestaurant ? (
+          // Restaurant: Only show theme (colors)
           <ThemeSide />
-        )}
+        ) : // E-commerce: Show all options
+          side === "content" ? (
+            <ContentSide />
+          ) : side === "elements" ? (
+            <ElementsSide />
+          ) : (
+            <ThemeSide />
+          )}
+      </div>
+      {!isRestaurant && side === "content" && <EditorSectionList />}
     </article>
   );
 };

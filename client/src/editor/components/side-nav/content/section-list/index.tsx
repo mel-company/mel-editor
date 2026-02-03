@@ -65,64 +65,62 @@ const EditorSectionList = () => {
   };
 
   return (
-    <div className="flex flex-col justify-end sticky bottom-0 z-10 bg-white" style={!isCollapsed ? { boxShadow: "0px -4px 8px -2px rgba(0, 0, 0, 0.025)" } : { boxShadow: "none" }}>
-      <div className="editor-nav-section">
-        <div className="h-px bg-slate-100 w-full" />
+    <div className="flex flex-col justify-end z-10 bg-white shrink-0" style={!isCollapsed ? { boxShadow: "0px -4px 8px -2px rgba(0, 0, 0, 0.025)" } : { boxShadow: "none" }}>
+      <div className="h-px bg-slate-100 w-full" />
 
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex items-center justify-between my-2 w-full rounded-md transition-colors"
-        >
-          <div className="flex items-center gap-1">
-            <ChevronDown
-              size={16}
-              className={`text-slate-400 transition-transform duration-300 ${isCollapsed ? "-rotate-90" : ""}`}
-            />
-            <h3 className="title">{"الاقسام"}</h3>
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="flex items-center justify-between my-2 w-full rounded-md"
+      >
+        <div className="flex items-center gap-1">
+          <ChevronDown
+            size={16}
+            className={`text-slate-400 transition-transform duration-300 ${isCollapsed ? "-rotate-90" : ""}`}
+          />
+          <h3 className="title">{"الاقسام"}</h3>
+        </div>
+        {currentPage && (
+          <span className="text-xs text-slate-500">
+            ({sections.length} قسم)
+          </span>
+        )}
+      </button>
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? "max-h-0" : "max-h-[500px]"}`}
+      >
+
+        {sections.length === 0 ? (
+          <div className="p-4 bg-slate-50 rounded-lg text-center">
+            <p className="text-xs text-slate-500">
+              لا توجد أقسام في هذه الصفحة
+            </p>
           </div>
-          {currentPage && (
-            <span className="text-xs text-slate-500">
-              ({sections.length} قسم)
-            </span>
-          )}
-        </button>
-        <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${isCollapsed ? "max-h-0" : "max-h-[500px]"}`}
-        >
-
-          {sections.length === 0 ? (
-            <div className="p-4 bg-slate-50 rounded-lg text-center">
-              <p className="text-xs text-slate-500">
-                لا توجد أقسام في هذه الصفحة
-              </p>
-            </div>
-          ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
+        ) : (
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={sections.map((section) => section.target_id).filter((id): id is string => id !== undefined)}
+              strategy={verticalListSortingStrategy}
             >
-              <SortableContext
-                items={sections.map((section) => section.target_id).filter((id): id is string => id !== undefined)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="w-full h-full gap-2 flex flex-col">
-                  {sections.map((section) => {
-                    return (
-                      <SectionItem key={section?.target_id} section={section} />
-                    );
-                  })}
-                </div>
-              </SortableContext>
-            </DndContext>
-          )}
-        </div>
-        <div className={classNames("transition-all duration-300 ease-in-out", {
-          "opacity-100 h-10": !isCollapsed,
-          "opacity-0 h-0 overflow-hidden": isCollapsed,
-        })}>
-          <AddSectionBtn />
-        </div>
+              <div className="w-full h-full gap-2 flex flex-col">
+                {sections.map((section) => {
+                  return (
+                    <SectionItem key={section?.target_id} section={section} />
+                  );
+                })}
+              </div>
+            </SortableContext>
+          </DndContext>
+        )}
+      </div>
+      <div className={classNames("transition-all duration-300 ease-in-out overflow-hidden", {
+        "opacity-100 h-10 mt-2": !isCollapsed,
+        "opacity-0 h-0": isCollapsed,
+      })}>
+        <AddSectionBtn />
       </div>
     </div>
   );
@@ -132,6 +130,9 @@ export default EditorSectionList;
 
 const SectionItem = ({ section }: { section: SectionType }) => {
   const { activeSectionId, setActiveSectionId } = useSectionStore();
+  const [thumbPos, setThumbPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  const itemRef = useRef<HTMLDivElement>(null);
   const {
     attributes,
     listeners,
@@ -151,11 +152,29 @@ const SectionItem = ({ section }: { section: SectionType }) => {
   const option = section?.options?.find(
     (option: SectionOptionType) => option?.id === section?.section_id
   );
+
+  const handleMouseEnter = () => {
+    if (itemRef.current) {
+      const rect = itemRef.current.getBoundingClientRect();
+      setThumbPos({ top: rect.top + rect.height / 2, left: rect.left });
+    }
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => {
+        setNodeRef(node);
+        (itemRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }}
       style={style}
       onClick={() => section.target_id && setActiveSectionId(section.target_id)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       className={classNames(
         `w-full border-e-8 transition-all group p-1.5 rounded-lg bg-slate-50 flex items-center gap-1 relative cursor-pointer select-none ${isDragging ? "shadow-lg" : ""
         }`,
@@ -173,7 +192,16 @@ const SectionItem = ({ section }: { section: SectionType }) => {
         <ListChevronsUpDown size={16} />
       </div>
       <span className="text-xs select-none">{option?.title}</span>
-      <div className="absolute delay-150 pointer-events-none top-1/2 end-0 rounded-xl -translate-x-full -translate-y-1/2 overflow-hidden bg-slate-100 opacity-0 group-hover:opacity-100 transition-all duration-300">
+      <div
+        className={classNames(
+          "fixed pointer-events-none rounded-xl overflow-hidden bg-slate-100 z-100 -translate-y-1/2 -translate-x-[calc(100%+1rem)] transition-opacity duration-300",
+          {
+            "opacity-100": isHovered,
+            "opacity-0": !isHovered,
+          }
+        )}
+        style={{ top: thumbPos.top, left: thumbPos.left }}
+      >
         <img className="w-32" src={option?.thumbnail?.url} alt="" />
       </div>
     </div>
