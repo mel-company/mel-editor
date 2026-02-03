@@ -34,7 +34,7 @@ const EditoNavHeader = ({
 
 
   return (
-    <div className="flex flex-col gap-2 top-0 z-10 bg-white">
+    <div className="flex flex-col gap-2 sticky top-0 z-10 bg-white">
       <div
         className={`grid p-1 w-full bg-slate-50 rounded-xl ${isRestaurant ? "grid-cols-1" : "grid-cols-2"
           }`}

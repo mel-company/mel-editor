@@ -1,6 +1,5 @@
-import classNames from "classnames";
 import { useEffect, useState } from "react";
-import { ColorPicker, useColor } from "react-color-palette";
+import { ColorPicker } from "react-color-palette";
 import "react-color-palette/css";
 
 // Helper function to convert hex to RGB
@@ -8,10 +7,10 @@ const hexToRgb = (hex: string) => {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result
     ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+    }
     : { r: 0, g: 0, b: 0 };
 };
 
@@ -65,7 +64,7 @@ const ColorPickerBar = ({
   const hexValue = value || "#000000";
   const rgb = hexToRgb(hexValue);
   const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
-  
+
   const [color, setColor] = useState({
     hex: hexValue,
     rgb: { r: rgb.r, g: rgb.g, b: rgb.b, a: 1 },
@@ -92,7 +91,7 @@ const ColorPickerBar = ({
   // Notify parent when color changes
   useEffect(() => {
     if (!color?.hex) return;
-    
+
     const handler = setTimeout(() => {
       if (color.hex && color.hex !== value) {
         onChange(color.hex);
@@ -108,23 +107,19 @@ const ColorPickerBar = ({
 
   return (
     <div className="flex flex-col gap-2 select-none p-2 rounded-lg w-full bg-slate-50 relative">
-      <div className="flex items-center justify-between">
-        <label className="text-xs text-slate-600 font-medium">
+      <div className="flex items-center justify-between gap-1.5">
+        <label className="text-xs text-slate-600 font-medium grow">
           {label}
         </label>
-        <div
-          role="button"
+
+        <p className="text-sm font-mono uppercase font-medium text-slate-700">
+          {value || "#000000"}
+        </p>
+        <button
           onClick={() => setOpen(isOpen ? "" : label)}
-          className="flex items-center gap-2 cursor-pointer hover:bg-slate-100 px-2 py-1 rounded transition-colors"
-        >
-          <div
-            className="w-8 h-8 rounded border-2 border-slate-300"
-            style={{ backgroundColor: value || "#000000" }}
-          />
-          <p className="text-xs font-mono uppercase font-medium text-slate-700">
-            {value || "#000000"}
-          </p>
-        </div>
+          className="w-7 h-7 rounded-md border border-slate-200 cursor-pointer active:scale-90 transition-transform duration-200 ease-in-out"
+          style={{ backgroundColor: value || "#000000" }}
+        />
       </div>
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 z-50 bg-white rounded-lg shadow-xl border border-slate-200 p-2">

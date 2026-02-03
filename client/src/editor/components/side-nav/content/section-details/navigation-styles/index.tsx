@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ColorPickerBar from "../../../../../../shared/components/ui/color-picker-bar";
-import FileUpload from "../../../../../../shared/components/ui/file-upload";
 import { useStoreSettingsStore } from "../../../../../../shared/store/editor/store-settings";
 
 const NavigationLinks = () => {
@@ -230,23 +229,7 @@ const NavigationStyles = () => {
 
       <NavigationLinks />
 
-      <div className="mt-6 border-t pt-4">
-        <h4 className="title text-sm mb-3">{"الشعار"}</h4>
-        <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-          <FileUpload
-            label="صورة الشعار"
-            value={storeSettings.header?.logo || {}}
-            onChange={(file) => {
-              updateStoreSettings({
-                header: {
-                  ...storeSettings.header,
-                  logo: file,
-                },
-              });
-            }}
-          />
-        </div>
-      </div>
+
     </div>
   );
 };

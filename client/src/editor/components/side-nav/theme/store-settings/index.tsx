@@ -1,26 +1,15 @@
-import React, { useState } from "react";
 import { useStoreSettingsStore } from "../../../../../shared/store/editor/store-settings";
-import { usePageStore } from "../../../../../shared/store/editor/page";
-import FileUploadInput from "../../../../../shared/components/ui/file-upload";
 import TextInput from "../../../../../shared/components/ui/input";
-import SelectList from "../../../../../shared/components/ui/select-list";
-import Divider from "../../../../../shared/components/ui/divider";
-import ColorPickerBar from "../../../../../shared/components/ui/color-picker-bar";
-import { Plus, Trash2 } from "lucide-react";
 import FileUploadBar from "../../../../../shared/components/ui/file-upload/bar";
 
 const EditorStoreSettings = () => {
   const {
     storeSettings,
     setLogo,
-    setHeaderLogo,
-    setFooterLogo,
-    setStoreType,
+
     updateStoreSettings,
   } = useStoreSettingsStore();
-  const { pages } = usePageStore();
 
-  const storeTypeOptions = ["e-commerce", "restaurant"];
 
   return (
     <div className="editor-nav-section flex flex-col gap-4">
@@ -31,11 +20,7 @@ const EditorStoreSettings = () => {
             <FileUploadBar label="الشعار"
               value={storeSettings.logo || {}}
               onChange={setLogo} />
-            {/* <FileUploadInput
-                label="شعار المتجر"
-                value={storeSettings.logo || {}}
-                onChange={setLogo}
-              /> */}
+
 
           </div>
         </div>
@@ -452,77 +437,5 @@ const EditorStoreSettings = () => {
   );
 };
 
-// Footer Colors Editor Component
-const FooterColorsEditor = () => {
-  const { storeSettings, updateStoreSettings } = useStoreSettingsStore();
-  const [open, setOpen] = useState("");
-
-  const styles = storeSettings.footer?.styles || {
-    backgroundColor: "#1e293b",
-    textColor: "#ffffff",
-    padding: "",
-    margin: "",
-  };
-
-  const updateStyles = (newStyles: Partial<typeof styles>) => {
-    updateStoreSettings({
-      footer: {
-        ...storeSettings.footer,
-        styles: {
-          ...styles,
-          ...newStyles,
-        },
-      },
-    });
-  };
-
-  return (
-    <div className="flex flex-col gap-3">
-      <div>
-        <h5 className="text-xs text-slate-600 mb-2">لون الخلفية</h5>
-        <ColorPickerBar
-          label="الخلفية"
-          value={styles.backgroundColor || "#1e293b"}
-          onChange={(value) => updateStyles({ backgroundColor: value })}
-          open={open}
-          setOpen={setOpen}
-        />
-      </div>
-
-      <div>
-        <h5 className="text-xs text-slate-600 mb-2">لون النص</h5>
-        <ColorPickerBar
-          label="النص"
-          value={styles.textColor || "#ffffff"}
-          onChange={(value) => updateStyles({ textColor: value })}
-          open={open}
-          setOpen={setOpen}
-        />
-      </div>
-
-      {/* <div>
-        <h5 className="text-xs text-slate-600 mb-2">المسافات الداخلية</h5>
-        <input
-          type="text"
-          value={styles.padding || ""}
-          onChange={(e) => updateStyles({ padding: e.target.value })}
-          placeholder="مثال: 20px أو 1rem"
-          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
-        <h5 className="text-xs text-slate-600 mb-2">المسافات الخارجية</h5>
-        <input
-          type="text"
-          value={styles.margin || ""}
-          onChange={(e) => updateStyles({ margin: e.target.value })}
-          placeholder="مثال: 20px أو 1rem"
-          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div> */}
-    </div>
-  );
-};
 
 export default EditorStoreSettings;

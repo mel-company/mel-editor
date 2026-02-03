@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ColorPickerBar from "../../../../../../shared/components/ui/color-picker-bar";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { useSectionStore } from "../../../../../../shared/store/editor/section";
@@ -8,7 +8,6 @@ import {
   Move,
   Layers,
   Type,
-  Square,
   Box,
   Sparkles,
   ChevronDown,
