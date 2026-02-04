@@ -179,6 +179,7 @@ export type TemplateType = {
   };
   storeType: "e-commerce" | "restaurant";
   sections: SectionType[];
+  pages?: PageType[];
 };
 
 export type PageType = {

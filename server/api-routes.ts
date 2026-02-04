@@ -9,7 +9,7 @@ import multer from 'multer';
 
 export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, isProduction: boolean) {
     // Configure multer for local file uploads
-    const upload = multer({ 
+    const upload = multer({
         dest: 'client/public/uploads/',
         limits: {
             fileSize: 10 * 1024 * 1024, // 10MB
@@ -144,7 +144,7 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
             if (key === 'storeSettings') {
                 try {
                     const css = await generateStyles(value);
-                    const fileName = `store-${storeId}-${Date.now()}.css`;
+                    const fileName = `${subdomain}-style.css`;
                     const styleUrl = await uploadFile(fileName, css);
                     storeData.styleUrl = styleUrl;
                     console.log(styleUrl)
@@ -197,7 +197,7 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
             if (storeData.storeSettings) {
                 try {
                     const css = await generateStyles(storeData.storeSettings);
-                    const fileName = `store-${row.store_id}-${Date.now()}.css`;
+                    const fileName = `${subdomain}-style.css`;
                     const styleUrl = await uploadFile(fileName, css);
                     storeData.storeSettings.styleUrl = styleUrl;
 
@@ -242,7 +242,7 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
             if (storeData.storeSettings) {
                 try {
                     const css = await generateStyles(storeData.storeSettings);
-                    const fileName = `store-${row.store_id}-${Date.now()}.css`;
+                    const fileName = `${subdomain}-style.css`;
                     const styleUrl = await uploadFile(fileName, css);
                     storeData.styleUrl = styleUrl; // Deprecated: keep for back-compat if needed
                     storeData.storeSettings.styleUrl = styleUrl; // Store inside settings
@@ -276,13 +276,13 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
 
             const fs = await import('node:fs');
             const fileBuffer = await fs.promises.readFile(req.file.path);
-            
+
             // Extract store ID from subdomain or request body
             const storeId = req.body.storeId || resolveStore(req.get('host') || '');
             console.log('📤 Upload - storeId:', storeId, 'host:', req.get('host'));
-            
+
             let fileUrl: string;
-            
+
             if (isR2Available()) {
                 // Upload to R2
                 try {
@@ -305,7 +305,7 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
                 fileUrl = `/uploads/${req.file.filename}`;
                 console.log('📁 File saved locally:', fileUrl);
             }
-            
+
             res.json({
                 success: true,
                 fileUrl,

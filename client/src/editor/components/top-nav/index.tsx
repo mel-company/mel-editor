@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { Save, UploadCloud } from "lucide-react";
+import { UploadCloud } from "lucide-react";
 import { usePageStore } from "../../../shared/store/editor/page";
 import { publishStore, generateStyles } from "@/shared/api/production";
+import classNames from "classnames";
 
 
 const PublishButton = () => {
@@ -35,11 +36,11 @@ const PublishButton = () => {
     };
 
     let buttonText = "نشر";
-    let buttonColor = "bg-indigo-600 hover:bg-indigo-700";
+    let buttonColor = "bg-blue-600 hover:bg-blue-700";
 
     if (isPublishing) {
         buttonText = "جاري النشر...";
-        buttonColor = "bg-indigo-400 cursor-wait";
+        buttonColor = "bg-blue-400 cursor-wait";
     } else if (showConfirm) {
         buttonText = "متأكد؟";
         buttonColor = "bg-orange-500 hover:bg-orange-600";
@@ -55,10 +56,10 @@ const PublishButton = () => {
         <button
             onClick={handlePublish}
             disabled={isPublishing}
-            className={`cursor-pointer line-clamp-1 text-nowrap flex items-center justify-center gap-1 px-4 py-2 rounded-lg transition-all duration-200 font-medium text-white ${buttonColor}`}
+            className={`cursor-pointer w-20 line-clamp-1 text-nowrap flex items-center justify-center gap-1 px-4 py-2 rounded-lg transition-all duration-200 font-medium text-white ${buttonColor}`}
         >
-            {!isPublishing && status === "idle" && !showConfirm && <UploadCloud className="w-3 h-3" />}
-            <span className="text-xs">{buttonText}</span>
+            {!isPublishing && status === "idle" && !showConfirm && <UploadCloud className="w-4 h-4" />}
+            <span className="text-sm">{buttonText}</span>
         </button>
     );
 };
@@ -82,23 +83,23 @@ const SaveBtn = () => {
 
 
     return (
-        <div className="grid grid-cols-2 gap-1">
-            <button
-                onClick={handleSave}
-                className={`cursor-pointer line-clamp-1 text-nowrap flex items-center justify-center gap-1 px-4 py-2 rounded-lg transition-all duration-200 font-medium text-white
-                    ${saveStatus === "success" ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}
-                    ${saveStatus === "loading" ? "bg-blue-400 cursor-wait" : ""}
-                    ${saveStatus === "error" ? "bg-red-600" : ""}`}
-            >
-                <Save className="w-3 h-3" />
-                <span className="text-xs">
-                    {saveStatus === "success" ? "تم الحفظ" :
-                        saveStatus === "loading" ? "جاري الحفظ..." :
-                            saveStatus === "error" ? "فشل" : "حفظ"}
-                </span>
-            </button>
-
-        </div>
+        <button
+            onClick={handleSave}
+            className={
+                classNames("cursor-pointer w-20 line-clamp-1 text-nowrap flex items-center justify-center gap-1 px-4 py-2 rounded-lg transition-all duration-200 font-medium ", {
+                    "bg-green-600 text-white": saveStatus === "success",
+                    "bg-blue-50 hover:bg-blue-100 text-blue-600": saveStatus === "idle",
+                    "bg-blue-400 cursor-wait": saveStatus === "loading",
+                    "bg-red-600 text-white": saveStatus === "error",
+                })
+            }
+        >
+            <span className="text-sm">
+                {saveStatus === "success" ? "تم الحفظ" :
+                    saveStatus === "loading" ? "جاري الحفظ..." :
+                        saveStatus === "error" ? "فشل" : "حفظ"}
+            </span>
+        </button>
     )
 }
 
@@ -116,10 +117,10 @@ const EditorTopNav = () => {
     }, [currentPageId]);
 
     return (
-        <header className="bg-white absolute top-0 left-0 right-64 p-2 text-sm font-medium flex gap-1 items-center justify-end overflow-hidden z-40" >
+        <header className="bg-white px-20 absolute top-0 left-0 right-64 p-2 text-sm font-medium flex gap-2 items-center justify-end overflow-hidden z-40" >
             {/* <TemplateJsonWrapper /> */}
-            <PublishButton />
             <SaveBtn />
+            <PublishButton />
         </header>
     );
 };

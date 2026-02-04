@@ -11,6 +11,7 @@ import { our_story_sections } from "@templates/data/template/sections/our-story"
 import { contact_sections } from "@templates/data/template/sections/contact";
 import { resolveComponent } from "../../../utils/component-registry";
 import { footer_sections } from "@templates/data/template/sections/footer";
+import { mockTemplate } from "@templates/data/template";
 
 // Map section types to their section definitions
 const sectionTypesMap: Record<string, any[]> = {
@@ -211,8 +212,25 @@ export const usePageStore = create<Store>()(
       name: "editor-pages-storage",
       storage: createJSONStorage(() => createDbStorage()),
       onRehydrateStorage: () => (state) => {
-        if (state && state.pages) {
-          state.pages = restoreSectionComponents(state.pages);
+        if (state) {
+          const mockPages = mockTemplate.pages || [];
+          const storedPagesCount = state.pages?.length || 0;
+
+          // If mockTemplate has more pages than storage, use mockTemplate pages
+          // This ensures new multi-page templates are loaded even when old single-page data exists
+          if (mockPages.length > 0 && mockPages.length > storedPagesCount) {
+            console.log(`📄 MockTemplate has more pages (${mockPages.length}) than storage (${storedPagesCount}), loading mockTemplate pages`);
+            state.pages = restoreSectionComponents(mockPages);
+            state.currentPageId = mockPages[0].id;
+          } else if (state.pages && state.pages.length > 0) {
+            // Restore components for stored pages
+            state.pages = restoreSectionComponents(state.pages);
+          } else if (mockPages.length > 0) {
+            // No pages in storage, use mockTemplate
+            console.log("📄 No cached pages found, loading default pages from mockTemplate");
+            state.pages = restoreSectionComponents(mockPages);
+            state.currentPageId = mockPages[0].id;
+          }
         }
       },
     }

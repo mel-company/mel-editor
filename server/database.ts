@@ -105,20 +105,21 @@ const db = new sqlite3.Database(dbPath, (err) => {
     }
 });
 
-export function getStore(identifier: string): Promise<any> {
+export function getStore(identifier: string, usePublished: boolean = false): Promise<any> {
     return new Promise((resolve, reject) => {
-        db.get(`SELECT json FROM stores WHERE store_id = ? OR subdomain = ?`, [identifier, identifier], (err, row: any) => {
+        const column = usePublished ? 'published_json' : 'json';
+        db.get(`SELECT ${column} as data FROM stores WHERE store_id = ? OR subdomain = ?`, [identifier, identifier], (err, row: any) => {
             if (err) {
                 console.error('Database Error:', err);
                 reject(err);
                 return;
             }
-            if (!row || !row.json) {
+            if (!row || !row.data) {
                 resolve(null);
                 return;
             }
             try {
-                const storeData = JSON.parse(row.json);
+                const storeData = JSON.parse(row.data);
                 resolve(storeData);
             } catch (parseErr) {
                 console.error('JSON Parse Error:', parseErr);

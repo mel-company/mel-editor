@@ -7,7 +7,7 @@ import { getStore } from './database';
 export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduction: boolean, rootDir: string) {
     // Import restoreSectionComponents from client code
     let restoreSectionComponents: any;
-    
+
     // Handle all routes for SSR
     // Note: The path pattern might depend on Express version, keeping original
     app.get(/(.*)/, async (req: Request, res: Response, next: NextFunction) => {
@@ -25,7 +25,7 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                 const module = await import('../client/src/shared/store/editor/page/index.tsx');
                 restoreSectionComponents = module.restoreSectionComponents;
             }
-            
+
             // 1. Resolve Store from Domain
             const storeId = resolveStore(host);
             console.log(`[SSR] Resolving request for ${host} -> ${storeId}`);
@@ -37,7 +37,8 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
             let templateConfig: any = undefined;
 
             try {
-                const storeData = await getStore(storeId);
+                // Use published data for production SSR
+                const storeData = await getStore(storeId, true);
                 if (storeData) {
                     products = storeData.products || [];
                     categories = storeData.categories || [];
@@ -71,6 +72,14 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                     let pages = pagesStorage?.state?.pages || storeData.pages || [];
                     const storeSettings = settingsStorage?.state?.storeSettings || storeData.storeSettings || {};
 
+                    // Merge styleUrl from publish (stored at storeData.storeSettings.styleUrl)
+                    if (storeData.storeSettings?.styleUrl && !storeSettings.styleUrl) {
+                        storeSettings.styleUrl = storeData.storeSettings.styleUrl;
+                    }
+                    if (storeData.styleUrl && !storeSettings.styleUrl) {
+                        storeSettings.styleUrl = storeData.styleUrl;
+                    }
+
                     // Restore section components (add options with components)
                     if (pages && pages.length > 0) {
                         console.log(`[SSR] Before restore: Page has ${pages[0].sections?.length || 0} sections`);
@@ -81,14 +90,18 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                         console.log(`[SSR] First section options count:`, pages[0].sections?.[0]?.options?.length || 0);
                     }
 
-                    // If no pages in database, load from mock template as fallback
-                    if (!pages || pages.length === 0) {
-                        console.log(`[SSR] No pages in DB for ${storeId}, loading from mock template`);
-                        const mocks = await getMockData(storeId, vite, isProduction);
+                    // If no pages in database OR mockTemplate has more pages, prefer mockTemplate.pages
+                    const mocks = await getMockData(storeId, vite, isProduction);
+                    const mockPages = mocks.mockTemplate?.pages || [];
 
-                        // mockTemplate has sections, but we need pages
-                        // Create a default home page from the template sections
-                        if (mocks.mockTemplate?.sections) {
+                    if (!pages || pages.length === 0 || (mockPages.length > 0 && mockPages.length > pages.length)) {
+                        console.log(`[SSR] Using mockTemplate pages for ${storeId} (DB: ${pages?.length || 0}, Mock: ${mockPages.length})`);
+
+                        if (mockPages.length > 0) {
+                            // Use mockTemplate.pages directly
+                            pages = restoreSectionComponents(mockPages);
+                        } else if (mocks.mockTemplate?.sections) {
+                            // Fallback: Create a default home page from the template sections
                             pages = [{
                                 id: 'home',
                                 name: 'الصفحة الرئيسية',
@@ -98,7 +111,6 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                                     target_id: section.id || section.section_id
                                 }))
                             }];
-                            // Restore components for mock template pages too
                             pages = restoreSectionComponents(pages);
                         } else {
                             pages = [];
@@ -110,19 +122,22 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                         storeSettings
                     };
                     console.log(`[SSR] Loaded data from DB for ${storeId}: ${pages.length} pages found`);
+                    console.log(`[SSR] storeSettings.styleUrl:`, storeSettings?.styleUrl);
+                    console.log(`[SSR] storeData.styleUrl:`, storeData?.styleUrl);
+                    console.log(`[SSR] storeData.storeSettings?.styleUrl:`, storeData?.storeSettings?.styleUrl);
                 } else {
                     console.log(`[SSR] No DB data for ${storeId}, using mocks`);
                     const mocks = await getMockData(storeId, vite, isProduction);
                     products = mocks.mockProducts || [];
                     categories = mocks.mockCategories || [];
                     templateData = mocks.mockTemplate || null;
-                    
+
                     let noDbPages = mocks.mockTemplate?.pages || [];
                     // Restore components for no DB data pages too
                     if (noDbPages.length > 0) {
                         noDbPages = restoreSectionComponents(noDbPages);
                     }
-                    
+
                     templateConfig = {
                         pages: noDbPages,
                         storeSettings: {}
@@ -135,13 +150,13 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                 products = mocks.mockProducts || [];
                 categories = mocks.mockCategories || [];
                 templateData = mocks.mockTemplate || null;
-                
+
                 let fallbackPages = mocks.mockTemplate?.pages || [];
                 // Restore components for fallback pages too
                 if (fallbackPages.length > 0) {
                     fallbackPages = restoreSectionComponents(fallbackPages);
                 }
-                
+
                 templateConfig = {
                     pages: fallbackPages,
                     storeSettings: {}

@@ -46,29 +46,46 @@ export const uploadFileToR2 = async (fileName: string, fileBuffer: Buffer, mimeT
     if (!isR2Configured || !r2Client) {
         throw new Error('R2 is not configured');
     }
-    
+
     // Organize files by store ID if provided
     const basePath = storeId ? `stores/${storeId}` : 'uploads';
     const key = `${basePath}/${Date.now()}-${fileName}`;
-    
+
     await r2Client.putObject({
         Bucket: R2_BUCKET,
         Key: key,
         Body: fileBuffer,
         ContentType: mimeType,
     }).promise();
-    
+
     return `${R2_PUBLIC_URL}/${key}`;
 };
 
 export const isR2Available = () => isR2Configured;
 
-// Legacy local storage function (for CSS files)
-export const uploadFile = async (fileName: string, content: string): Promise<string> => {
+// Upload CSS/text files - prefers R2, falls back to local
+export const uploadFile = async (fileName: string, content: string, storeId?: string): Promise<string> => {
+    // If R2 is configured, upload to R2
+    if (isR2Configured && r2Client) {
+        const basePath = storeId ? `stores/${storeId}` : 'styles';
+        const key = `${basePath}/${fileName}`;
+
+        await r2Client.putObject({
+            Bucket: R2_BUCKET,
+            Key: key,
+            Body: Buffer.from(content, 'utf-8'),
+            ContentType: 'text/css',
+            CacheControl: 'public, max-age=31536000', // 1 year cache
+        }).promise();
+
+        console.log(`[Storage] Uploaded ${fileName} to R2: ${R2_PUBLIC_URL}/${key}`);
+        return `${R2_PUBLIC_URL}/${key}`;
+    }
+
+    // Fallback to local storage
     const filePath = path.join(UPLOAD_DIR, fileName);
     await fs.promises.writeFile(filePath, content, 'utf-8');
-
-    // Return URL relative to public (will be served by Vite/Express)
+    console.log(`[Storage] Saved ${fileName} locally`);
     return `/uploads/${fileName}`;
 };
 
@@ -77,9 +94,9 @@ export const uploadToR2 = async (fileName: string, content: Buffer, mimeType: st
     if (!r2Client) {
         throw new Error('R2 is not configured');
     }
-    
+
     const key = `uploads/${Date.now()}-${fileName}`;
-    
+
     await r2Client.upload({
         Bucket: R2_BUCKET,
         Key: key,
@@ -87,6 +104,6 @@ export const uploadToR2 = async (fileName: string, content: Buffer, mimeType: st
         ContentType: mimeType,
         ACL: 'public-read',
     }).promise();
-    
+
     return `${R2_PUBLIC_URL}/${key}`;
 };
