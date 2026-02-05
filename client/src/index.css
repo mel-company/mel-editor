@@ -1,34 +1,42 @@
 @import "tailwindcss";
-@source "../../templates";
-@plugin "daisyui" {
-   themes: light --default
-}
 
+@source "../../templates";
+
+@plugin "daisyui" {
+  themes: light --default
+}
 
 body {
   font-family: 'IBM Plex Sans Arabic', sans-serif;
 }
 
-.editor-nav-section {
-    @apply w-full flex flex-col gap-2;
-}
-
-.editor .title {
-    @apply text-sm text-slate-800;
-}
-
-.editor .sub-title {
-    @apply text-xs text-slate-400;
-}
-
 /* Apply heading font to headings */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--heading-font, 'IBM Plex Sans Arabic', sans-serif);
 }
 
 /* Apply body font to body text */
-body, p, span, div {
+p,
+span,
+div {
   font-family: var(--body-font, 'IBM Plex Sans Arabic', sans-serif);
+}
+
+.editor-nav-section {
+  @apply w-full flex flex-col gap-2;
+}
+
+.editor .title {
+  @apply text-sm text-slate-800;
+}
+
+.editor .sub-title {
+  @apply text-xs text-slate-400;
 }
 
 .no-scrollbar {
