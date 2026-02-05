@@ -1,4 +1,4 @@
-import { TemplateType } from "@/shared/types";
+import { TemplateType, PageType } from "@/shared/types";
 import { categories_sections } from "./sections/categories";
 import { recent_products_sections } from "./sections/recent-products";
 import { footer_sections } from "./sections/footer";
@@ -6,6 +6,63 @@ import { our_story_sections } from "./sections/our-story";
 import { contact_sections } from "./sections/contact";
 import { hero_sections } from "./sections/hero";
 import { navigation_sections } from "./sections/navigation";
+
+// Helper function to create a section with proper structure
+const createSection = (id: string, sectionId: string, type: string, options: any[], editable: boolean = true) => ({
+  id,
+  section_id: sectionId,
+  type,
+  editable,
+  options,
+  target_id: id,
+});
+
+// Page 1: Home Page - Navigation, Hero, Categories, Products, Footer
+const homePage: PageType = {
+  id: "home-page",
+  name: "الصفحة الرئيسية",
+  type: "home",
+  sections: [
+    createSection("home-nav", "1", "navigation", navigation_sections, false),
+    createSection("home-hero", "3", "hero", hero_sections, true),
+    createSection("home-categories", "1", "categories", categories_sections, true),
+    createSection("home-products", "2", "recentProducts", recent_products_sections, true),
+    createSection("home-footer", "1", "footer", footer_sections, false),
+  ],
+};
+
+// Page 2: About Page - Hero, Our Story, Contact Info
+const aboutPage: PageType = {
+  id: "about-page",
+  name: "حول المتجر",
+  type: "about",
+  sections: [
+    createSection("about-hero", "2", "hero", hero_sections, true),
+    createSection("about-story", "1", "ourStory", our_story_sections, true),
+    createSection("about-contact", "1", "contact", contact_sections, true),
+  ],
+};
+
+// Page 3: Products Page - Products Grid
+const productsPage: PageType = {
+  id: "products-page",
+  name: "المنتجات",
+  type: "content",
+  sections: [
+    createSection("products-grid", "1", "recentProducts", recent_products_sections, true),
+  ],
+};
+
+// Page 4: Contact Page - Hero, Contact Form
+const contactPage: PageType = {
+  id: "contact-page",
+  name: "اتصل بنا",
+  type: "content",
+  sections: [
+    createSection("contact-hero", "1", "hero", hero_sections, true),
+    createSection("contact-form", "2", "contact", contact_sections, true),
+  ],
+};
 
 export const mockTemplate: TemplateType = {
   id: "cklsmvdlkvmds",
@@ -17,6 +74,7 @@ export const mockTemplate: TemplateType = {
     url: "",
   },
 
+  // Legacy sections array (for backwards compatibility)
   sections: [
     {
       id: "0",
@@ -32,18 +90,6 @@ export const mockTemplate: TemplateType = {
       view_all_link: "",
       editable: true,
       options: hero_sections,
-    },
-    {
-      id: "test-registry-lookup",
-      section_id: "1",
-      type: "contact",
-      editable: true,
-      options: contact_sections,
-      // Testing overrides: The registry has defaults, but we override the title here
-      content: {
-        title: "Custom Contact Title",
-        description: "This description replaces the default one from the registry.",
-      }
     },
     {
       id: "2",
@@ -86,4 +132,7 @@ export const mockTemplate: TemplateType = {
       editable: true,
     },
   ],
+
+  // Multi-page support: 4 pages for e-commerce
+  pages: [homePage, aboutPage, productsPage, contactPage],
 };
