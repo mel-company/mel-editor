@@ -208,6 +208,59 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
                 html = html.replace('</head>', `<link rel="stylesheet" href="${templateConfig.storeSettings.styleUrl}"></head>`);
             }
 
+            // Inject SEO meta tags from store settings
+            const storeSettings = templateConfig?.storeSettings || {};
+            const storeName = storeSettings.name || 'متجر';
+            const storeDescription = storeSettings.description || '';
+            const storeLogo = storeSettings.logo?.url || storeSettings.logo?.publicUrl || '';
+
+            // Escape HTML entities in meta content
+            const escapeHtml = (text: string) => {
+                return text
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            };
+
+            // Build SEO meta tags
+            let seoTags = '';
+
+            // Open Graph tags for social media
+            seoTags += `<meta property="og:title" content="${escapeHtml(storeName)}" />\n    `;
+            if (storeDescription) {
+                seoTags += `<meta property="og:description" content="${escapeHtml(storeDescription)}" />\n    `;
+            }
+            if (storeLogo) {
+                seoTags += `<meta property="og:image" content="${escapeHtml(storeLogo)}" />\n    `;
+            }
+            seoTags += `<meta property="og:type" content="website" />\n    `;
+
+            // Twitter Card tags
+            seoTags += `<meta name="twitter:card" content="summary_large_image" />\n    `;
+            seoTags += `<meta name="twitter:title" content="${escapeHtml(storeName)}" />\n    `;
+            if (storeDescription) {
+                seoTags += `<meta name="twitter:description" content="${escapeHtml(storeDescription)}" />\n    `;
+            }
+            if (storeLogo) {
+                seoTags += `<meta name="twitter:image" content="${escapeHtml(storeLogo)}" />\n    `;
+            }
+
+            // Favicon/Icon
+            if (storeLogo) {
+                seoTags += `<link rel="icon" type="image/png" href="${escapeHtml(storeLogo)}" />`;
+            }
+
+            // Replace default title and description with store settings
+            html = html.replace(/<title>.*?<\/title>/, `<title>${escapeHtml(storeName)}</title>`);
+            if (storeDescription) {
+                html = html.replace(/<meta name="description" content=".*?" \/>/, `<meta name="description" content="${escapeHtml(storeDescription)}" />`);
+            }
+
+            // Inject additional SEO tags at placeholder
+            html = html.replace('<!--seo-tags-->', seoTags);
+
             // 6. Send the rendered HTML
             res.status(200).set({ 'Content-Type': 'text/html' }).end(html);
         } catch (e: any) {
