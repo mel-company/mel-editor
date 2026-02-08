@@ -13,6 +13,7 @@ export default defineConfig({
             '@': path.resolve(__dirname, './src'),
             '@templates': path.resolve(__dirname, '../templates/ecommerce/retail-v1'),
         },
+        extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
     },
     server: {
         fs: {

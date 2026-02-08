@@ -325,4 +325,111 @@ export function setupApiRoutes(app: Express, vite: ViteDevServer | undefined, is
             res.json({ data: rows });
         });
     });
+
+    // Layout Management Endpoints
+
+    // Get layout configuration for a specific page
+    app.get('/api/v1/layouts/:pageId', (req: Request, res: Response) => {
+        const host = req.headers.host;
+        const subdomain = resolveStore(host);
+        const pageId = req.params.pageId;
+
+        db.get(`SELECT json FROM stores WHERE subdomain = ?`, [subdomain], (err, row: any) => {
+            if (err) {
+                console.error('Database Error:', err);
+                return res.status(500).json({ error: 'Database Error' });
+            }
+            if (!row || !row.json) {
+                return res.json({ data: null });
+            }
+            try {
+                const storeData = JSON.parse(row.json);
+                const templates = storeData.pageTemplates || [];
+                const pageTemplate = templates.find((t: any) => t.pageId === pageId);
+                res.json({ data: pageTemplate || null });
+            } catch (parseErr) {
+                console.error('JSON Parse Error:', parseErr);
+                res.status(500).json({ error: 'Data Corruption' });
+            }
+        });
+    });
+
+    // Save page template selection for a specific page
+    app.post('/api/v1/page-templates/:pageId', (req: Request, res: Response) => {
+        const host = req.headers.host;
+        const subdomain = resolveStore(host);
+        const pageId = req.params.pageId;
+        const templateSelection = req.body;
+
+        db.get(`SELECT store_id, json FROM stores WHERE subdomain = ?`, [subdomain], (err, row: any) => {
+            if (err) {
+                console.error('Database Read Error:', err);
+                return res.status(500).json({ error: 'Database Error' });
+            }
+
+            let storeId = row ? row.store_id : crypto.randomUUID();
+            let storeData: any = {};
+
+            if (row && row.json) {
+                try {
+                    storeData = JSON.parse(row.json);
+                } catch (e) {
+                    console.error('Existing data corrupt, resetting', e);
+                }
+            }
+
+            // Initialize pageTemplates array if it doesn't exist
+            if (!storeData.pageTemplates) {
+                storeData.pageTemplates = [];
+            }
+
+            // Update or add the page template selection
+            const existingIndex = storeData.pageTemplates.findIndex((t: any) => t.pageId === pageId);
+            if (existingIndex >= 0) {
+                storeData.pageTemplates[existingIndex] = templateSelection;
+            } else {
+                storeData.pageTemplates.push(templateSelection);
+            }
+
+            const newJson = JSON.stringify(storeData);
+
+            if (row) {
+                db.run(`UPDATE stores SET json = ? WHERE store_id = ?`, [newJson, storeId], (updateErr) => {
+                    if (updateErr) return res.status(500).json({ error: 'Database Update Error' });
+                    res.json({ success: true });
+                });
+            } else {
+                db.run(`INSERT INTO stores (store_id, template_id, json, subdomain) VALUES (?, ?, ?, ?)`,
+                    [storeId, 'temp-01', newJson, subdomain],
+                    (insertErr) => {
+                        if (insertErr) return res.status(500).json({ error: 'Database Insert Error' });
+                        res.json({ success: true });
+                    }
+                );
+            }
+        });
+    });
+
+    // Get all page template selections for the store
+    app.get('/api/v1/page-templates', (req: Request, res: Response) => {
+        const host = req.headers.host;
+        const subdomain = resolveStore(host);
+
+        db.get(`SELECT json FROM stores WHERE subdomain = ?`, [subdomain], (err, row: any) => {
+            if (err) {
+                console.error('Database Error:', err);
+                return res.status(500).json({ error: 'Database Error' });
+            }
+            if (!row || !row.json) {
+                return res.json({ data: [] });
+            }
+            try {
+                const storeData = JSON.parse(row.json);
+                res.json({ data: storeData.pageTemplates || [] });
+            } catch (parseErr) {
+                console.error('JSON Parse Error:', parseErr);
+                res.status(500).json({ error: 'Data Corruption' });
+            }
+        });
+    });
 }

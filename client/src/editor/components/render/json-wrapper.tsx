@@ -80,7 +80,7 @@ const TemplateJsonWrapper = () => {
 
             {/* JSON Output Display */}
             {showDebug && (
-                <div className="absolute top-12 left-4 z-50 w-96 max-h-[80vh] overflow-auto bg-gray-900 text-green-400 p-4 rounded shadow-xl text-xs font-mono border border-gray-700">
+                <div className="absolute top-12 left-4 z-50 w-96 max-h-96 overflow-auto bg-gray-900 text-green-400 p-4 rounded shadow-xl text-xs font-mono border border-gray-700">
                     <div className="flex justify-between items-center mb-2">
                         <span className="font-bold text-white">Template JSON Structure</span>
                         <button
@@ -99,7 +99,7 @@ const TemplateJsonWrapper = () => {
 
             {/* Generated Code Display */}
             {showCode && (
-                <div className="absolute top-12 left-4 z-50 w-[600px] max-h-[80vh] overflow-auto bg-[#1e1e1e] text-blue-300 p-4 rounded shadow-xl text-xs font-mono border border-gray-700">
+                <div className="absolute top-12 left-4 z-50 max-w-2xl max-h-96 overflow-auto bg-gray-900 text-blue-300 p-4 rounded shadow-xl text-xs font-mono border border-gray-700">
                     <div className="flex justify-between items-center mb-2">
                         <span className="font-bold text-white">Generated Server Code (Mock)</span>
                         <button

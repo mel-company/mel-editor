@@ -1,3 +1,5 @@
+import { Select } from "../select";
+
 const SelectList = ({
   options,
   selected,
@@ -8,17 +10,16 @@ const SelectList = ({
   setSelected: (value: string) => void;
 }) => {
   return (
-    <select
+    <Select
       value={selected}
       onChange={(e) => setSelected(e.target.value)}
-      className="select border-none rounded-lg bg-slate-50 active:border-none active:outline-none focus:border-none focus:outline-none focus:ring-0"
     >
       {options.map((option) => (
         <option key={option} value={option}>
           {option}
         </option>
       ))}
-    </select>
+    </Select>
   );
 };
 

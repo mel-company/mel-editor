@@ -1,6 +1,6 @@
-import { usePageStore } from "../../../../../shared/store/editor/page";
-import { PageType } from "../../../../../shared/types";
-
+import { usePageStore } from "@/shared/store/editor/page";
+import { PageType } from "@/shared/types";
+import { Select } from "@/shared/components/ui/select";
 
 const PageList = () => {
   const { pages, currentPageId, setCurrentPageId } = usePageStore();
@@ -31,15 +31,14 @@ const PageList = () => {
       <div className="editor-nav-section">
         <h3 className="title">{"الصفحة الحالية"}</h3>
 
-        <select
-          className="select select-sm rounded-lg"
+        <Select
           value={currentPageId}
           onChange={(e) => setCurrentPageId(e.target.value)}
         >
           {pages.map((page) => (
             <option key={page.id} value={page.id}>{page.name || pageTypeLabels[page.type]}</option>
           ))}
-        </select>
+        </Select>
       </div>
     </div>
   );

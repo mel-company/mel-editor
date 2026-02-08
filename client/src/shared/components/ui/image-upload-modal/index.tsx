@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { X, Upload, Image as ImageIcon, Eye } from "lucide-react";
+import { useState } from "react";
+import { X, Upload, Image as ImageIcon } from "lucide-react";
 import { FileType, ProductType, CategoryType } from "../../../types";
 import { useR2Upload } from "../../../hooks/use-r2-upload";
 import { mockProducts } from "@templates/data/products";
@@ -21,10 +21,9 @@ const ImageUploadModal = ({
   const [step, setStep] = useState<"upload" | "category" | "product" | "preview">("upload");
   const [selectedCategory, setSelectedCategory] = useState<CategoryType | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
-  const [showPreview, setShowPreview] = useState(false);
 
   const { uploadState, handleFileChange, clear } = useR2Upload({
-    onUpload: () => {},
+    onUpload: () => { },
     maxSizeMB: 5,
     acceptedTypes: ["image/*"],
   });
@@ -55,10 +54,7 @@ const ImageUploadModal = ({
   };
 
   const handleClose = () => {
-    setStep("upload");
-    setSelectedCategory(null);
     setSelectedProduct(null);
-    setShowPreview(false);
     clear();
     onClose();
   };
@@ -67,7 +63,7 @@ const ImageUploadModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <h2 className="text-xl font-bold text-slate-900">{label}</h2>
@@ -166,11 +162,10 @@ const ImageUploadModal = ({
                 <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
                   <button
                     onClick={() => setSelectedCategory(null)}
-                    className={`p-3 rounded-lg border-2 text-right transition-all ${
-                      selectedCategory === null
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-slate-200 hover:border-blue-300"
-                    }`}
+                    className={`p-3 rounded-lg border-2 text-right transition-all ${selectedCategory === null
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-slate-200 hover:border-blue-300"
+                      }`}
                   >
                     <p className="text-sm font-medium text-slate-900">بدون تصنيف</p>
                   </button>
@@ -178,11 +173,10 @@ const ImageUploadModal = ({
                     <button
                       key={category.id}
                       onClick={() => setSelectedCategory(category)}
-                      className={`p-3 rounded-lg border-2 text-right transition-all ${
-                        selectedCategory?.id === category.id
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-slate-200 hover:border-blue-300"
-                      }`}
+                      className={`p-3 rounded-lg border-2 text-right transition-all ${selectedCategory?.id === category.id
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-slate-200 hover:border-blue-300"
+                        }`}
                     >
                       <p className="text-sm font-medium text-slate-900">
                         {category.name}
@@ -223,11 +217,10 @@ const ImageUploadModal = ({
                 <div className="max-h-64 overflow-y-auto space-y-2">
                   <button
                     onClick={() => setSelectedProduct(null)}
-                    className={`w-full p-3 rounded-lg border-2 text-right transition-all ${
-                      selectedProduct === null
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-slate-200 hover:border-blue-300"
-                    }`}
+                    className={`w-full p-3 rounded-lg border-2 text-right transition-all ${selectedProduct === null
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-slate-200 hover:border-blue-300"
+                      }`}
                   >
                     <p className="text-sm font-medium text-slate-900">بدون منتج</p>
                   </button>
@@ -235,11 +228,10 @@ const ImageUploadModal = ({
                     <button
                       key={product.id}
                       onClick={() => setSelectedProduct(product)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 text-right transition-all ${
-                        selectedProduct?.id === product.id
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-slate-200 hover:border-blue-300"
-                      }`}
+                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 text-right transition-all ${selectedProduct?.id === product.id
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-slate-200 hover:border-blue-300"
+                        }`}
                     >
                       <div className="w-12 h-12 border border-slate-200 rounded-lg overflow-hidden flex-shrink-0">
                         {product.thumbnail?.url ? (

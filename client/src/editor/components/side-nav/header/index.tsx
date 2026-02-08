@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import React from "react";
-
-
+import { usePageStore } from "../../../../shared/store/editor/page";
 
 const EditoNavHeader = ({
   side,
@@ -13,6 +12,10 @@ const EditoNavHeader = ({
   onNavigate?: (view: "editor" | "store" | "dashboard") => void;
   isRestaurant?: boolean;
 }) => {
+  const { getCurrentPage } = usePageStore();
+  const currentPage = getCurrentPage();
+  const isHomePage = currentPage?.type === "home";
+
   const options = isRestaurant
     ? [
       {
@@ -20,16 +23,27 @@ const EditoNavHeader = ({
         value: "theme",
       },
     ]
-    : [
-      {
-        label: "الثيم",
-        value: "theme",
-      },
-      {
-        label: "المحتوى",
-        value: "content",
-      }
-    ];
+    : isHomePage
+      ? [
+        {
+          label: "الثيم",
+          value: "theme",
+        },
+        {
+          label: "المحتوى",
+          value: "content",
+        }
+      ]
+      : [
+        {
+          label: "الثيم",
+          value: "theme",
+        },
+        {
+          label: "التخطيطات",
+          value: "layout",
+        }
+      ];
 
 
 

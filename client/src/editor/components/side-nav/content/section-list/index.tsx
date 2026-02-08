@@ -22,12 +22,17 @@ import NewSectionBtn from "./new-section-btn";
 import classNames from "classnames";
 
 const EditorSectionList = () => {
-  const { getSections, setSections, activeSectionId } = useSectionStore();
-  const { getCurrentPage } = usePageStore();
-  const currentPage = getCurrentPage();
-  const sections = getSections({ onlyEditable: true });
+  const { setSections, activeSectionId } = useSectionStore();
+  const currentPage = usePageStore((state) => state.pages.find((p) => p.id === state.currentPageId));
+  const sections = currentPage?.sections?.filter((section) => !!section.editable) || [];
   const [isCollapsed, setIsCollapsed] = useState(!!activeSectionId);
+  const [refreshKey, setRefreshKey] = useState(0);
   const prevActiveSectionId = useRef(activeSectionId);
+
+  const handleToggleCollapse = () => {
+    setIsCollapsed(!isCollapsed);
+    setRefreshKey((prev) => prev + 1);
+  };
 
   useEffect(() => {
     // Only auto-collapse when going from no selection to having one
@@ -69,7 +74,7 @@ const EditorSectionList = () => {
       <div className="h-px bg-slate-100 w-full" />
 
       <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
+        onClick={handleToggleCollapse}
         className="flex items-center justify-between my-2 w-full rounded-md"
       >
         <div className="flex items-center gap-1">
@@ -105,7 +110,7 @@ const EditorSectionList = () => {
               items={sections.map((section) => section.target_id).filter((id): id is string => id !== undefined)}
               strategy={verticalListSortingStrategy}
             >
-              <div className="w-full h-full gap-2 flex flex-col">
+              <div key={refreshKey} className="w-full h-full gap-2 flex flex-col">
                 {sections.map((section) => {
                   return (
                     <SectionItem key={section?.target_id} section={section} />

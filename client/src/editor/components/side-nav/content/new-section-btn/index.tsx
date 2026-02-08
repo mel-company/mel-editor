@@ -1,7 +1,8 @@
+import { Button } from "../../../../../shared/components/ui/button";
 
 const NewSectionBtn = () => {
     return (
-        <button className="btn btn-primary">إضافة قسم جديد</button>
+        <Button variant="primary">إضافة قسم جديد</Button>
     )
 }
 

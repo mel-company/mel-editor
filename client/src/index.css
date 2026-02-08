@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   font-family: 'IBM Plex Sans Arabic', sans-serif;
 }
@@ -38,4 +42,22 @@ div {
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Style for select dropdown options */
+select option {
+  padding: 0.5rem 0.75rem;
+  background-color: white;
+  color: rgb(15 23 42);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+select option:hover {
+  background-color: rgb(239 246 255);
+}
+
+select option:checked {
+  background-color: rgb(219 234 254);
+  font-weight: 500;
 }

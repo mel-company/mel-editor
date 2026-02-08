@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { usePageStore, restoreSectionComponents } from "../store/editor/page";
 import { useStoreSettingsStore } from "../store/editor/store-settings";
+import { usePageTemplateStore } from "../store/editor/page-template";
 import { mockTemplate } from "@templates/data/template";
 // import { Navigation1 } from "@templates/data/template/sections/navigation";
 // import { footer_sections } from "@templates/data/template/sections/footer";
@@ -14,6 +15,7 @@ import { useSSRProducts, useSSRCategories, useSSRData } from "../context/ssr-dat
 export const useTemplateStructure = () => {
     const { pages: storePages, currentPageId: storeCurrentPageId } = usePageStore();
     const { storeSettings: storeStoreSettings } = useStoreSettingsStore();
+    const { getSelectedTemplateId } = usePageTemplateStore();
 
     // Get SSR data
     const { isSSR, templateConfig } = useSSRData();
@@ -102,7 +104,21 @@ export const useTemplateStructure = () => {
         // Use SSR template if available, otherwise fallback to mock/page merge
         const templateSource = (isSSR && templateConfig) ? { sections: pages.find(p => p.id === currentPageId)?.sections || [] } : mockTemplate;
 
-        const currentPage = { ...templateSource, ...page };
+        let currentPage = { ...templateSource, ...page };
+
+        // For non-home pages, check if a template variant is selected
+        if (page && page.type !== "home" && page.templateVariants && page.templateVariants.length > 0) {
+            const selectedTemplateId = getSelectedTemplateId(page.id);
+            const selectedTemplate = page.templateVariants.find((t: any) => t.id === selectedTemplateId);
+
+            // If a template is selected, use its sections instead
+            if (selectedTemplate) {
+                currentPage = {
+                    ...currentPage,
+                    sections: selectedTemplate.sections
+                };
+            }
+        }
 
         // 1. Navigation
         let navigation: NavigationFooterType | null = null;

@@ -1,11 +1,12 @@
 import { useState } from "react";
- import { useSectionStore } from "../../../../shared/store/editor/section";
-import { usePageStore } from "../../../../shared/store/editor/page";
+import { useSectionStore } from "@/shared/store/editor/section";
+import { usePageStore } from "@/shared/store/editor/page";
 import { mockTemplate } from "@templates/data/template";
-import { SectionType, PageType } from "../../../../shared/types";
+import { SectionType, PageType } from "@/shared/types";
 import classNames from "classnames";
 import { Plus, Eye, X } from "lucide-react";
-import Divider from "../../../../shared/components/ui/divider";
+import Divider from "@/shared/components/ui/divider";
+import { Select } from "@/shared/components/ui/select";
 import EditorSectionList from "../content/section-list";
 
 // Mapping between page types and available section types
@@ -27,10 +28,10 @@ const ElementsSide = () => {
   // Get sections available for current page type
   const getAvailableSections = () => {
     if (!currentPage) return [];
-    
+
     const allowedSectionTypes = pageSectionMapping[currentPage.type] || [];
     const allEditableSections = mockTemplate.sections.filter((s) => s.editable);
-    
+
     // Filter sections based on page type
     return allEditableSections.filter((section) =>
       allowedSectionTypes.includes(section.type)
@@ -126,55 +127,49 @@ const ElementsSide = () => {
         ) : (
           <div className="flex flex-col gap-3">
             {/* Section Type Selector */}
-            <div className="relative">
-              <label className="block text-xs font-medium text-slate-700 mb-2">
-                نوع القسم
-              </label>
-              <select
-                value={selectedSectionType}
-                onChange={(e) => handleSectionTypeChange(e.target.value)}
-                className="w-full p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">اختر نوع القسم</option>
-                {availableSections.map((section) => (
-                  <option key={section.id} value={section.type}>
-                    {getSectionLabel(section.type)}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <Select
+              label="نوع القسم"
+              value={selectedSectionType}
+              onChange={(e) => handleSectionTypeChange(e.target.value)}
+            >
+              <option value="">اختر نوع القسم</option>
+              {availableSections.map((section) => (
+                <option key={section.id} value={section.type}>
+                  {getSectionLabel(section.type)}
+                </option>
+              ))}
+            </Select>
 
-          {/* Variant Selector - Only show if section type is selected */}
-          {selectedSectionType &&
-            getVariants(selectedSectionType).length > 0 && (
-              <div className="relative">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-xs font-medium text-slate-700">
-                    الشكل
-                  </label>
-                  {selectedVariant && (
-                    <button
-                      onClick={() => setShowPreview(true)}
-                      className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
-                    >
-                      <Eye className="w-3 h-3" />
-                      <span>معاينة</span>
-                    </button>
-                  )}
+            {/* Variant Selector - Only show if section type is selected */}
+            {selectedSectionType &&
+              getVariants(selectedSectionType).length > 0 && (
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-xs font-medium text-slate-700">
+                      الشكل
+                    </label>
+                    {selectedVariant && (
+                      <button
+                        onClick={() => setShowPreview(true)}
+                        className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>معاينة</span>
+                      </button>
+                    )}
+                  </div>
+                  <Select
+                    value={selectedVariant}
+                    onChange={(e) => setSelectedVariant(e.target.value)}
+                  >
+                    {getVariants(selectedSectionType).map((variant: any) => (
+                      <option key={variant.id} value={variant.id}>
+                        {variant.title}
+                      </option>
+                    ))}
+                  </Select>
                 </div>
-                <select
-                  value={selectedVariant}
-                  onChange={(e) => setSelectedVariant(e.target.value)}
-                  className="w-full p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  {getVariants(selectedSectionType).map((variant: any) => (
-                    <option key={variant.id} value={variant.id}>
-                      {variant.title}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+              )}
 
             {/* Add Button */}
             <button
@@ -243,7 +238,7 @@ const SectionPreviewModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <h2 className="text-xl font-bold text-slate-900">
             معاينة: {variant?.title || sectionType}

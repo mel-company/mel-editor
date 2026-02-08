@@ -187,6 +187,18 @@ export type PageType = {
   name: string;
   type: "home" | "about" | "content" | "menu";
   sections: SectionType[];
+  templateVariants?: PageTemplateVariant[]; // Available template layouts for this page
+  selectedTemplateId?: string; // Currently selected template variant
+};
+
+export type PageTemplateVariant = {
+  id: string;
+  title: string;
+  description?: string;
+  thumbnail?: {
+    url: string;
+  };
+  sections: SectionType[]; // Complete section configuration for this layout
 };
 
 export type EditorStoreType = {

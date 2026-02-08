@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TemplateJsonWrapper from "../../components/render/json-wrapper";
 import EditorSideNav from "../../components/side-nav";
-import { Loader2, Save, UploadCloud } from "lucide-react";
+import { Loader2, Save, UploadCloud, Monitor, X } from "lucide-react";
 import { usePageStore } from "../../../shared/store/editor/page";
 import { publishStore, generateStyles } from "@/shared/api/production";
 import RenderTemplate from "@/editor/components/render";
@@ -108,9 +108,53 @@ const SaveBtn = () => {
 }
 
 
+const MobileWarningPopup = ({ onClose }: { onClose: () => void }) => {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in duration-300">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        <div className="flex flex-col items-center text-center gap-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <Monitor className="w-8 h-8 text-white" />
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-slate-900">
+              المحرر متاح على الكمبيوتر فقط
+            </h2>
+            <p className="text-slate-600 leading-relaxed">
+              للحصول على أفضل تجربة تحرير، يرجى استخدام المحرر على جهاز كمبيوتر مكتبي أو لابتوب بشاشة أكبر
+            </p>
+          </div>
+
+          <div className="w-full pt-2">
+            <button
+              onClick={onClose}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              فهمت
+            </button>
+          </div>
+
+          <p className="text-xs text-slate-400 pt-2">
+            الحد الأدنى للعرض الموصى به: 1024 بكسل
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const EditorPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [showMobileWarning, setShowMobileWarning] = useState(false);
   const currentPageId = usePageStore((state) => state.currentPageId);
 
   useEffect(() => {
@@ -128,6 +172,20 @@ const EditorPage = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Check if screen is mobile on mount
+    const checkMobile = () => {
+      if (window.innerWidth < 1024) {
+        setShowMobileWarning(true);
+      }
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const handleNavigate = (view: "editor" | "store" | "dashboard") => {
@@ -153,11 +211,18 @@ const EditorPage = () => {
   return (
     <main
       dir="rtl"
-      className="bg-slate-100 text-sm font-medium w-screen h-screen max-w-screen max-h-screen flex items-center justify-center relative overflow-hidden"
+      className="bg-slate-100 text-sm font-medium w-screen h-screen max-w-screen max-h-screen flex relative overflow-hidden"
     >
-      <EditorSideNav onNavigate={handleNavigate} />
-      <EditorTopNav />
-      <RenderTemplate />
+      {showMobileWarning && <MobileWarningPopup onClose={() => setShowMobileWarning(false)} />}
+
+      <div className="hidden lg:block sticky top-0 h-screen z-50">
+        <EditorSideNav onNavigate={handleNavigate} />
+      </div>
+
+      <div className="flex-1 flex items-center justify-center">
+        <EditorTopNav />
+        <RenderTemplate />
+      </div>
 
     </main>
   );

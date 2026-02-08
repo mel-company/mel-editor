@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import React from "react";
 import { usePageStore } from "../../../shared/store/editor/page";
 import { useStoreSettingsStore } from "../../../shared/store/editor/store-settings";
-import { PageType, TemplateType } from "../../types";
+import { PageType, TemplateType, SectionType } from "../../../shared/types";
 import { Check, Sparkles, Store, UtensilsCrossed, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getActiveTemplates, ApiTemplateResponse } from "../../../shared/services/api";
@@ -433,8 +433,7 @@ const TemplateSelector = () => {
 
       // Verify pages were saved
       setTimeout(() => {
-        const savedPages = usePageStore.getState().pages;
-
+        // Pages saved successfully
       }, 100);
 
       navigate("/editor");
@@ -448,7 +447,7 @@ const TemplateSelector = () => {
 
     // Get editable sections from template (excluding navigation)
     const editableSections = template.sections.filter(
-      (s) => s.editable && s.type !== "navigation"
+      (s: SectionType) => s.editable && s.type !== "navigation"
     );
 
     // Helper function to clone a section with new IDs
@@ -513,7 +512,7 @@ const TemplateSelector = () => {
 
       // Add Categories section
       const categoriesSection = editableSections.find(
-        (s) => s.type === "categories"
+        (s: SectionType) => s.type === "categories"
       );
       if (categoriesSection) {
         menuPageSections.push(cloneSection(categoriesSection));
@@ -557,7 +556,7 @@ const TemplateSelector = () => {
       const homePageSections: any[] = [];
 
       // Add Navigation (only on home page)
-      const navSection = template.sections.find((s) => s.type === "navigation");
+      const navSection = template.sections.find((s: SectionType) => s.type === "navigation");
       if (navSection) {
         homePageSections.push(cloneSection(navSection));
       }
@@ -596,11 +595,11 @@ const TemplateSelector = () => {
       if (homeHero) homePageSections.push(homeHero);
 
       // Add Categories section
-      const categoriesSection = editableSections.find(
-        (s) => s.type === "categories"
+      const homeCategoriesSection = editableSections.find(
+        (s: SectionType) => s.type === "categories"
       );
-      if (categoriesSection) {
-        homePageSections.push(cloneSection(categoriesSection));
+      if (homeCategoriesSection) {
+        homePageSections.push(cloneSection(homeCategoriesSection));
       } else {
         // Create default categories section
         const defaultCategories = createSectionWithVariant(
@@ -946,7 +945,7 @@ const TemplateSelector = () => {
       <div className="max-w-7xl mx-auto">
         {/* Store Type Selection - Show only if no store type selected */}
         {needsStoreTypeSelection && !hasSelectedStoreType ? (
-          <div className="min-h-[70vh] flex items-center justify-center">
+          <div className="min-h-screen flex items-center justify-center">
             <div className="w-full max-w-5xl">
               <div className="text-center mb-16">
                 <div className="flex items-center justify-center gap-4 mb-6">

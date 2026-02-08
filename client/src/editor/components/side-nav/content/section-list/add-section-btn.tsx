@@ -1,9 +1,10 @@
-import { useState } from "react";
 import { Plus } from "lucide-react";
-import { useSectionStore } from "../../../../../shared/store/editor/section";
-import { usePageStore } from "../../../../../shared/store/editor/page";
-import { SectionType, PageType } from "../../../../../shared/types";
+import { useState } from "react";
+import { useSectionStore } from "@/shared/store/editor/section";
+import { usePageStore } from "@/shared/store/editor/page";
+import { SectionType, PageType } from "@/shared/types";
 import { mockTemplate } from "@templates/data/template";
+import { Select } from "@/shared/components/ui/select";
 
 const pageSectionMapping: Record<PageType["type"], string[]> = {
   home: ["hero", "categories", "recentProducts"],
@@ -76,10 +77,9 @@ const AddSectionBtn = () => {
   if (showAddForm) {
     return (
       <div className="mt-2 p-3 bg-slate-50 rounded-lg flex flex-col gap-2">
-        <select
+        <Select
           value={selectedSectionType}
           onChange={(e) => handleSectionTypeChange(e.target.value)}
-          className="w-full p-2 rounded-lg bg-white border border-slate-200 text-xs"
         >
           <option value="">اختر نوع القسم</option>
           {availableSections.map((section) => (
@@ -87,19 +87,18 @@ const AddSectionBtn = () => {
               {getSectionLabel(section.type)}
             </option>
           ))}
-        </select>
+        </Select>
         {selectedSectionType && getVariants(selectedSectionType).length > 0 && (
-          <select
+          <Select
             value={selectedVariant}
             onChange={(e) => setSelectedVariant(e.target.value)}
-            className="w-full p-2 rounded-lg bg-white border border-slate-200 text-xs"
           >
             {getVariants(selectedSectionType).map((variant: any) => (
               <option key={variant.id} value={variant.id}>
                 {variant.title}
               </option>
             ))}
-          </select>
+          </Select>
         )}
         <div className="flex gap-2">
           <button
