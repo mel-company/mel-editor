@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Documentation - Template Editor System</title>
+
+  <!-- Prism.js for Syntax Highlighting -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.7;
+      color: #1e293b;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 2rem auto;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2rem;
+      min-height: calc(100vh - 4rem);
+      padding: 0 2rem;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      color: #fff;
+      padding: 2rem 0;
+      position: sticky;
+      top: 2rem;
+      height: calc(100vh - 4rem);
+      overflow-y: auto;
+      border-radius: 1rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar h1 {
+      padding: 0 1.5rem;
+      margin-bottom: 2rem;
+      font-size: 1.75rem;
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-section {
+      margin-bottom: 2rem;
+    }
+
+    .nav-section h3 {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #64748b;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.05);
+      margin: 0 0.5rem;
+      border-radius: 0.5rem;
+    }
+
+    .nav-section ul {
+      list-style: none;
+      padding: 0.5rem 0;
+    }
+
+    .nav-section a {
+      display: block;
+      padding: 0.75rem 1.5rem;
+      margin: 0.25rem 0.5rem;
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .nav-section a::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: linear-gradient(180deg, #60a5fa 0%, #a78bfa 100%);
+      transform: scaleY(0);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-section a:hover {
+      background: rgba(96, 165, 250, 0.1);
+      color: #fff;
+      transform: translateX(4px);
+    }
+
+    .nav-section a:hover::before {
+      transform: scaleY(1);
+    }
+
+    .nav-section a.active {
+      background: linear-gradient(90deg, rgba(96, 165, 250, 0.2) 0%, rgba(167, 139, 250, 0.1) 100%);
+      color: #60a5fa;
+      font-weight: 600;
+    }
+
+    .nav-section a.active::before {
+      transform: scaleY(1);
+    }
+
+    /* Main Content */
+    .content {
+      background: #fff;
+      padding: 3rem;
+      overflow-y: auto;
+      border-radius: 1rem;
+    }
+
+    .content h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      color: #1e293b;
+    }
+
+    .content h2 {
+      font-size: 2rem;
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      color: #1e293b;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .content h3 {
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: #334155;
+    }
+
+    .content h4 {
+      font-size: 1.25rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: #475569;
+    }
+
+    .content p {
+      margin-bottom: 1rem;
+      color: #475569;
+    }
+
+    .content ul,
+    .content ol {
+      margin-bottom: 1rem;
+      padding-left: 2rem;
+      color: #475569;
+    }
+
+    .content li {
+      margin-bottom: 0.5rem;
+    }
+
+    /* Code Blocks */
+    pre {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+      color: #e6edf3;
+      padding: 2rem;
+      border-radius: 1rem;
+      overflow-x: auto;
+      margin: 2rem 0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      position: relative;
+    }
+
+    pre::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: linear-gradient(90deg, rgba(255, 0, 128, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
+      border-radius: 1rem 1rem 0 0;
+      border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    pre::after {
+      content: '⬤ ⬤ ⬤';
+      position: absolute;
+      top: 12px;
+      left: 20px;
+      font-size: 8px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 6px;
+    }
+
+    code {
+      background: linear-gradient(135deg, #fce7f3 0%, #ddd6fe 100%);
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.375rem;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
+      font-size: 0.9em;
+      color: #be185d;
+      font-weight: 500;
+      border: 1px solid rgba(190, 24, 93, 0.1);
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: #e6edf3;
+      border: none;
+      display: block;
+      margin-top: 30px;
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', 'Courier New', monospace;
+    }
+
+    /* Override Prism.js styles to match our design */
+    pre[class*="language-"] {
+      background: linear-gradient(135deg, #0d1117 0%, #161b22 100%) !important;
+      border: 1px solid rgba(96, 165, 250, 0.3) !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    code[class*="language-"] {
+      color: #e6edf3 !important;
+      text-shadow: none !important;
+    }
+
+    /* Info Boxes */
+    .info-box {
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+      border-left: 4px solid;
+    }
+
+    .info-box.note {
+      background: #dbeafe;
+      border-color: #3b82f6;
+    }
+
+    .info-box.warning {
+      background: #fef3c7;
+      border-color: #f59e0b;
+    }
+
+    .info-box.success {
+      background: #d1fae5;
+      border-color: #10b981;
+    }
+
+    .info-box.tip {
+      background: #e0e7ff;
+      border-color: #6366f1;
+    }
+
+    .info-box h4 {
+      margin-top: 0;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 2rem 0;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    th,
+    td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-weight: 700;
+      color: #ffffff;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+
+    tbody tr {
+      background: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+      transform: scale(1.01);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    td {
+      color: #475569;
+      font-size: 0.95rem;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+
+    .badge.required {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge.optional {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge.new {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    /* Diagram */
+    .diagram {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      padding: 3rem;
+      border-radius: 1rem;
+      margin: 2.5rem 0;
+      text-align: center;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    .flow-item {
+      display: inline-block;
+      padding: 1.25rem 2.5rem;
+      background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      border-radius: 0.75rem;
+      margin: 0.75rem;
+      font-weight: 700;
+      color: #1e293b;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .flow-item::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 0.75rem;
+      padding: 2px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      z-index: -1;
+    }
+
+    .flow-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .flow-arrow {
+      display: inline-block;
+      margin: 0 1.5rem;
+      font-size: 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: bold;
+    }
+
+    /* Scrollbar Styling */
+    .sidebar::-webkit-scrollbar,
+    .content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+      border-radius: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #7c8ff0 0%, #8b5db8 100%);
+    }
+
+    .content::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 10px;
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
+      border-radius: 10px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+        margin: 1rem;
+        padding: 0 1rem;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        top: 0;
+        margin-bottom: 2rem;
+      }
+
+      .content {
+        padding: 2rem 1.5rem;
+      }
+
+      .content h1 {
+        font-size: 2.25rem;
+      }
+
+      .content h2 {
+        font-size: 1.75rem;
+      }
+    }
+
+    /* Smooth Scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    section {
+      scroll-margin-top: 2rem;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    section {
+      animation: fadeIn 0.6s ease-out;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+      <div style="text-align: center; padding: 0 1rem; margin-bottom: 1rem;">
+        <img
+          src="https://img.playbook.com/Na-10rj1XDUCy8p7MPhhfg4bFUJqJW5MyCzryQG7R7M/Z3M6Ly9wbGF5Ym9v/ay1hc3NldHMtcHVi/bGljLzc0ODk1YjBl/LTUwNDEtNDAxNC04/NjVkLTRmNjg2ZmRj/MmU4Zg"
+          alt="MEL Logo" style="width: 100px; height: auto; filter: drop-shadow(0 2px 8px rgba(96, 165, 250, 0.3));">
+      </div>
+      <h1 style="margin-bottom: 1.5rem;">Documentation</h1>
+
+      <div class="nav-section">
+        <h3>Getting Started</h3>
+        <ul>
+          <li><a href="#overview">Platform Overview</a></li>
+          <li><a href="#architecture">Architecture</a></li>
+          <li><a href="#quick-start">Quick Start</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Data Handling</h3>
+        <ul>
+          <li><a href="#data-flow">Data Flow</a></li>
+          <li><a href="#data-structure">Data Structure</a></li>
+          <li><a href="#data-persistence">Persistence</a></li>
+          <li><a href="#data-attributes">Data Attributes</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Editor System</h3>
+        <ul>
+          <li><a href="#editor-overview">Editor Overview</a></li>
+          <li><a href="#editor-features">Features</a></li>
+          <li><a href="#dom-scanning">DOM Scanning</a></li>
+          <li><a href="#editing-modes">Editing Modes</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Template System</h3>
+        <ul>
+          <li><a href="#template-structure">Template Structure</a></li>
+          <li><a href="#creating-templates">Creating Templates</a></li>
+          <li><a href="#sections">Sections & Variants</a></li>
+          <li><a href="#component-props">Component Props</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Best Practices</h3>
+        <ul>
+          <li><a href="#naming-conventions">Naming Conventions</a></li>
+          <li><a href="#code-organization">Code Organization</a></li>
+          <li><a href="#performance">Performance</a></li>
+          <li><a href="#testing">Testing</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h3>Examples</h3>
+        <ul>
+          <li><a href="#example-hero">Hero Section</a></li>
+          <li><a href="#example-features">Features Grid</a></li>
+          <li><a href="#example-products">Product Display</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="content">
+      <!-- Overview Section -->
+      <section id="overview">
+        <h1>🚀 Platform Overview</h1>
+        <p>
+          Welcome to the Template Editor Platform documentation. This system provides a powerful,
+          flexible way to create and manage website templates with a visual editor that allows
+          real-time content editing without touching code.
+        </p>
+
+        <h3>Key Features</h3>
+        <ul>
+          <li><strong>Visual Editing</strong> - Edit content directly in the browser with instant preview</li>
+          <li><strong>Data Attribute System</strong> - Simple, declarative way to mark editable content</li>
+          <li><strong>Component-Based</strong> - Reusable React components with variants</li>
+          <li><strong>Type-Safe</strong> - Full TypeScript support throughout</li>
+          <li><strong>Flexible Architecture</strong> - Write components your way, editor adapts to you</li>
+          <li><strong>Auto-Detection</strong> - Editor automatically discovers editable fields</li>
+        </ul>
+
+        <div class="info-box note">
+          <h4>💡 Philosophy</h4>
+          <p>
+            <strong>Developers write components naturally. The editor adapts through data attributes.</strong>
+            No complex patterns, no boilerplate, just React components with special attributes.
+          </p>
+        </div>
+      </section>
+
+      <!-- Architecture Section -->
+      <section id="architecture">
+        <h2>🏗️ Architecture</h2>
+
+        <h3>System Overview</h3>
+        <p>The platform consists of four main layers:</p>
+
+        <div class="diagram">
+          <div class="flow-item">Template Components</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-item">Component Registry</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-item">DOM Scanner</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-item">Visual Editor</div>
+        </div>
+
+        <h4>1. Template Components Layer</h4>
+        <p>React components with data attributes marking editable content. Developers have full creative freedom.</p>
+
+        <h4>2. Component Registry Layer</h4>
+        <p>Maps section types and IDs to their React components using lazy loading for optimal performance.</p>
+
+        <h4>3. DOM Scanner Layer</h4>
+        <p>Automatically scans rendered HTML for <code>data-type</code> attributes and builds editing schema.</p>
+
+        <h4>4. Visual Editor Layer</h4>
+        <p>Provides UI for editing content, managing sections, and previewing changes in real-time.</p>
+
+        <h3>Technology Stack</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Technology</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Frontend</td>
+              <td>React + TypeScript</td>
+              <td>Component rendering and UI</td>
+            </tr>
+            <tr>
+              <td>State Management</td>
+              <td>Zustand</td>
+              <td>Editor state and template selections</td>
+            </tr>
+            <tr>
+              <td>Styling</td>
+              <td>Tailwind CSS</td>
+              <td>Utility-first styling</td>
+            </tr>
+            <tr>
+              <td>Build Tool</td>
+              <td>Vite</td>
+              <td>Fast development and optimized builds</td>
+            </tr>
+            <tr>
+              <td>Backend</td>
+              <td>Node.js</td>
+              <td>API and data persistence</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Quick Start -->
+      <section id="quick-start">
+        <h2>⚡ Quick Start</h2>
+
+        <h3>Create Your First Section (5 Minutes)</h3>
+
+        <h4>Step 1: Write Component</h4>
+        <pre><code>// templates/my-template/sections/hero/MyHero.tsx
+export const MyHero = ({ title, description, photos }) => {
+  const heroImage = photos?.find(p => p.id === "hero_image");
+  
+  return (
+    &lt;section className="py-20"&gt;
+      &lt;h1 data-type="text" data-name="title"&gt;
+        {title || "Welcome"}
+      &lt;/h1&gt;
+      &lt;p data-type="textarea" data-name="description"&gt;
+        {description || "Your description here"}
+      &lt;/p&gt;
+      &lt;img 
+        src={heroImage?.url || "/default.jpg"}
+        data-type="image" 
+        data-name="hero_image"
+      /&gt;
+    &lt;/section&gt;
+  );
+};</code></pre>
+
+        <h4>Step 2: Register Component</h4>
+        <pre><code>// client/src/shared/utils/component-registry.ts
+registry["hero:1"] = {
+  component: lazy(() => 
+    import("@templates/sections/hero/MyHero")
+      .then(m => ({ default: m.MyHero }))
+  )
+};</code></pre>
+
+        <h4>Step 3: Done!</h4>
+        <p>The editor automatically detects all 3 editable fields and creates appropriate inputs.</p>
+
+        <div class="info-box success">
+          <h4>✅ That's It!</h4>
+          <p>No builders, no factories, no complex setup. Just React components with data attributes.</p>
+        </div>
+      </section>
+
+      <!-- Data Flow Section -->
+      <section id="data-flow">
+        <h2>📊 Data Flow</h2>
+
+        <h3>How Data Moves Through the System</h3>
+
+        <div class="diagram">
+          <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+            <div class="flow-item">User Edits Content</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-item">Editor Updates State</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-item">State Syncs to Server</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-item">Component Re-renders</div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-item">DOM Updates</div>
+          </div>
+        </div>
+
+        <h3>Data Flow Steps</h3>
+        <ol>
+          <li><strong>Initial Load</strong> - Template data loaded from server</li>
+          <li><strong>DOM Scan</strong> - Editor scans for <code>data-type</code> attributes</li>
+          <li><strong>Schema Generation</strong> - Creates editing schema from detected fields</li>
+          <li><strong>User Interaction</strong> - User edits content in sidebar</li>
+          <li><strong>State Update</strong> - Zustand store updates with new values</li>
+          <li><strong>Component Update</strong> - React re-renders with new props</li>
+          <li><strong>Persistence</strong> - Changes saved to server</li>
+        </ol>
+
+        <h3>Real-Time Updates</h3>
+        <p>The system uses React's reactive nature to provide instant feedback:</p>
+        <pre><code>// User types in editor
+onChange={(value) => {
+  // Update store
+  updateSectionContent(sectionId, fieldName, value);
+  
+  // Component automatically re-renders with new value
+  // No manual DOM manipulation needed
+}}</code></pre>
+      </section>
+
+      <!-- Data Structure -->
+      <section id="data-structure">
+        <h2>🗂️ Data Structure</h2>
+
+        <h3>Core Types</h3>
+
+        <h4>Template Type</h4>
+        <pre><code>interface TemplateType {
+  id: string;
+  title: string;
+  description: string;
+  store_type: StoreType;
+  thumbnail: string;
+  sections: SectionType[];
+  pages: PageType[];
+}</code></pre>
+
+        <h4>Page Type</h4>
+        <pre><code>interface PageType {
+  id: string;
+  name: string;
+  type: string;
+  sections: SectionType[];
+}</code></pre>
+
+        <h4>Section Type</h4>
+        <pre><code>interface SectionType {
+  id: string;
+  section_id: string;
+  type: string;
+  editable: boolean;
+  options: SectionOptionType[];
+  content?: Record&lt;string, string&gt;;
+  photos?: PhotoItem[];
+}</code></pre>
+
+        <h4>Section Option Type</h4>
+        <pre><code>interface SectionOptionType {
+  id: string;
+  title: string;
+  description?: string;
+  component: React.ComponentType&lt;any&gt;;
+  thumbnail?: string;
+  content?: ContentItem[];
+  photos?: PhotoItem[];
+}</code></pre>
+
+        <div class="info-box tip">
+          <h4>💡 Tip</h4>
+          <p>Section options represent different design variants of the same section type. For example, "Hero Section"
+            might have variants like "Hero with Image", "Hero with Video", "Hero Centered", etc.</p>
+        </div>
+      </section>
+
+      <!-- Data Persistence -->
+      <section id="data-persistence">
+        <h2>💾 Data Persistence</h2>
+
+        <h3>Storage Strategy</h3>
+        <p>The platform uses a hybrid storage approach:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Data Type</th>
+              <th>Storage</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Template Definitions</td>
+              <td>File System</td>
+              <td>Static template structure and defaults</td>
+            </tr>
+            <tr>
+              <td>User Content</td>
+              <td>Database</td>
+              <td>User-edited text, links, and settings</td>
+            </tr>
+            <tr>
+              <td>Images</td>
+              <td>File Storage</td>
+              <td>Uploaded images and media</td>
+            </tr>
+            <tr>
+              <td>Editor State</td>
+              <td>Zustand (Memory)</td>
+              <td>Current editing session state</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Save Operations</h3>
+        <pre><code>// Auto-save on content change
+const updateContent = async (sectionId, fieldName, value) => {
+  // Update local state immediately
+  setSectionContent(sectionId, fieldName, value);
+  
+  // Debounced save to server
+  await debouncedSave({
+    sectionId,
+    content: {
+      ...existingContent,
+      [fieldName]: value
+    }
+  });
+};</code></pre>
+      </section>
+
+      <!-- Data Attributes -->
+      <section id="data-attributes">
+        <h2>🏷️ Data Attributes System</h2>
+
+        <h3>The Core Mechanism</h3>
+        <p>Data attributes are the foundation of the editor system. They tell the editor what content is editable and
+          how to edit it.</p>
+
+        <h3>Supported Attributes</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Attribute</th>
+              <th>Purpose</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>data-type</code></td>
+              <td>Defines the field type</td>
+              <td><code>data-type="text"</code></td>
+            </tr>
+            <tr>
+              <td><code>data-name</code></td>
+              <td>Unique identifier for the field</td>
+              <td><code>data-name="title"</code></td>
+            </tr>
+            <tr>
+              <td><code>data-title</code></td>
+              <td>Label shown in editor UI</td>
+              <td><code>data-title="Main Heading"</code></td>
+            </tr>
+            <tr>
+              <td><code>data-placeholder</code></td>
+              <td>Placeholder text for empty fields</td>
+              <td><code>data-placeholder="Enter text"</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Data Types</h3>
+
+        <h4>1. Text (<code>data-type="text"</code>)</h4>
+        <p>For short text content like headings, buttons, labels.</p>
+        <pre><code>&lt;h1 data-type="text" data-name="heading"&gt;
+  {heading || "Default Heading"}
+&lt;/h1&gt;</code></pre>
+
+        <h4>2. Textarea (<code>data-type="textarea"</code>)</h4>
+        <p>For longer text content like paragraphs, descriptions.</p>
+        <pre><code>&lt;p data-type="textarea" data-name="description"&gt;
+  {description || "Default description"}
+&lt;/p&gt;</code></pre>
+
+        <h4>3. Link (<code>data-type="link"</code>)</h4>
+        <p>For URLs and hyperlinks.</p>
+        <pre><code>&lt;a href={ctaLink || "#"} data-type="link" data-name="cta_link"&gt;
+  Click Here
+&lt;/a&gt;</code></pre>
+
+        <h4>4. Image (<code>data-type="image"</code>)</h4>
+        <p>For images and background images.</p>
+        <pre><code>&lt;img 
+  src={heroImage?.url || "/default.jpg"}
+  data-type="image" 
+  data-name="hero_image"
+/&gt;</code></pre>
+
+        <div class="info-box warning">
+          <h4>⚠️ Important</h4>
+          <p><strong>data-name must be unique</strong> within a section. Use descriptive names like
+            <code>hero_title</code> instead of generic names like <code>text1</code>.
+          </p>
+        </div>
+      </section>
+
+      <!-- Editor Overview -->
+      <section id="editor-overview">
+        <h2>✏️ Editor System</h2>
+
+        <h3>Editor Interface</h3>
+        <p>The editor provides a split-screen interface:</p>
+        <ul>
+          <li><strong>Left Sidebar</strong> - Section list, content editing, and settings</li>
+          <li><strong>Main Canvas</strong> - Live preview of the page</li>
+          <li><strong>Top Toolbar</strong> - Save, preview, and page navigation</li>
+        </ul>
+
+        <h3>Key Components</h3>
+
+        <h4>Section List</h4>
+        <p>Shows all sections on the current page. Users can:</p>
+        <ul>
+          <li>Reorder sections via drag-and-drop</li>
+          <li>Add new sections from templates</li>
+          <li>Delete sections</li>
+          <li>Switch between section variants</li>
+        </ul>
+
+        <h4>Content Editor</h4>
+        <p>Dynamically generated based on detected fields. Provides:</p>
+        <ul>
+          <li>Text inputs for <code>data-type="text"</code></li>
+          <li>Textareas for <code>data-type="textarea"</code></li>
+          <li>URL inputs for <code>data-type="link"</code></li>
+          <li>Image uploaders for <code>data-type="image"</code></li>
+        </ul>
+
+        <h4>Live Preview</h4>
+        <p>Shows real-time updates as users edit content. No refresh needed.</p>
+      </section>
+
+      <!-- Editor Features -->
+      <section id="editor-features">
+        <h2>🎨 Editor Features</h2>
+
+        <h3>Real-Time Editing</h3>
+        <p>Changes appear instantly in the preview as users type.</p>
+
+        <h3>Auto-Save</h3>
+        <p>Content is automatically saved to the server with debouncing to prevent excessive requests.</p>
+
+        <h3>Undo/Redo</h3>
+        <p>Full history tracking for all content changes.</p>
+
+        <h3>Responsive Preview</h3>
+        <p>Toggle between desktop, tablet, and mobile views.</p>
+
+        <h3>Section Variants</h3>
+        <p>Switch between different designs for the same section type without losing content.</p>
+
+        <h3>Image Management</h3>
+        <ul>
+          <li>Upload images via drag-and-drop</li>
+          <li>Image cropping and resizing</li>
+          <li>Alt text editing</li>
+          <li>Image optimization</li>
+        </ul>
+      </section>
+
+      <!-- DOM Scanning -->
+      <section id="dom-scanning">
+        <h2>🔍 DOM Scanning</h2>
+
+        <h3>How It Works</h3>
+        <p>The DOM scanner automatically discovers editable fields by:</p>
+
+        <ol>
+          <li>Rendering the component</li>
+          <li>Querying for elements with <code>data-type</code> attribute</li>
+          <li>Extracting metadata (name, title, placeholder)</li>
+          <li>Determining field type</li>
+          <li>Building editing schema</li>
+          <li>Creating appropriate UI controls</li>
+        </ol>
+
+        <h3>Scanner Implementation</h3>
+        <pre><code>// Simplified scanner logic
+const scanSection = (sectionElement) => {
+  const fields = [];
+  
+  // Find all elements with data-type
+  const editableElements = sectionElement.querySelectorAll('[data-type]');
+  
+  editableElements.forEach(el => {
+    const type = el.getAttribute('data-type');
+    const name = el.getAttribute('data-name');
+    const title = el.getAttribute('data-title') || name;
+    
+    fields.push({
+      type,
+      name,
+      title,
+      value: getCurrentValue(el, type)
+    });
+  });
+  
+  return fields;
+};</code></pre>
+
+        <div class="info-box note">
+          <h4>💡 Automatic Detection</h4>
+          <p>You never need to manually configure fields. The scanner finds them automatically by reading your
+            component's HTML.</p>
+        </div>
+      </section>
+
+      <!-- Editing Modes -->
+      <section id="editing-modes">
+        <h2>🎯 Editing Modes</h2>
+
+        <h3>Content Mode</h3>
+        <p>Default mode for editing text, links, and images within sections.</p>
+
+        <h3>Layout Mode</h3>
+        <p>Reorder, add, or remove sections. Change section variants.</p>
+
+        <h3>Settings Mode</h3>
+        <p>Configure page-level settings like SEO, meta tags, and navigation.</p>
+
+        <h3>Preview Mode</h3>
+        <p>View the page as end-users will see it, without editor UI.</p>
+      </section>
+
+      <!-- Template Structure -->
+      <section id="template-structure">
+        <h2>📦 Template Structure</h2>
+
+        <h3>Directory Organization</h3>
+        <pre><code>templates/
+└── ecommerce/
+    └── retail-v1/
+        ├── data/
+        │   ├── template/
+        │   │   ├── index.ts          # Template definition
+        │   │   └── sections/
+        │   │       ├── hero/
+        │   │       │   ├── components.tsx  # React components
+        │   │       │   └── data.ts         # Section options
+        │   │       ├── categories/
+        │   │       ├── products/
+        │   │       └── footer/
+        │   ├── products.ts           # Mock product data
+        │   └── categories.ts         # Mock category data
+        └── README.md</code></pre>
+
+        <h3>Template Definition</h3>
+        <pre><code>// templates/ecommerce/retail-v1/data/template/index.ts
+export const retailTemplate: TemplateType = {
+  id: "retail-v1",
+  title: "Retail Store",
+  description: "Modern e-commerce template",
+  store_type: "ecommerce",
+  thumbnail: "/thumbnails/retail.jpg",
+  sections: [...],
+  pages: [
+    {
+      id: "home",
+      name: "Home",
+      type: "home",
+      sections: [...]
+    },
+    {
+      id: "products",
+      name: "Products",
+      type: "products",
+      sections: [...]
+    }
+  ]
+};</code></pre>
+      </section>
+
+      <!-- Creating Templates -->
+      <section id="creating-templates">
+        <h2>🛠️ Creating Templates</h2>
+
+        <h3>Step-by-Step Guide</h3>
+
+        <h4>1. Create Template Directory</h4>
+        <pre><code>mkdir -p templates/my-store/my-template/data/template/sections</code></pre>
+
+        <h4>2. Create Section Component</h4>
+        <pre><code>// sections/hero/components.tsx
+export const HeroSimple = ({ title, description }) => (
+  &lt;section className="py-20 text-center"&gt;
+    &lt;h1 
+      className="text-5xl font-bold mb-4"
+      data-type="text" 
+      data-name="title"
+    &gt;
+      {title || "Welcome"}
+    &lt;/h1&gt;
+    &lt;p 
+      className="text-xl"
+      data-type="textarea" 
+      data-name="description"
+    &gt;
+      {description || "Your description"}
+    &lt;/p&gt;
+  &lt;/section&gt;
+);</code></pre>
+
+        <h4>3. Define Section Options</h4>
+        <pre><code>// sections/hero/data.ts
+import { HeroSimple } from './components';
+
+export const hero_sections = [
+  {
+    id: "1",
+    title: "Simple Hero",
+    component: HeroSimple,
+    thumbnail: "/thumbnails/hero-simple.jpg"
+  }
+];</code></pre>
+
+        <h4>4. Register Component</h4>
+        <pre><code>// client/src/shared/utils/component-registry.ts
+registry["hero:1"] = {
+  component: lazy(() => 
+    import("@templates/sections/hero/components")
+      .then(m => ({ default: m.HeroSimple }))
+  )
+};</code></pre>
+
+        <h4>5. Add to Template</h4>
+        <pre><code>// data/template/index.ts
+import { hero_sections } from './sections/hero/data';
+
+export const myTemplate: TemplateType = {
+  id: "my-template",
+  title: "My Template",
+  // ... other properties
+  pages: [
+    {
+      id: "home",
+      name: "Home",
+      type: "home",
+      sections: [
+        {
+          id: "home-hero",
+          section_id: "1",
+          type: "hero",
+          editable: true,
+          options: hero_sections
+        }
+      ]
+    }
+  ]
+};</code></pre>
+      </section>
+
+      <!-- Sections & Variants -->
+      <section id="sections">
+        <h2>🎭 Sections & Variants</h2>
+
+        <h3>Section Concept</h3>
+        <p>A section is a reusable piece of a page (hero, features, products, etc.).</p>
+
+        <h3>Variants</h3>
+        <p>Multiple design variations of the same section type. Users can switch between variants without losing
+          content.</p>
+
+        <h3>Creating Variants</h3>
+        <pre><code>// Multiple variants for hero section
+export const HeroSimple = ({ title }) => (
+  &lt;section className="text-center"&gt;
+    &lt;h1 data-type="text" data-name="title"&gt;{title}&lt;/h1&gt;
+  &lt;/section&gt;
+);
+
+export const HeroWithImage = ({ title, photos }) => {
+  const heroImage = photos?.find(p => p.id === "hero_image");
+  return (
+    &lt;section className="grid grid-cols-2"&gt;
+      &lt;h1 data-type="text" data-name="title"&gt;{title}&lt;/h1&gt;
+      &lt;img src={heroImage?.url} data-type="image" data-name="hero_image" /&gt;
+    &lt;/section&gt;
+  );
+};
+
+export const HeroFullWidth = ({ title, photos }) => {
+  const bgImage = photos?.find(p => p.id === "background");
+  return (
+    &lt;section 
+      style={{ backgroundImage: `url(${bgImage?.url})` }}
+      data-type="image" 
+      data-name="background"
+    &gt;
+      &lt;h1 data-type="text" data-name="title"&gt;{title}&lt;/h1&gt;
+    &lt;/section&gt;
+  );
+};</code></pre>
+
+        <div class="info-box tip">
+          <h4>💡 Content Preservation</h4>
+          <p>When switching variants, content is preserved if field names match. For example, if both variants have
+            <code>data-name="title"</code>, the title content will be maintained.
+          </p>
+        </div>
+      </section>
+
+      <!-- Component Props -->
+      <section id="component-props">
+        <h2>⚙️ Component Props</h2>
+
+        <h3>Props Your Component Receives</h3>
+
+        <h4>Text/Link Props</h4>
+        <p>Editable text and link fields are passed as direct props:</p>
+        <pre><code>interface SectionProps {
+  title?: string;
+  description?: string;
+  cta_link?: string;
+  cta_text?: string;
+  // ... any other text fields
+}</code></pre>
+
+        <h4>Photos Prop</h4>
+        <p>Array of uploaded images:</p>
+        <pre><code>photos?: Array&lt;{
+  id: string;
+  url?: string;
+  base64Content?: string;
+  label: string;
+}&gt;</code></pre>
+
+        <h4>Products Prop (E-commerce)</h4>
+        <p>Array of products for product sections:</p>
+        <pre><code>products?: Array&lt;{
+  id: string;
+  name: string;
+  price: number;
+  thumbnail: { url: string };
+  description: string;
+}&gt;</code></pre>
+
+        <h4>Categories Prop (E-commerce)</h4>
+        <p>Array of categories:</p>
+        <pre><code>categories?: Array&lt;{
+  id: string;
+  name: string;
+  thumbnail: { url: string };
+}&gt;</code></pre>
+
+        <h3>Accessing Props</h3>
+        <pre><code>export const MySection = ({ 
+  title, 
+  description, 
+  photos, 
+  products 
+}) => {
+  // Find specific image
+  const heroImage = photos?.find(p => p.id === "hero_image");
+  
+  // Use text props directly
+  return (
+    &lt;section&gt;
+      &lt;h1 data-type="text" data-name="title"&gt;
+        {title || "Default Title"}
+      &lt;/h1&gt;
+      &lt;p data-type="textarea" data-name="description"&gt;
+        {description || "Default description"}
+      &lt;/p&gt;
+      &lt;img src={heroImage?.url} data-type="image" data-name="hero_image" /&gt;
+    &lt;/section&gt;
+  );
+};</code></pre>
+      </section>
+
+      <!-- Best Practices -->
+      <section id="naming-conventions">
+        <h2>📋 Best Practices</h2>
+
+        <h3>Naming Conventions</h3>
+
+        <h4>Component Names</h4>
+        <ul>
+          <li>Use PascalCase: <code>HeroSection</code>, <code>ProductGrid</code></li>
+          <li>Be descriptive: <code>HeroWithBackgroundImage</code> not <code>Hero2</code></li>
+          <li>Include variant info: <code>HeroSimple</code>, <code>HeroCentered</code></li>
+        </ul>
+
+        <h4>Data Names</h4>
+        <ul>
+          <li>Use snake_case: <code>hero_title</code>, <code>cta_link</code></li>
+          <li>Be specific: <code>hero_title</code> not <code>title</code></li>
+          <li>Use prefixes for groups: <code>feature_1_title</code>, <code>feature_1_desc</code></li>
+          <li>Avoid generic names: <code>main_heading</code> not <code>text1</code></li>
+        </ul>
+
+        <h4>Section IDs</h4>
+        <ul>
+          <li>Format: <code>page-section-variant</code></li>
+          <li>Example: <code>home-hero-1</code>, <code>products-grid-2</code></li>
+          <li>Be unique across the template</li>
+        </ul>
+
+        <div class="info-box warning">
+          <h4>⚠️ Critical</h4>
+          <p><strong>data-name must be unique within each section.</strong> Duplicate names will cause editing
+            conflicts.</p>
+        </div>
+      </section>
+
+      <!-- Code Organization -->
+      <section id="code-organization">
+        <h2>📁 Code Organization</h2>
+
+        <h3>File Structure Best Practices</h3>
+
+        <h4>Group by Section Type</h4>
+        <pre><code>sections/
+├── hero/
+│   ├── components.tsx    # All hero variants
+│   ├── data.ts          # Section options
+│   └── types.ts         # TypeScript types
+├── features/
+│   ├── components.tsx
+│   └── data.ts
+└── products/
+    ├── components.tsx
+    └── data.ts</code></pre>
+
+        <h4>Separate Concerns</h4>
+        <ul>
+          <li><strong>components.tsx</strong> - React components only</li>
+          <li><strong>data.ts</strong> - Section options and metadata</li>
+          <li><strong>types.ts</strong> - TypeScript interfaces (if needed)</li>
+          <li><strong>utils.ts</strong> - Helper functions</li>
+        </ul>
+
+        <h4>Keep Components Small</h4>
+        <p>Break large components into smaller, reusable pieces:</p>
+        <pre><code>// Good: Small, focused components
+const HeroContent = ({ title, description }) => (
+  &lt;div&gt;
+    &lt;h1 data-type="text" data-name="title"&gt;{title}&lt;/h1&gt;
+    &lt;p data-type="textarea" data-name="description"&gt;{description}&lt;/p&gt;
+  &lt;/div&gt;
+);
+
+const HeroImage = ({ photos }) => {
+  const image = photos?.find(p => p.id === "hero_image");
+  return &lt;img src={image?.url} data-type="image" data-name="hero_image" /&gt;;
+};
+
+export const Hero = ({ title, description, photos }) => (
+  &lt;section&gt;
+    &lt;HeroContent title={title} description={description} /&gt;
+    &lt;HeroImage photos={photos} /&gt;
+  &lt;/section&gt;
+);</code></pre>
+      </section>
+
+      <!-- Performance -->
+      <section id="performance">
+        <h2>⚡ Performance</h2>
+
+        <h3>Optimization Strategies</h3>
+
+        <h4>1. Lazy Loading</h4>
+        <p>All components are lazy-loaded by default:</p>
+        <pre><code>registry["hero:1"] = {
+  component: lazy(() => import("./Hero"))
+};</code></pre>
+
+        <h4>2. Image Optimization</h4>
+        <ul>
+          <li>Use appropriate image formats (WebP, AVIF)</li>
+          <li>Implement lazy loading for images</li>
+          <li>Provide responsive images with srcset</li>
+          <li>Compress images before upload</li>
+        </ul>
+
+        <h4>3. Memoization</h4>
+        <p>Use React.memo for expensive components:</p>
+        <pre><code>export const ProductCard = React.memo(({ product }) => {
+  // Component logic
+});</code></pre>
+
+        <h4>4. Debouncing</h4>
+        <p>Debounce auto-save operations:</p>
+        <pre><code>const debouncedSave = useMemo(
+  () => debounce(saveToServer, 500),
+  []
+);</code></pre>
+
+        <h4>5. Code Splitting</h4>
+        <p>Each section is automatically code-split, loading only when needed.</p>
+
+        <div class="info-box success">
+          <h4>✅ Built-in Optimizations</h4>
+          <p>The platform handles lazy loading, code splitting, and component registry automatically. You just write
+            components.</p>
+        </div>
+      </section>
+
+      <!-- Testing -->
+      <section id="testing">
+        <h2>🧪 Testing</h2>
+
+        <h3>Testing Your Components</h3>
+
+        <h4>Unit Tests</h4>
+        <pre><code>import { render, screen } from '@testing-library/react';
+import { HeroSimple } from './components';
+
+test('renders hero with title', () => {
+  render(&lt;HeroSimple title="Test Title" /&gt;);
+  expect(screen.getByText('Test Title')).toBeInTheDocument();
+});
+
+test('renders default title when no prop provided', () => {
+  render(&lt;HeroSimple /&gt;);
+  expect(screen.getByText('Welcome')).toBeInTheDocument();
+});</code></pre>
+
+        <h4>Data Attribute Tests</h4>
+        <pre><code>test('has correct data attributes', () => {
+  const { container } = render(&lt;HeroSimple title="Test" /&gt;);
+  const heading = container.querySelector('[data-type="text"]');
+  
+  expect(heading).toHaveAttribute('data-name', 'title');
+  expect(heading).toHaveAttribute('data-type', 'text');
+});</code></pre>
+
+        <h4>Visual Testing</h4>
+        <ul>
+          <li>Test in the editor to ensure fields are detected</li>
+          <li>Verify all variants render correctly</li>
+          <li>Check responsive behavior</li>
+          <li>Test content switching between variants</li>
+        </ul>
+
+        <h3>Testing Checklist</h3>
+        <ul>
+          <li>✅ All data attributes present</li>
+          <li>✅ Unique data-name values</li>
+          <li>✅ Fallback values work</li>
+          <li>✅ Images load correctly</li>
+          <li>✅ Links are functional</li>
+          <li>✅ Responsive on all devices</li>
+          <li>✅ No console errors</li>
+        </ul>
+      </section>
+
+      <!-- Examples -->
+      <section id="example-hero">
+        <h2>📝 Example: Hero Section</h2>
+
+        <h3>Complete Hero Implementation</h3>
+        <pre><code>// sections/hero/components.tsx
+import React from 'react';
+
+interface HeroProps {
+  title?: string;
+  subtitle?: string;
+  cta_text?: string;
+  cta_link?: string;
+  photos?: Array&lt;{ id: string; url?: string }&gt;;
+}
+
+export const HeroWithCTA: React.FC&lt;HeroProps&gt; = ({
+  title,
+  subtitle,
+  cta_text,
+  cta_link,
+  photos
+}) => {
+  const bgImage = photos?.find(p => p.id === "background");
+  
+  return (
+    &lt;section 
+      className="relative h-screen flex items-center justify-center"
+      style={{ 
+        backgroundImage: `url(${bgImage?.url || '/default-bg.jpg'})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+      data-type="image"
+      data-name="background"
+      data-title="Background Image"
+    &gt;
+      {/* Overlay */}
+      &lt;div className="absolute inset-0 bg-black bg-opacity-50" /&gt;
+      
+      {/* Content */}
+      &lt;div className="relative z-10 text-center text-white max-w-4xl px-4"&gt;
+        &lt;h1 
+          className="text-6xl font-bold mb-6"
+          data-type="text"
+          data-name="title"
+          data-title="Main Heading"
+          data-placeholder="Enter your heading"
+        &gt;
+          {title || "Welcome to Our Store"}
+        &lt;/h1&gt;
+        
+        &lt;p 
+          className="text-2xl mb-8"
+          data-type="textarea"
+          data-name="subtitle"
+          data-title="Subtitle"
+        &gt;
+          {subtitle || "Discover amazing products"}
+        &lt;/p&gt;
+        
+        &lt;a 
+          href={cta_link || "/products"}
+          className="inline-block bg-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition"
+          data-type="link"
+          data-name="cta_link"
+          data-title="Button Link"
+        &gt;
+          &lt;span 
+            data-type="text"
+            data-name="cta_text"
+            data-title="Button Text"
+          &gt;
+            {cta_text || "Shop Now"}
+          &lt;/span&gt;
+        &lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+};</code></pre>
+
+        <h3>Section Data</h3>
+        <pre><code>// sections/hero/data.ts
+import { HeroWithCTA } from './components';
+
+export const hero_sections = [
+  {
+    id: "1",
+    title: "Hero with CTA",
+    description: "Full-screen hero with background image and call-to-action",
+    component: HeroWithCTA,
+    thumbnail: "/thumbnails/hero-cta.jpg"
+  }
+];</code></pre>
+
+        <h3>Registration</h3>
+        <pre><code>// component-registry.ts
+registry["hero:1"] = {
+  component: lazy(() => 
+    import("@templates/sections/hero/components")
+      .then(m => ({ default: m.HeroWithCTA }))
+  )
+};</code></pre>
+
+        <div class="info-box success">
+          <h4>✅ Result</h4>
+          <p>The editor automatically detects 5 editable fields: background image, title, subtitle, button text, and
+            button link.</p>
+        </div>
+      </section>
+
+      <!-- Example Features -->
+      <section id="example-features">
+        <h2>📝 Example: Features Grid</h2>
+
+        <h3>Features Section with Multiple Items</h3>
+        <pre><code>export const FeaturesGrid = ({
+  section_title,
+  feature_1_icon,
+  feature_1_title,
+  feature_1_desc,
+  feature_2_icon,
+  feature_2_title,
+  feature_2_desc,
+  feature_3_icon,
+  feature_3_title,
+  feature_3_desc
+}) => {
+  const features = [
+    { icon: feature_1_icon || '🚚', title: feature_1_title, desc: feature_1_desc, prefix: 'feature_1' },
+    { icon: feature_2_icon || '✨', title: feature_2_title, desc: feature_2_desc, prefix: 'feature_2' },
+    { icon: feature_3_icon || '💎', title: feature_3_title, desc: feature_3_desc, prefix: 'feature_3' }
+  ];
+  
+  return (
+    &lt;section className="py-16 bg-gray-50"&gt;
+      &lt;div className="container mx-auto px-4"&gt;
+        &lt;h2 
+          className="text-3xl font-bold text-center mb-12"
+          data-type="text"
+          data-name="section_title"
+        &gt;
+          {section_title || "Why Choose Us"}
+        &lt;/h2&gt;
+        
+        &lt;div className="grid grid-cols-1 md:grid-cols-3 gap-8"&gt;
+          {features.map((feature, index) => (
+            &lt;div key={index} className="text-center"&gt;
+              &lt;div className="text-5xl mb-4"&gt;{feature.icon}&lt;/div&gt;
+              
+              &lt;h3 
+                className="text-xl font-semibold mb-2"
+                data-type="text"
+                data-name={`${feature.prefix}_title`}
+              &gt;
+                {feature.title || "Feature Title"}
+              &lt;/h3&gt;
+              
+              &lt;p 
+                className="text-gray-600"
+                data-type="textarea"
+                data-name={`${feature.prefix}_desc`}
+              &gt;
+                {feature.desc || "Feature description"}
+              &lt;/p&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+};</code></pre>
+      </section>
+
+      <!-- Example Products -->
+      <section id="example-products">
+        <h2>📝 Example: Product Display</h2>
+
+        <h3>Product Grid with Dynamic Data</h3>
+        <pre><code>export const ProductGrid = ({ section_title, products }) => {
+  if (!products || products.length === 0) {
+    return (
+      &lt;section className="py-16"&gt;
+        &lt;div className="container mx-auto px-4"&gt;
+          &lt;h2 
+            className="text-3xl font-bold text-center mb-8"
+            data-type="text"
+            data-name="section_title"
+          &gt;
+            {section_title || "Featured Products"}
+          &lt;/h2&gt;
+          &lt;p className="text-center text-gray-500"&gt;
+            No products available
+          &lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+    );
+  }
+  
+  return (
+    &lt;section className="py-16"&gt;
+      &lt;div className="container mx-auto px-4"&gt;
+        &lt;h2 
+          className="text-3xl font-bold text-center mb-12"
+          data-type="text"
+          data-name="section_title"
+        &gt;
+          {section_title || "Featured Products"}
+        &lt;/h2&gt;
+        
+        &lt;div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6"&gt;
+          {products.slice(0, 8).map((product) => (
+            &lt;div 
+              key={product.id} 
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+            &gt;
+              &lt;img 
+                src={product.thumbnail?.url || '/placeholder.jpg'}
+                alt={product.name}
+                className="w-full h-48 object-cover"
+              /&gt;
+              &lt;div className="p-4"&gt;
+                &lt;h3 className="font-semibold text-lg mb-2"&gt;
+                  {product.name}
+                &lt;/h3&gt;
+                &lt;p className="text-gray-600 text-sm mb-4"&gt;
+                  {product.description}
+                &lt;/p&gt;
+                &lt;div className="flex justify-between items-center"&gt;
+                  &lt;span className="text-xl font-bold"&gt;
+                    ${product.price}
+                  &lt;/span&gt;
+                  &lt;button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"&gt;
+                    Add to Cart
+                  &lt;/button&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          ))}
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/section&gt;
+  );
+};</code></pre>
+
+        <div class="info-box note">
+          <h4>💡 Dynamic Content</h4>
+          <p>Product data comes from the <code>products</code> prop, which is populated from your database or mock data.
+            The section title is still editable via data attributes.</p>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <section style="margin-top: 4rem; padding-top: 2rem; border-top: 2px solid #e2e8f0;">
+        <h2>🎉 You're Ready!</h2>
+        <p>
+          You now have a comprehensive understanding of the platform. Start creating amazing templates!
+        </p>
+
+        <div class="info-box tip">
+          <h4>📚 Additional Resources</h4>
+          <ul style="margin-bottom: 0;">
+            <li><code>SIMPLE_DEVELOPER_GUIDE.md</code> - Detailed guide with more examples</li>
+            <li><code>QUICK_START.md</code> - 5-minute quick start</li>
+            <li><code>COMPONENT_TEMPLATE.tsx</code> - Copy-paste templates</li>
+            <li><code>CODE_REVIEW_FINDINGS.md</code> - Technical review and corrections</li>
+          </ul>
+        </div>
+
+        <p style="text-align: center; margin-top: 2rem; color: #64748b;">
+          <strong>Happy coding! 🚀</strong>
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Smooth scroll and active link highlighting
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('.sidebar a');
+      const sections = document.querySelectorAll('section[id]');
+
+      // Highlight active section on scroll
+      const observerOptions = {
+        threshold: 0.3,
+        rootMargin: '-100px 0px -66%'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(link => link.classList.remove('active'));
+            const activeLink = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+            if (activeLink) activeLink.classList.add('active');
+          }
+        });
+      }, observerOptions);
+
+      sections.forEach(section => observer.observe(section));
+
+      // Smooth scroll on click
+      links.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const targetId = link.getAttribute('href').substring(1);
+          const targetSection = document.getElementById(targetId);
+          if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+
+      // Add language classes to code blocks for Prism.js
+      const codeBlocks = document.querySelectorAll('pre code');
+      codeBlocks.forEach(block => {
+        if (!block.className.includes('language-')) {
+          block.className = 'language-javascript';
+          block.parentElement.className = 'language-javascript';
+        }
+      });
+    });
+  </script>
+
+  <!-- Prism.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-jsx.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-tsx.min.js"></script>
+</body>
+
+</html>

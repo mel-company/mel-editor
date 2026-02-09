@@ -109,3 +109,6 @@ This hook is the bridge between the UI and the Store. It simplifies complex stat
 
 - **"Section not updating"**: Ensure you are using `setSection` with the correct `target_id`. The store creates a _new_ array reference to trigger React re-renders.
 - **"Component not found"**: correct `section_id` in the `options` array must match the section you are trying to render. Ensure the `component` property is a valid React component.
+
+
+

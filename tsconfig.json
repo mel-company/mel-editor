@@ -2,6 +2,12 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
+            "@templates/shared": [
+                "templates/shared"
+            ],
+            "@templates/shared/*": [
+                "templates/shared/*"
+            ],
             "@templates/*": [
                 "templates/ecommerce/retail-v1/*"
             ],
