@@ -82,7 +82,7 @@ const StoreViewPage = () => {
   return (
     <div className="min-h-screen bg-white" dir="rtl">
       {/* Top Bar - Edit Button */}
-      <div className="bg-slate-800 text-white px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
+      <div className="bg-slate-800 text-white px-3 sm:px-4 py-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4 sticky top-0 z-50">
         <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={() => navigate("/editor")}

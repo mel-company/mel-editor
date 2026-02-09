@@ -1,7 +1,7 @@
 import { TemplateType, ProductType, CategoryType } from "@/shared/types";
 import { categories_sections } from "../template/sections/categories";
 import { hero_sections } from "../template/sections/hero";
-import { navigation_sections } from "../template/sections/navigation";
+import { navigation_sections } from "../../sections/page/home/production/navbar";
 import { recent_products_sections } from "../template/sections/recent-products";
 import { menu_sections } from "../template/sections/menu";
 import { footer_sections } from "../template/sections/footer";

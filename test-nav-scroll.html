@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Navigation Scroll</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; }
+        
+        .container {
+            height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #ccc;
+            margin: 20px;
+        }
+        
+        nav {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+            z-index: 10;
+        }
+        
+        nav button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #4272FF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        
+        section {
+            min-height: 400px;
+            padding: 40px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        section:nth-child(odd) { background: #f5f5f5; }
+        section:nth-child(even) { background: #fff; }
+    </style>
+</head>
+<body>
+    <div id="editor-preview-container" class="container">
+        <nav>
+            <button onclick="scrollToSection('section-1')">القسم 1</button>
+            <button onclick="scrollToSection('section-2')">القسم 2</button>
+            <button onclick="scrollToSection('section-3')">القسم 3</button>
+        </nav>
+        
+        <section id="section-1" data-section-instance-id="section-1">
+            <h2>القسم الأول</h2>
+            <p>هذا هو محتوى القسم الأول</p>
+        </section>
+        
+        <section id="section-2" data-section-instance-id="section-2">
+            <h2>القسم الثاني</h2>
+            <p>هذا هو محتوى القسم الثاني</p>
+        </section>
+        
+        <section id="section-3" data-section-instance-id="section-3">
+            <h2>القسم الثالث</h2>
+            <p>هذا هو محتوى القسم الثالث</p>
+        </section>
+    </div>
+
+    <script>
+        function scrollToSection(sectionId) {
+            console.log('Scrolling to:', sectionId);
+            
+            const sectionElement = document.querySelector(`[data-section-instance-id="${sectionId}"]`) 
+                || document.getElementById(sectionId);
+            
+            if (sectionElement) {
+                console.log('Section found:', sectionElement);
+                const editorContainer = document.getElementById('editor-preview-container');
+                console.log('Container found:', editorContainer);
+                
+                if (editorContainer) {
+                    const sectionTop = sectionElement.offsetTop;
+                    console.log('Scrolling to position:', sectionTop - 80);
+                    editorContainer.scrollTo({
+                        top: sectionTop - 80,
+                        behavior: "smooth",
+                    });
+                }
+            } else {
+                console.error('Section not found:', sectionId);
+            }
+        }
+    </script>
+</body>
+</html>

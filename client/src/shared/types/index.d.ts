@@ -16,7 +16,14 @@ export type StoreType = {
   };
   header: {
     logo?: FileType;
-    navigationLinks?: Array<{ id: string; label: string; url: string; pageId?: string }>;
+    navigationLinks?: Array<{
+      id: string;
+      label: string;
+      url: string;
+      pageId?: string;
+      linkType?: 'external' | 'section';
+      sectionId?: string;
+    }>;
     styles?: {
       backgroundColor?: string;
       textColor?: string;
@@ -102,6 +109,8 @@ export type LinkItem = {
   label: string;
   url: string;
   pageId?: string;
+  linkType?: 'external' | 'section';
+  sectionId?: string;
 };
 
 export type SectionOptionType = {

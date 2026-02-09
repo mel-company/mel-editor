@@ -92,22 +92,25 @@ const RenderTemplate = () => {
       className="w-full h-full flex items-center justify-center cursor-default"
     >
       <div
-        className="h-[90vh] max-h-screen mx-auto w-full sm:w-[80vw] max-w-8xl overflow-y-auto overflow-x-hidden bg-white rounded-2xl flex flex-col mt-10"
+        className="h-[90vh] max-h-screen mx-auto w-full sm:w-[80vw] max-w-8xl bg-white rounded-2xl flex flex-col mt-10 overflow-hidden"
         style={globalStyles}
       >
-        {/* Navigation Bar */}
+        {/* Navigation Bar - Sticky at top */}
         {navigation && (
           <div
-            onClickCapture={(e) => {
-              // Use capture to catch clicks even if links inside stop propagation
-              // But check if we want to allow default link behavior?
-              // In editor, we usually want to select the component first.
-              e.stopPropagation();
-              setActiveElementType("navigation");
-              setActiveSectionId("");
+            onClick={(e) => {
+              // Only select navigation if clicking on the wrapper itself, not on links
+              const target = e.target as HTMLElement;
+              const isNavigationLink = target.closest('a');
+
+              if (!isNavigationLink) {
+                e.stopPropagation();
+                setActiveElementType("navigation");
+                setActiveSectionId("");
+              }
             }}
             className={`
-              cursor-pointer transition-all duration-200 relative
+              cursor-pointer transition-all duration-200 sticky top-0 z-50
               ${activeElementType === "navigation"
                 ? "outline-2 outline-blue-500 outline-offset-2"
                 : ""
@@ -136,136 +139,141 @@ const RenderTemplate = () => {
                     }
                   }, 100);
                 }
+                // Note: Section scroll is handled directly in the navigation component
+                // by checking linkType and sectionId before calling onLinkClick
               }}
             />
           </div>
         )}
 
-        {/* Page Content */}
-        <div className="flex-1" data-page-content>
-          {sections.length === 0 ? (
-            <div className="p-8 text-center text-slate-500">
-              لا توجد أقسام في هذه الصفحة
-            </div>
-          ) : (
-            sections.map((sectionData: HydratedSection) => {
-              const { Component, props, id, originalSection } = sectionData;
-              const sectionStyles = originalSection.styles || {};
+        {/* Scrollable content area */}
+        <div id="editor-preview-container" className="flex-1 overflow-y-auto overflow-x-hidden">
+          {/* Page Content */}
+          <div className="flex-1" data-page-content>
+            {sections.length === 0 ? (
+              <div className="p-8 text-center text-slate-500">
+                لا توجد أقسام في هذه الصفحة
+              </div>
+            ) : (
+              sections.map((sectionData: HydratedSection) => {
+                const { Component, props, id, originalSection } = sectionData;
+                const sectionStyles = originalSection.styles || {};
 
-              // Build comprehensive style object for the WRAPPER
-              const sectionStyle: React.CSSProperties = {
-                backgroundColor: sectionStyles.backgroundColor,
-                color: sectionStyles.textColor,
-                // Padding
-                padding: sectionStyles.padding,
-                paddingTop: sectionStyles.paddingTop || sectionStyles.padding,
-                paddingBottom:
-                  sectionStyles.paddingBottom || sectionStyles.padding,
-                paddingLeft: sectionStyles.paddingLeft || sectionStyles.padding,
-                paddingRight:
-                  sectionStyles.paddingRight || sectionStyles.padding,
-                // Margin
-                margin: sectionStyles.margin,
-                marginTop: sectionStyles.marginTop || sectionStyles.margin,
-                marginBottom:
-                  sectionStyles.marginBottom || sectionStyles.margin,
-                marginLeft: sectionStyles.marginLeft || sectionStyles.margin,
-                marginRight: sectionStyles.marginRight || sectionStyles.margin,
-                // Borders
-                borderWidth: sectionStyles.borderWidth,
-                borderStyle: sectionStyles.borderStyle as any,
-                borderColor: sectionStyles.borderColor,
-                borderRadius: sectionStyles.borderRadius,
-                // Effects
-                boxShadow: sectionStyles.boxShadow,
-                opacity: sectionStyles.opacity
-                  ? parseFloat(sectionStyles.opacity)
-                  : undefined,
-              };
+                // Build comprehensive style object for the WRAPPER
+                const sectionStyle: React.CSSProperties = {
+                  backgroundColor: sectionStyles.backgroundColor,
+                  color: sectionStyles.textColor,
+                  // Padding
+                  padding: sectionStyles.padding,
+                  paddingTop: sectionStyles.paddingTop || sectionStyles.padding,
+                  paddingBottom:
+                    sectionStyles.paddingBottom || sectionStyles.padding,
+                  paddingLeft: sectionStyles.paddingLeft || sectionStyles.padding,
+                  paddingRight:
+                    sectionStyles.paddingRight || sectionStyles.padding,
+                  // Margin
+                  margin: sectionStyles.margin,
+                  marginTop: sectionStyles.marginTop || sectionStyles.margin,
+                  marginBottom:
+                    sectionStyles.marginBottom || sectionStyles.margin,
+                  marginLeft: sectionStyles.marginLeft || sectionStyles.margin,
+                  marginRight: sectionStyles.marginRight || sectionStyles.margin,
+                  // Borders
+                  borderWidth: sectionStyles.borderWidth,
+                  borderStyle: sectionStyles.borderStyle as any,
+                  borderColor: sectionStyles.borderColor,
+                  borderRadius: sectionStyles.borderRadius,
+                  // Effects
+                  boxShadow: sectionStyles.boxShadow,
+                  opacity: sectionStyles.opacity
+                    ? parseFloat(sectionStyles.opacity)
+                    : undefined,
+                };
 
-              return (
-                <div
-                  // Keep the DOM id for backwards compatibility, but rely on a virtual id for editor logic.
-                  id={id}
-                  data-section-instance-id={id}
-                  key={id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveElementType("section");
-                    // Use target_id (primary identifier) to match how sections are stored and deleted
-                    setActiveSectionId(originalSection.target_id || id || "");
-                  }}
-                  className={`
+                return (
+                  <div
+                    // Keep the DOM id for backwards compatibility, but rely on a virtual id for editor logic.
+                    id={id}
+                    data-section-instance-id={id}
+                    key={id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveElementType("section");
+                      // Use target_id (primary identifier) to match how sections are stored and deleted
+                      setActiveSectionId(originalSection.target_id || id || "");
+                    }}
+                    className={`
                     cursor-pointer transition-all duration-200
                     ${(originalSection.target_id === activeSectionId || id === activeSectionId) &&
-                      activeElementType === "section"
-                      ? "outline-2 outline-blue-500 outline-offset-2"
-                      : ""
-                    }
+                        activeElementType === "section"
+                        ? "outline-2 outline-blue-500 outline-offset-2"
+                        : ""
+                      }
                   `}
-                  style={
-                    {
-                      ...sectionStyle,
-                      // CSS Variables for use inside section components
-                      "--section-heading-color":
-                        sectionStyles.headingColor ||
-                        sectionStyles.textColor ||
-                        "#1D293D",
-                      "--section-text-color":
-                        sectionStyles.textColor || "#1D293D",
-                      "--section-button-color":
-                        sectionStyles.buttonColor || "#4272FF",
-                      "--section-button-text-color":
-                        sectionStyles.buttonTextColor || "#FFFFFF",
-                      "--section-heading-font-size":
-                        sectionStyles.headingFontSize || "2rem",
-                      "--section-text-font-size":
-                        sectionStyles.textFontSize || "1rem",
-                      "--section-heading-font-weight":
-                        sectionStyles.headingFontWeight || "bold",
-                      "--section-text-font-weight":
-                        sectionStyles.textFontWeight || "normal",
-                    } as React.CSSProperties
-                  }
-                >
-                  <React.Suspense fallback={<div className="p-8 text-center text-slate-400 bg-slate-50 animate-pulse rounded-lg">Loading Section...</div>}>
-                    <Component {...props} />
-                  </React.Suspense>
-                </div>
-              );
-            })
-          )}
-        </div>
+                    style={
+                      {
+                        ...sectionStyle,
+                        // CSS Variables for use inside section components
+                        "--section-heading-color":
+                          sectionStyles.headingColor ||
+                          sectionStyles.textColor ||
+                          "#1D293D",
+                        "--section-text-color":
+                          sectionStyles.textColor || "#1D293D",
+                        "--section-button-color":
+                          sectionStyles.buttonColor || "#4272FF",
+                        "--section-button-text-color":
+                          sectionStyles.buttonTextColor || "#FFFFFF",
+                        "--section-heading-font-size":
+                          sectionStyles.headingFontSize || "2rem",
+                        "--section-text-font-size":
+                          sectionStyles.textFontSize || "1rem",
+                        "--section-heading-font-weight":
+                          sectionStyles.headingFontWeight || "bold",
+                        "--section-text-font-weight":
+                          sectionStyles.textFontWeight || "normal",
+                      } as React.CSSProperties
+                    }
+                  >
+                    <React.Suspense fallback={<div className="p-8 text-center text-slate-400 bg-slate-50 animate-pulse rounded-lg">Loading Section...</div>}>
+                      <Component {...props} />
+                    </React.Suspense>
+                  </div>
+                );
+              })
+            )}
+          </div>
 
-        {/* Footer */}
-        {footer && (
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-              setActiveElementType("footer");
-              setActiveSectionId("footer");
-            }}
-            className={`
+          {/* Footer */}
+          {footer && (
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveElementType("footer");
+                setActiveSectionId("footer");
+              }}
+              className={`
                 cursor-pointer transition-all duration-200 mt-auto
                 ${activeSectionId === "footer" && activeElementType === "footer"
-                ? "outline-2 outline-blue-500 outline-offset-2"
-                : ""
-              }
+                  ? "outline-2 outline-blue-500 outline-offset-2"
+                  : ""
+                }
               `}
-            style={{
-              backgroundColor:
-                storeSettings.footer?.styles?.backgroundColor || "#1e293b",
-              color: storeSettings.footer?.styles?.textColor || "#ffffff",
-              padding: storeSettings.footer?.styles?.padding,
-              margin: storeSettings.footer?.styles?.margin,
-            }}
-          >
-            <footer.Component
-              {...footer.props}
-            // onLinkClick is already handled in getSectionProps for Footer
-            />
-          </div>
-        )}
+              style={{
+                backgroundColor:
+                  storeSettings.footer?.styles?.backgroundColor || "#1e293b",
+                color: storeSettings.footer?.styles?.textColor || "#ffffff",
+                padding: storeSettings.footer?.styles?.padding,
+                margin: storeSettings.footer?.styles?.margin,
+              }}
+            >
+              <footer.Component
+                {...footer.props}
+              // onLinkClick is already handled in getSectionProps for Footer
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

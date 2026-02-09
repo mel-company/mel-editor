@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import createDbStorage from "../../../utils/db-storage";
 import { PageType } from "../../../types";
-import { navigation_sections } from "@templates/data/template/sections/navigation";
+import { navigation_sections } from "@templates/sections/page/home/production/navbar";
 import { hero_sections } from "@templates/data/template/sections/hero";
 import { categories_sections } from "@templates/data/template/sections/categories";
 import { recent_products_sections } from "@templates/data/template/sections/recent-products";

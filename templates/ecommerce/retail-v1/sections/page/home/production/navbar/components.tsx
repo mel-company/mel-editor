@@ -11,6 +11,8 @@ interface NavigationLink {
     label: string;
     url: string;
     pageId?: string;
+    linkType?: 'external' | 'section';
+    sectionId?: string;
 }
 
 export const Navigation1 = ({
@@ -32,7 +34,7 @@ export const Navigation1 = ({
     const themeColor = primaryColor || "#4272FF";
 
     return (
-        <nav className="w-full border-b sticky top-0 z-50 border-slate-200 bg-white shadow-sm">
+        <nav className="w-full border-b sticky top-0 z-40 border-slate-200 bg-white shadow-sm">
             <div className="container mx-auto px-4 lg:px-6">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo - Left Side */}
@@ -49,49 +51,42 @@ export const Navigation1 = ({
                     {/* Desktop Navigation Links - Center */}
                     {navigationLinks && navigationLinks.length > 0 && (
                         <div className="hidden md:flex items-center gap-6 lg:gap-8 flex-1 justify-center">
-                            {navigationLinks.map((link) => (
-                                <button
-                                    key={link.id}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        if (onLinkClick) {
-                                            onLinkClick(link.pageId, link.url);
-                                        } else {
-                                            // Fallback: scroll to section if pageId exists
-                                            if (link.pageId) {
-                                                const element = document.querySelector(
-                                                    `[data-page-id="${link.pageId}"]`
-                                                );
-                                                if (element) {
-                                                    element.scrollIntoView({
-                                                        behavior: "smooth",
-                                                        block: "start",
-                                                    });
-                                                }
+                            {navigationLinks.map((link) => {
+                                const isSection = link.linkType === 'section' && link.sectionId;
+                                const href = isSection ? `#${link.sectionId}` : (link.url || '#');
+                                return (
+                                    <a
+                                        key={link.id}
+                                        href={href}
+                                        onClick={(e) => {
+                                            if (isSection) return;
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            if (onLinkClick && link.pageId) {
+                                                onLinkClick(link.pageId, link.url);
                                             }
+                                        }}
+                                        className="text-slate-700 transition-colors font-medium text-sm relative group py-2 cursor-pointer"
+                                        style={
+                                            {
+                                                "--hover-color": themeColor,
+                                            } as React.CSSProperties
                                         }
-                                    }}
-                                    className="text-slate-700 transition-colors font-medium text-sm relative group py-2 cursor-pointer"
-                                    style={
-                                        {
-                                            "--hover-color": themeColor,
-                                        } as React.CSSProperties
-                                    }
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.color = themeColor;
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.color = "";
-                                    }}
-                                >
-                                    {link.label}
-                                    <span
-                                        className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
-                                        style={{ backgroundColor: themeColor }}
-                                    ></span>
-                                </button>
-                            ))}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color = themeColor;
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color = "";
+                                        }}
+                                    >
+                                        {link.label}
+                                        <span
+                                            className="absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
+                                            style={{ backgroundColor: themeColor }}
+                                        ></span>
+                                    </a>
+                                );
+                            })}
                         </div>
                     )}
 
@@ -136,40 +131,33 @@ export const Navigation1 = ({
                 {mobileMenuOpen && navigationLinks && navigationLinks.length > 0 && (
                     <div className="md:hidden border-t border-slate-200 py-4 animate-in slide-in-from-top">
                         <div className="flex flex-col gap-2">
-                            {navigationLinks.map((link) => (
-                                <button
-                                    key={link.id}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        setMobileMenuOpen(false);
-                                        if (onLinkClick) {
-                                            onLinkClick(link.pageId, link.url);
-                                        } else {
-                                            // Fallback: scroll to section if pageId exists
-                                            if (link.pageId) {
-                                                const element = document.querySelector(
-                                                    `[data-page-id="${link.pageId}"]`
-                                                );
-                                                if (element) {
-                                                    element.scrollIntoView({
-                                                        behavior: "smooth",
-                                                        block: "start",
-                                                    });
-                                                }
+                            {navigationLinks.map((link) => {
+                                const isSection = link.linkType === 'section' && link.sectionId;
+                                const href = isSection ? `#${link.sectionId}` : (link.url || '#');
+                                return (
+                                    <a
+                                        key={link.id}
+                                        href={href}
+                                        onClick={(e) => {
+                                            setMobileMenuOpen(false);
+                                            if (isSection) return;
+                                            e.preventDefault();
+                                            if (onLinkClick && link.pageId) {
+                                                onLinkClick(link.pageId, link.url);
                                             }
-                                        }
-                                    }}
-                                    className="text-slate-700 hover:bg-slate-50 transition-colors font-medium px-4 py-2 rounded-lg text-right"
-                                    onMouseEnter={(e) => {
-                                        e.currentTarget.style.color = themeColor;
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        e.currentTarget.style.color = "";
-                                    }}
-                                >
-                                    {link.label}
-                                </button>
-                            ))}
+                                        }}
+                                        className="text-slate-700 hover:bg-slate-50 transition-colors font-medium px-4 py-2 rounded-lg text-right block"
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color = themeColor;
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color = "";
+                                        }}
+                                    >
+                                        {link.label}
+                                    </a>
+                                );
+                            })}
                         </div>
                     </div>
                 )}

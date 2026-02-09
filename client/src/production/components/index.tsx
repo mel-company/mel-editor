@@ -1,7 +1,7 @@
 import React from "react";
 
 import { PageType, SectionType, StoreType, ProductType, CategoryType } from "../../shared/types";
-import { Navigation1 } from "@templates/data/template/sections/navigation";
+import { Navigation1 } from "@templates/sections/page/home/production/navbar/components";
 import { footer_sections } from "@templates/data/template/sections/footer";
 
 interface StoreViewProps {
@@ -57,6 +57,7 @@ const StoreView = ({
       {/* Navigation Bar - Main Header (only for e-commerce) */}
       {storeSettings.type !== "restaurant" && (
         <div
+          className="sticky top-0 z-40"
           style={{
             backgroundColor: storeSettings.header?.styles?.backgroundColor,
             color: storeSettings.header?.styles?.textColor,
@@ -111,6 +112,8 @@ const StoreView = ({
           return (
             <div
               key={section.target_id}
+              id={section.target_id || section.id}
+              data-section-instance-id={section.target_id || section.id}
               style={
                 {
                   ...sectionStyle,
