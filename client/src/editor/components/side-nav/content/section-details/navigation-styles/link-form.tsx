@@ -35,13 +35,13 @@ export const LinkForm = ({
   return (
     <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 flex flex-col gap-2">
 
-      <div className="flex gap-1 bg-white p-1.5 rounded-full">
+      <div className="flex gap-1 bg-white p-1 rounded-xl">
         <button
           onClick={() => {
             onLinkTypeChange('external');
             // Clear errors when switching types
           }}
-          className={`flex-1 text-xs py-1 px-3 transition-colors rounded-full ${newLinkType === 'external'
+          className={`flex-1 text-xs py-1 px-3 transition-colors rounded-lg ${newLinkType === 'external'
             ? 'bg-blue-100 text-blue-600'
             : 'bg-slate-50 text-slate-600 hover:border-blue-400'
             }`}
@@ -53,7 +53,7 @@ export const LinkForm = ({
             onLinkTypeChange('section');
             // Clear errors when switching types
           }}
-          className={`flex-1 text-xs py-2 px-3 rounded-full transition-colors ${newLinkType === 'section'
+          className={`flex-1 text-xs py-2 px-3 rounded-lg transition-colors ${newLinkType === 'section'
             ? 'bg-blue-100 text-blue-600'
             : 'bg-slate-50 text-slate-600 hover:border-blue-400'
             }`}
