@@ -204,6 +204,12 @@ const Footer = ({
             contactInfo={footer?.contactInfo}
             navigationLinks={navigationLinks}
             socialLinks={footer?.socialLinks}
+            onLinkClick={(pageId) => {
+                if (pageId) {
+                    setCurrentPageId(pageId);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+            }}
             styles={footer?.styles}
         />
     );

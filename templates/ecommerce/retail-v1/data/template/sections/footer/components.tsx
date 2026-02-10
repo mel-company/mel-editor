@@ -157,6 +157,10 @@ export const Footer1 = ({
                                             if (link.pageId && onLinkClick) {
                                                 e.preventDefault();
                                                 onLinkClick(link.pageId);
+                                            } else if (link.url && !link.pageId) {
+                                                // Handle external link
+                                                e.preventDefault();
+                                                window.open(link.url, '_blank', 'noopener,noreferrer');
                                             }
                                         }}
                                         className="group flex items-center gap-2 text-sm sm:text-base text-slate-300 hover:text-blue-400 transition-all duration-300"
@@ -368,6 +372,10 @@ export const FooterSection2 = ({
                                             if (link.pageId && onLinkClick) {
                                                 e.preventDefault();
                                                 onLinkClick(link.pageId);
+                                            } else if (link.url && !link.pageId) {
+                                                // Handle external link
+                                                e.preventDefault();
+                                                window.open(link.url, '_blank', 'noopener,noreferrer');
                                             }
                                         }}
                                         className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
@@ -501,6 +509,10 @@ export const FooterSection3 = ({
                                         if (link.pageId && onLinkClick) {
                                             e.preventDefault();
                                             onLinkClick(link.pageId);
+                                        } else if (link.url && !link.pageId) {
+                                            // Handle external link
+                                            e.preventDefault();
+                                            window.open(link.url, '_blank', 'noopener,noreferrer');
                                         }
                                     }}
                                     className="text-slate-600 hover:text-blue-600 transition-colors"

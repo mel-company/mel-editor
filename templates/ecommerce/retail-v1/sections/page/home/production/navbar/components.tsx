@@ -62,8 +62,14 @@ export const Navigation1 = ({
                                             if (isSection) return;
                                             e.preventDefault();
                                             e.stopPropagation();
-                                            if (onLinkClick && link.pageId) {
-                                                onLinkClick(link.pageId, link.url);
+                                            if (onLinkClick) {
+                                                if (link.pageId) {
+                                                    // Handle page navigation
+                                                    onLinkClick(link.pageId, link.url);
+                                                } else if (link.url) {
+                                                    // Handle external link
+                                                    window.open(link.url, '_blank', 'noopener,noreferrer');
+                                                }
                                             }
                                         }}
                                         className="text-slate-700 transition-colors font-medium text-sm relative group py-2 cursor-pointer"
@@ -142,8 +148,14 @@ export const Navigation1 = ({
                                             setMobileMenuOpen(false);
                                             if (isSection) return;
                                             e.preventDefault();
-                                            if (onLinkClick && link.pageId) {
-                                                onLinkClick(link.pageId, link.url);
+                                            if (onLinkClick) {
+                                                if (link.pageId) {
+                                                    // Handle page navigation
+                                                    onLinkClick(link.pageId, link.url);
+                                                } else if (link.url) {
+                                                    // Handle external link
+                                                    window.open(link.url, '_blank', 'noopener,noreferrer');
+                                                }
                                             }
                                         }}
                                         className="text-slate-700 hover:bg-slate-50 transition-colors font-medium px-4 py-2 rounded-lg text-right block"
