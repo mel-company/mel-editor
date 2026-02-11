@@ -12,7 +12,7 @@ import { useSSRProducts, useSSRCategories, useSSRData } from "../context/ssr-dat
 
 
 
-export const useTemplateStructure = () => {
+export const useTemplateStructure = (isEditor = false) => {
     const { pages: storePages, currentPageId: storeCurrentPageId } = usePageStore();
     const { storeSettings: storeStoreSettings } = useStoreSettingsStore();
     const { getSelectedTemplateId } = usePageTemplateStore();
@@ -207,7 +207,7 @@ export const useTemplateStructure = () => {
                     const Component = selected_options.component as any;
                     // Pass section with hydrated options to getSectionProps
                     const hydratedSection = { ...section, options: hydratedOptions };
-                    const props = getSectionProps(hydratedSection, storeSettings);
+                    const props = getSectionProps(hydratedSection, storeSettings, isEditor);
 
                     if (!props) return null;
 
@@ -258,7 +258,7 @@ export const useTemplateStructure = () => {
 
                     // Use getSectionProps to resolve the final props including content
                     // We must trick getSectionProps into finding the option we just created
-                    const props = getSectionProps(virtualSection as any, storeSettings);
+                    const props = getSectionProps(virtualSection as any, storeSettings, isEditor);
 
                     return {
                         id: section.target_id || section.id || section.section_id,

@@ -4,7 +4,8 @@ import { usePageStore } from "../store/editor/page";
 // Helper function to extract props for a section
 export const getSectionProps = (
     section: SectionType,
-    storeSettings: any
+    storeSettings: any,
+    isEditor = false
 ) => {
     const { setCurrentPageId } = usePageStore.getState();
 
@@ -21,6 +22,7 @@ export const getSectionProps = (
     let props: any = {
         id: section.id || section.section_id, // Pass ID for store connection
         styles: section.styles, // Pass styles to component
+        isEditor, // Pass editor context flag
     };
 
     // Handle content (title, description, etc.)

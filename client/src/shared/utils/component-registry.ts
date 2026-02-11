@@ -2,7 +2,7 @@ import { categories_sections } from "@templates/data/template/sections/categorie
 import { recent_products_sections } from "@templates/data/template/sections/recent-products";
 import { footer_sections } from "@templates/data/template/sections/footer";
 import { navigation_sections } from "@templates/sections/page/home/production/navbar";
-import { hero_sections } from "@templates/data/template/sections/hero";
+import { hero_sections } from "@templates/sections/hero/data"; // Updated path
 import { lazy } from "react";
 
 // Type definition for the registry
@@ -30,23 +30,23 @@ registry["navigation:1"] = {
 
 // Hero Sections
 registry["hero:1"] = {
-    component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection1 }))),
+    component: lazy(() => import("@templates/sections/hero/components").then(m => ({ default: m.HeroSection1 }))),
     defaultOptions: hero_sections.find(s => s.id === "1")
 };
 registry["hero:2"] = {
-    component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection2 }))),
+    component: lazy(() => import("@templates/sections/hero/components").then(m => ({ default: m.HeroSection2 }))),
     defaultOptions: hero_sections.find(s => s.id === "2")
 };
 registry["hero:3"] = {
-    component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection3 }))),
+    component: lazy(() => import("@templates/sections/hero/components").then(m => ({ default: m.HeroSection3 }))),
     defaultOptions: hero_sections.find(s => s.id === "3")
 };
 registry["hero:4"] = {
-    component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection4 }))),
+    component: lazy(() => import("@templates/sections/hero/components").then(m => ({ default: m.HeroSection4 }))),
     defaultOptions: hero_sections.find(s => s.id === "4")
 };
 registry["hero:5"] = {
-    component: lazy(() => import("@templates/data/template/sections/hero/components").then(m => ({ default: m.HeroSection5 }))),
+    component: lazy(() => import("@templates/sections/hero/components").then(m => ({ default: m.HeroSection5 }))),
     defaultOptions: hero_sections.find(s => s.id === "5")
 };
 

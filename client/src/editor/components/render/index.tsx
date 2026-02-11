@@ -22,7 +22,7 @@ const RenderTemplate = () => {
     globalStyles,
     storeSettings,
     currentPageId
-  } = useTemplateStructure();
+  } = useTemplateStructure(true); // Pass isEditor=true for editor context
 
   // Debug: Log sections for troubleshooting
   useEffect(() => {
