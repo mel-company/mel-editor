@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, Undo, Redo } from "lucide-react";
 import { usePageStore } from "../../../shared/store/editor/page";
+import { useZundoHistory } from "../../../shared/hooks/use-zundo-history";
 import { publishStore, generateStyles } from "@/shared/api/production";
 import classNames from "classnames";
 
@@ -103,6 +104,84 @@ const SaveBtn = () => {
     )
 }
 
+const ZundoHistoryButtons = () => {
+    const { undo, redo, canUndo, canRedo, getHistorySize } = useZundoHistory();
+
+    console.log('Zundo HistoryButtons render:', {
+        canUndo: canUndo(),
+        canRedo: canRedo(),
+        historySize: getHistorySize()
+    });
+
+    const handleUndo = () => {
+        console.log('=== ZUNDO UNDO BUTTON CLICKED ===');
+        console.log('Zundo undo button clicked - checking canUndo:', canUndo());
+
+        const previousState = undo();
+        console.log('Zundo undo returned:', previousState?.id);
+
+        if (!previousState) {
+            console.log('Zundo undo returned undefined - no history available');
+        }
+
+        console.log('=== ZUNDO UNDO BUTTON HANDLER END ===');
+    };
+
+    const handleRedo = () => {
+        console.log('=== ZUNDO REDO BUTTON CLICKED ===');
+        console.log('Zundo redo button clicked - checking canRedo:', canRedo());
+
+        const nextState = redo();
+        console.log('Zundo redo returned:', nextState?.id);
+
+        if (!nextState) {
+            console.log('Zundo redo returned undefined - no forward history available');
+        }
+
+        console.log('=== ZUNDO REDO BUTTON HANDLER END ===');
+    };
+
+    return (
+        <div className="flex gap-1 items-center">
+            {/* Undo Button */}
+            <button
+                onClick={handleUndo}
+                disabled={!canUndo()}
+                className={classNames(
+                    "cursor-pointer flex items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 font-medium",
+                    {
+                        "bg-gray-100 text-gray-600 hover:bg-gray-200": canUndo(),
+                        "bg-gray-50 text-gray-400 cursor-not-allowed": !canUndo(),
+                    }
+                )}
+                title="تراجع (Ctrl+Z)"
+            >
+                <Undo className="w-4 h-4" />
+            </button>
+
+            {/* Redo Button */}
+            <button
+                onClick={handleRedo}
+                disabled={!canRedo()}
+                className={classNames(
+                    "cursor-pointer flex items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 font-medium",
+                    {
+                        "bg-gray-100 text-gray-600 hover:bg-gray-200": canRedo(),
+                        "bg-gray-50 text-gray-400 cursor-not-allowed": !canRedo(),
+                    }
+                )}
+                title="إعادة (Ctrl+Shift+Z)"
+            >
+                <Redo className="w-4 h-4" />
+            </button>
+
+            {/* Debug info */}
+            <div style={{ fontSize: '10px', color: 'green', position: 'absolute', top: '50px', left: '10px' }}>
+                Zundo: size={getHistorySize()}, undo={canUndo().toString()}, redo={canRedo().toString()}
+            </div>
+        </div>
+    );
+};
 
 const EditorTopNav = () => {
 
@@ -119,6 +198,7 @@ const EditorTopNav = () => {
     return (
         <header className="bg-white px-20 absolute top-0 left-0 right-64 p-2 text-sm font-medium flex gap-2 items-center justify-end overflow-hidden z-40" >
             {/* <TemplateJsonWrapper /> */}
+            <ZundoHistoryButtons />
             <SaveBtn />
             <PublishButton />
         </header>

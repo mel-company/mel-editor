@@ -169,9 +169,10 @@ export const usePageStore = create<Store>()(
         });
       },
       updatePage: (page) =>
-        set((state) => ({
-          pages: state.pages.map((p) => (p.id === page.id ? page : p)),
-        })),
+        set((state) => {
+          const updatedPages = state.pages.map((p) => (p.id === page.id ? page : p));
+          return { pages: updatedPages };
+        }),
       deletePage: (id) => {
         set((state) => {
           const newPages = state.pages.filter((p) => p.id !== id);

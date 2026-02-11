@@ -7,6 +7,8 @@ import { usePageStore } from "../../../shared/store/editor/page";
 import { publishStore, generateStyles } from "@/shared/api/production";
 import RenderTemplate from "@/editor/components/render";
 import EditorTopNav from "@/editor/components/top-nav";
+import { useKeyboardShortcuts } from "../../../shared/hooks/use-keyboard-shortcuts";
+import { useAutoSaveHistory } from "../../../shared/hooks/use-auto-save-history";
 
 
 const PublishButton = () => {
@@ -156,6 +158,12 @@ const EditorPage = () => {
   const [loading, setLoading] = useState(true);
   const [showMobileWarning, setShowMobileWarning] = useState(false);
   const currentPageId = usePageStore((state) => state.currentPageId);
+
+  // Enable keyboard shortcuts for undo/redo
+  useKeyboardShortcuts();
+
+  // Auto-save page changes to history
+  useAutoSaveHistory();
 
   useEffect(() => {
     if (currentPageId) {

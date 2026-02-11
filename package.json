@@ -36,6 +36,7 @@
     "react-router-dom": "^7.11.0",
     "sqlite3": "^5.1.7",
     "tailwind-merge": "^3.4.0",
+    "zundo": "^2.3.0",
     "zustand": "^5.0.9"
   },
   "devDependencies": {
