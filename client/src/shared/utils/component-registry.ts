@@ -1,8 +1,6 @@
 import { categories_sections } from "@templates/data/template/sections/categories";
 import { recent_products_sections } from "@templates/data/template/sections/recent-products";
 import { footer_sections } from "@templates/data/template/sections/footer";
-import { our_story_sections } from "@templates/data/template/sections/our-story";
-import { contact_sections } from "@templates/data/template/sections/contact";
 import { navigation_sections } from "@templates/sections/page/home/production/navbar";
 import { hero_sections } from "@templates/data/template/sections/hero";
 import { lazy } from "react";
