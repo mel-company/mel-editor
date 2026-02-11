@@ -1,12 +1,12 @@
 
 // Map of component names to their import paths (Mock for server generator)
 const COMPONENT_IMPORTS: Record<string, string> = {
-    "Navigation1": "@templates/sections/page/home/production/navbar",
-    "HeroSection1": "@templates/sections/page/home/production/hero",
-    "HeroSection2": "@templates/sections/page/home/production/hero",
-    "HeroSection4": "@templates/sections/page/home/production/hero",
-    "HeroSection5": "@templates/sections/page/home/production/hero",
-    "HeroCarousel": "@templates/sections/page/home/production/hero/hero-carousel",
+    "Navigation1": "@templates/sections/navbar/components",
+    "HeroSection1": "@templates/sections/hero/components",
+    "HeroSection2": "@templates/sections/hero/components",
+    "HeroSection4": "@templates/sections/hero/components",
+    "HeroSection5": "@templates/sections/hero/components",
+    "HeroCarousel": "@templates/sections/hero/components",
     "Footer1": "@templates/data/template/sections/footer", // Mock path
     // Add other components as needed
 };

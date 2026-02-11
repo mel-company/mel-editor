@@ -5,7 +5,7 @@ import { footer_sections } from "./sections/footer";
 import { our_story_sections } from "./sections/our-story";
 import { contact_sections } from "./sections/contact";
 import { hero_sections } from "./sections/hero";
-import { navigation_sections } from "../../sections/page/home/production/navbar";
+import { navigation_sections } from "../../sections/navbar/data";
 
 // Helper function to create a section with proper structure
 const createSection = (id: string, sectionId: string, type: string, options: any[], editable: boolean = true) => ({

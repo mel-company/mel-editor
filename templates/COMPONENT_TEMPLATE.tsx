@@ -49,8 +49,7 @@ export const MyNewSection: React.FC<Props> = ({
   cta_link,
   cta_text,
   photos,
-  products,
-  categories
+
 }) => {
   const mainImage = photos?.find(p => p.id === "main_image");
 
@@ -231,14 +230,7 @@ export const HeroBackgroundExample: React.FC<Props> = ({ hero_title, hero_subtit
  */
 export const FeaturesGridExample: React.FC<Props> = ({
   features_title,
-  feature_1_title,
-  feature_1_desc,
-  feature_2_title,
-  feature_2_desc,
-  feature_3_title,
-  feature_3_desc,
-  feature_4_title,
-  feature_4_desc
+
 }) => {
   const features = [
     { name: 'feature_1', icon: '🚚' },

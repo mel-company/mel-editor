@@ -7,7 +7,7 @@ import { recent_products_sections } from "@templates/data/template/sections/rece
 import { footer_sections } from "@templates/data/template/sections/footer";
 import { our_story_sections } from "@templates/data/template/sections/our-story";
 import { contact_sections } from "@templates/data/template/sections/contact";
-import { navigation_sections } from "@templates/sections/page/home/production/navbar";
+import { navigation_sections } from "@templates/sections/navbar/data";
 
 /**
  * Convert API template response to TemplateType

@@ -1,7 +1,7 @@
 import React from "react";
 
 import { PageType, SectionType, StoreType, ProductType, CategoryType } from "../../shared/types";
-import { Navigation1 } from "@templates/sections/page/home/production/navbar/components";
+import { Navigation1 } from "@templates/sections/navbar/components";
 import { footer_sections } from "@templates/data/template/sections/footer";
 
 interface StoreViewProps {
