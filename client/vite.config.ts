@@ -23,6 +23,8 @@ export default defineConfig({
     ssr: {
         // Mark problematic dependencies as external (use Node resolution)
         external: ['react-router-dom', 'react-router'],
+        // Exclude problematic files from SSR
+        noExternal: [],
     },
     build: {
         cssCodeSplit: false,
@@ -31,5 +33,9 @@ export default defineConfig({
                 manualChunks: undefined,
             },
         },
+    },
+    // Fix for Chrome DevTools JSON parsing issue
+    optimizeDeps: {
+        exclude: ['.well-known'],
     },
 })

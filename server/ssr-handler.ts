@@ -175,8 +175,13 @@ export function setupSSR(app: Express, vite: ViteDevServer | undefined, isProduc
             let template: string;
             if (!isProduction && vite) {
                 template = fs.readFileSync(path.resolve(rootDir, 'client/index.html'), 'utf-8');
-                // Apply Vite HTML transforms
-                template = await vite.transformIndexHtml(url, template);
+                // Apply Vite HTML transforms with error handling
+                try {
+                    template = await vite.transformIndexHtml(url, template);
+                } catch (transformError) {
+                    console.warn('SSR transform warning:', transformError);
+                    // Continue with original template if transform fails
+                }
             } else {
                 template = fs.readFileSync(path.resolve(rootDir, 'dist/client/index.html'), 'utf-8');
             }
