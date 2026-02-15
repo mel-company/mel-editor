@@ -1,5 +1,6 @@
 import useStoreDetails from "@/editor/hooks/editor-section-details";
 import { Select } from "@/shared/components/ui/select";
+import { SectionOptionType } from "@/shared/types";
 
 const SectionVariants = () => {
   const { section, setSection } = useStoreDetails();
@@ -14,7 +15,7 @@ const SectionVariants = () => {
         value={section?.section_id}
         onChange={(e) => setSection({ ...section, section_id: e.target.value })}
       >
-        {options?.map((option) => (
+        {options?.map((option: SectionOptionType) => (
           <option key={option.id} value={option.id}>
             {option.title}
           </option>
