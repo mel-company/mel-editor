@@ -1,12 +1,31 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { validateStoreToken, saveAuthData } from '../../../../../shared/utils/auth'
+import { fetchAPI } from '@/shared/api/fetchy'
 
 export default function AuthTokenPage() {
   const { token } = useParams<{ token: string }>()
   const navigate = useNavigate()
   const [isValidating, setIsValidating] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const fetchData = async () => {
+    const store = await fetchAPI({
+      endPoint: `/store/`,
+      method: 'GET'
+    })
+
+    const categories = await fetchAPI({
+      endPoint: `/store/categories`,
+      method: 'GET'
+    })
+
+    const products = await fetchAPI({
+      endPoint: `/store/products`,
+      method: 'GET'
+    })
+
+  }
 
   useEffect(() => {
     const validateToken = async () => {
