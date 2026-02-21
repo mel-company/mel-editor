@@ -1,0 +1,14 @@
+{
+  "name": "editor-server-nest",
+  "version": "1.0.0",
+  "description": "NestJS API Server",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "dev": "tsx watch src/main.ts",
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
+  }
+}
