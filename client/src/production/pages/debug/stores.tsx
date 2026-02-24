@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 const DebugStoresPage = () => {
     const [stores, setStores] = useState<any[]>([]);
     const [error, setError] = useState("");
+    const url = import.meta.env.VITE_EDITOR_API_URL
 
     useEffect(() => {
-        fetch("/api/v1/debug/stores")
+        fetch(`${url}/debug/stores`)
             .then(res => res.json())
             .then(data => setStores(data.data))
             .catch(err => setError(err.message));

@@ -28,10 +28,12 @@ export const useTemplateStructure = (isEditor = false) => {
     useEffect(() => {
         if (!isSSR) {
             const fetchGlobalData = async () => {
+                const url = import.meta.env.VITE_EDITOR_API_URL
+
                 try {
                     const [pRes, cRes] = await Promise.all([
-                        fetch("/api/v1/products").then(res => res.json()),
-                        fetch("/api/v1/categories").then(res => res.json())
+                        fetch(`${url}/products`).then(res => res.json()),
+                        fetch(`${url}/categories`).then(res => res.json())
                     ]);
                     if (pRes?.data) setClientProducts(pRes.data);
                     if (cRes?.data) setClientCategories(cRes.data);

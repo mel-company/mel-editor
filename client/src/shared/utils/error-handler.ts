@@ -90,7 +90,7 @@ export const handleStorageError = (error: unknown): void => {
  * @throws Error if required variables are missing in production
  */
 export const validateEnvVars = (): void => {
-    const requiredVars = ['VITE_API_BASE_URL'];
+    const requiredVars = ['VITE_EDITOR_API_URL'];
     const isProd = import.meta.env.PROD as boolean;
 
     if (isProd) {

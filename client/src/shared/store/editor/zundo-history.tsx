@@ -22,29 +22,22 @@ export const useZundoHistoryStore = create<ZundoHistoryState>()(
       storeSettings: null,
 
       setCurrentPage: (page: PageType) => {
-        console.log('[ZUNDO STORE] setCurrentPage called:', page.id);
         set({ currentPage: page });
-        console.log('[ZUNDO STORE] setCurrentPage complete');
       },
 
       updatePage: (page: PageType) => {
-        console.log('[ZUNDO STORE] updatePage called:', page.id);
-        console.log('[ZUNDO STORE] Page sections:', page.sections.map(s => ({ id: s.id, section_id: s.section_id })));
         set({ currentPage: page });
-        console.log('[ZUNDO STORE] updatePage complete');
       },
 
       updateStoreSettings: (settings: Partial<StoreType>) => {
-        console.log('[ZUNDO STORE] updateStoreSettings called');
         set({ storeSettings: settings });
-        console.log('[ZUNDO STORE] updateStoreSettings complete');
       },
     }),
     {
       limit: 10,
       partialize: (state) => ({ currentPage: state.currentPage, storeSettings: state.storeSettings }),
-      onSave: (state) => {
-        console.log('[ZUNDO TEMPORAL] State saved to history:', state.currentPage?.id);
+      onSave: () => {
+        // State saved to history
       },
     }
   )
@@ -95,13 +88,10 @@ export const useZundoTemporal = () => {
   return {
     undo: () => {
       if (!isClient) {
-        console.log('Zundo undo skipped - not in browser environment');
         return undefined;
       }
 
-      console.log('Zundo undo called');
       if (!temporalApi) {
-        console.log('Zundo undo failed - temporal not available');
         return undefined;
       }
 
@@ -110,19 +100,15 @@ export const useZundoTemporal = () => {
 
       // Get the current state after undo
       const currentState = useZundoHistoryStore.getState();
-      console.log('Zundo undo successful, current page:', currentState.currentPage?.id);
       return currentState.currentPage;
     },
 
     redo: () => {
       if (!isClient) {
-        console.log('Zundo redo skipped - not in browser environment');
         return undefined;
       }
 
-      console.log('Zundo redo called');
       if (!temporalApi) {
-        console.log('Zundo redo failed - temporal not available');
         return undefined;
       }
 
@@ -131,29 +117,22 @@ export const useZundoTemporal = () => {
 
       // Get the current state after redo
       const currentState = useZundoHistoryStore.getState();
-      console.log('Zundo redo successful, current page:', currentState.currentPage?.id);
       return currentState.currentPage;
     },
 
     canUndo: () => {
-      const result = pastStatesLength > 0;
-      console.log('Zundo canUndo check:', result, 'pastStates:', pastStatesLength);
-      return result;
+      return pastStatesLength > 0;
     },
 
     canRedo: () => {
-      const result = futureStatesLength > 0;
-      console.log('Zundo canRedo check:', result, 'futureStates:', futureStatesLength);
-      return result;
+      return futureStatesLength > 0;
     },
 
     clearHistory: () => {
       if (!isClient) {
-        console.log('Zundo clear skipped - not in browser environment');
         return;
       }
 
-      console.log('Zundo clearing history');
       if (temporalApi) {
         temporalApi.clear();
       }

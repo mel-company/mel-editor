@@ -3,8 +3,9 @@ import { StateStorage } from "zustand/middleware";
 const createDbStorage = (): StateStorage => ({
     getItem: async (name: string): Promise<string | null> => {
         if (typeof window === "undefined") return null;
+        const url = import.meta.env.VITE_EDITOR_API_URL
         try {
-            const response = await fetch(`/api/v1/store/${name}`);
+            const response = await fetch(`${url}/store/${name}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch from DB");
             }
@@ -33,8 +34,9 @@ const createDbStorage = (): StateStorage => ({
     },
     setItem: async (name: string, value: string): Promise<void> => {
         if (typeof window === "undefined") return;
+        const url = import.meta.env.VITE_EDITOR_API_URL
         try {
-            await fetch(`/api/v1/store/${name}`, {
+            await fetch(`${url}/store/${name}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

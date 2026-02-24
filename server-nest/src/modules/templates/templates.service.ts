@@ -5,7 +5,19 @@ import { UpdateTemplateDto } from './dto/update-template.dto';
 
 @Injectable()
 export class TemplatesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
+
+  resolveStore(host: string): string {
+    // Extract subdomain from host or return default
+    if (!host) return 'demo';
+
+    const parts = host.split('.');
+    if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'localhost') {
+      return parts[0];
+    }
+
+    return 'demo';
+  }
 
   async findAll() {
     return this.prisma.template.findMany();
@@ -54,6 +66,40 @@ export class TemplatesService {
       return { message: 'Template deleted successfully' };
     } catch (error) {
       throw new NotFoundException(`Template with ID ${id} not found`);
+    }
+  }
+
+  // Legacy endpoint methods
+  async getTemplateByStore(host: string) {
+    const subdomain = this.resolveStore(host);
+    const store = await this.prisma.store.findUnique({
+      where: { subdomain },
+    });
+
+    if (!store || !store.json) {
+      // Return mock template if no store data exists
+      return {
+        id: 'mock-template',
+        name: 'Mock Template',
+        pages: [
+          {
+            id: 'home',
+            name: 'Home',
+            sections: [
+              { type: 'hero', data: {} },
+              { type: 'products', data: {} },
+            ],
+          },
+        ],
+      };
+    }
+
+    try {
+      const storeData = JSON.parse(store.json);
+      return storeData.template || null;
+    } catch (e) {
+      console.error('Error parsing store data:', e);
+      return null;
     }
   }
 }

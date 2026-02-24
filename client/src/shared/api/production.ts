@@ -1,7 +1,9 @@
 
 export const generateStyles = async () => {
+    const url = import.meta.env.VITE_EDITOR_API_URL
+
     try {
-        const response = await fetch(`/api/v1/generate-styles`, {
+        const response = await fetch(`${url}/generate-styles`, {
             method: 'POST',
         });
         if (!response.ok) {
@@ -15,8 +17,10 @@ export const generateStyles = async () => {
 };
 
 export const fetchPublishedStoreData = async (key: string) => {
+    const url = import.meta.env.VITE_EDITOR_API_URL
+
     try {
-        const response = await fetch(`/api/v1/published/store/${key}`);
+        const response = await fetch(`${url}/published/store/${key}`);
         if (!response.ok) {
             throw new Error(`Failed to fetch ${key}`);
         }
@@ -29,8 +33,10 @@ export const fetchPublishedStoreData = async (key: string) => {
 };
 
 export const publishStore = async () => {
+    const url = import.meta.env.VITE_EDITOR_API_URL
+
     try {
-        const response = await fetch(`/api/v1/publish`, {
+        const response = await fetch(`${url}/publish`, {
             method: 'POST',
         });
         if (!response.ok) {

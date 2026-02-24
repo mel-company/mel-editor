@@ -26,10 +26,12 @@ const StoreViewPage = () => {
 
   useEffect(() => {
     const fetchGlobalData = async () => {
+      const url = import.meta.env.VITE_EDITOR_API_URL
+
       try {
         const [productsRes, categoriesRes] = await Promise.all([
-          fetch("/api/v1/products").then(r => r.json()),
-          fetch("/api/v1/categories").then(r => r.json())
+          fetch(`${url}/products`).then(r => r.json()),
+          fetch(`${url}/categories`).then(r => r.json())
         ]);
         if (productsRes?.data) setProducts(productsRes.data);
         if (categoriesRes?.data) setCategories(categoriesRes.data);

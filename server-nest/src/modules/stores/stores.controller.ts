@@ -1,62 +1,51 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { StoresService } from './stores.service';
-import { CreateStoreDto } from './dto/create-store.dto';
-import { UpdateStoreDto } from './dto/update-store.dto';
+import { Controller, Get, Post, Param, Req, Res } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 
 @ApiTags('stores')
-@Controller('stores')
+@Controller('store')
 export class StoresController {
-  constructor(private readonly storesService: StoresService) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Get all stores' })
-  @ApiResponse({ status: 200, description: 'Returns all stores' })
-  findAll() {
-    return this.storesService.findAll();
+  // Simple in-memory storage
+  private storage: Map<string, any> = new Map();
+
+  resolveStore(host: string | undefined): string {
+    if (!host) return 'demo';
+    const parts = host.split('.');
+    if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'localhost') {
+      return parts[0];
+    }
+    return 'demo';
   }
 
-  @Get(':storeId')
-  @ApiOperation({ summary: 'Get a store by ID' })
-  @ApiParam({ name: 'storeId', description: 'Store ID' })
-  @ApiResponse({ status: 200, description: 'Returns the store' })
-  @ApiResponse({ status: 404, description: 'Store not found' })
-  findOne(@Param('storeId') storeId: string) {
-    return this.storesService.findOne(storeId);
+  @Get(':key')
+  @ApiOperation({ summary: 'Get stored data by key' })
+  @ApiResponse({ status: 200, description: 'Returns stored data' })
+  async getStoreData(@Param('key') key: string, @Req() req: Request, @Res() res: Response) {
+    try {
+      const subdomain = this.resolveStore(req.headers.host);
+      const storageKey = `${subdomain}:${key}`;
+      const data = this.storage.get(storageKey) || null;
+      res.json({ data });
+    } catch (e) {
+      console.error('Database Error:', e);
+      res.status(500).json({ error: 'Database Error' });
+    }
   }
 
-  @Get('subdomain/:subdomain')
-  @ApiOperation({ summary: 'Get a store by subdomain' })
-  @ApiParam({ name: 'subdomain', description: 'Store subdomain' })
-  @ApiResponse({ status: 200, description: 'Returns the store' })
-  @ApiResponse({ status: 404, description: 'Store not found' })
-  findBySubdomain(@Param('subdomain') subdomain: string) {
-    return this.storesService.findBySubdomain(subdomain);
-  }
-
-  @Post()
-  @ApiOperation({ summary: 'Create a new store' })
-  @ApiResponse({ status: 201, description: 'Store created successfully' })
-  @ApiResponse({ status: 400, description: 'Bad request' })
-  create(@Body() createStoreDto: CreateStoreDto) {
-    return this.storesService.create(createStoreDto);
-  }
-
-  @Put(':storeId')
-  @ApiOperation({ summary: 'Update a store' })
-  @ApiParam({ name: 'storeId', description: 'Store ID' })
-  @ApiResponse({ status: 200, description: 'Store updated successfully' })
-  @ApiResponse({ status: 404, description: 'Store not found' })
-  update(@Param('storeId') storeId: string, @Body() updateStoreDto: UpdateStoreDto) {
-    return this.storesService.update(storeId, updateStoreDto);
-  }
-
-  @Delete(':storeId')
-  @ApiOperation({ summary: 'Delete a store' })
-  @ApiParam({ name: 'storeId', description: 'Store ID' })
-  @ApiResponse({ status: 200, description: 'Store deleted successfully' })
-  @ApiResponse({ status: 404, description: 'Store not found' })
-  remove(@Param('storeId') storeId: string) {
-    return this.storesService.remove(storeId);
+  @Post(':key')
+  @ApiOperation({ summary: 'Store data by key' })
+  @ApiResponse({ status: 200, description: 'Data stored successfully' })
+  async setStoreData(@Param('key') key: string, @Req() req: Request, @Res() res: Response) {
+    try {
+      const { value } = req.body;
+      const subdomain = this.resolveStore(req.headers.host);
+      const storageKey = `${subdomain}:${key}`;
+      this.storage.set(storageKey, value);
+      res.json({ success: true });
+    } catch (e) {
+      console.error('Database Error:', e);
+      res.status(500).json({ error: 'Database Error' });
+    }
   }
 }

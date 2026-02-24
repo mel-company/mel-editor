@@ -107,38 +107,18 @@ const SaveBtn = () => {
 const ZundoHistoryButtons = () => {
     const { undo, redo, canUndo, canRedo, getHistorySize } = useZundoHistory();
 
-    console.log('Zundo HistoryButtons render:', {
-        canUndo: canUndo(),
-        canRedo: canRedo(),
-        historySize: getHistorySize()
-    });
-
     const handleUndo = () => {
-        console.log('=== ZUNDO UNDO BUTTON CLICKED ===');
-        console.log('Zundo undo button clicked - checking canUndo:', canUndo());
-
         const previousState = undo();
-        console.log('Zundo undo returned:', previousState?.id);
-
         if (!previousState) {
-            console.log('Zundo undo returned undefined - no history available');
+            // No history available
         }
-
-        console.log('=== ZUNDO UNDO BUTTON HANDLER END ===');
     };
 
     const handleRedo = () => {
-        console.log('=== ZUNDO REDO BUTTON CLICKED ===');
-        console.log('Zundo redo button clicked - checking canRedo:', canRedo());
-
         const nextState = redo();
-        console.log('Zundo redo returned:', nextState?.id);
-
         if (!nextState) {
-            console.log('Zundo redo returned undefined - no forward history available');
+            // No forward history available
         }
-
-        console.log('=== ZUNDO REDO BUTTON HANDLER END ===');
     };
 
     return (

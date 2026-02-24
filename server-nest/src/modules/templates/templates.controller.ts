@@ -1,13 +1,14 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, Req, Res } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { TemplatesService } from './templates.service';
 import { CreateTemplateDto } from './dto/create-template.dto';
 import { UpdateTemplateDto } from './dto/update-template.dto';
+import { Request, Response } from 'express';
 
 @ApiTags('templates')
 @Controller('templates')
 export class TemplatesController {
-  constructor(private readonly templatesService: TemplatesService) {}
+  constructor(private readonly templatesService: TemplatesService) { }
 
   @Get()
   @ApiOperation({ summary: 'Get all templates' })
@@ -53,5 +54,33 @@ export class TemplatesController {
   @ApiResponse({ status: 404, description: 'Template not found' })
   remove(@Param('id') id: string) {
     return this.templatesService.remove(id);
+  }
+
+  // Legacy endpoints for compatibility with server API
+  @Get('v1/template')
+  @ApiOperation({ summary: 'Get template by store (legacy endpoint)' })
+  @ApiResponse({ status: 200, description: 'Returns template for the store' })
+  async getTemplateByStore(@Req() req: Request, @Res() res: Response) {
+    try {
+      const host = req.headers.host;
+      const template = await this.templatesService.getTemplateByStore(host);
+      res.json({ data: template });
+    } catch (e) {
+      console.error('API Error:', e);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  @Get('v1/list')
+  @ApiOperation({ summary: 'List all templates (legacy endpoint)' })
+  @ApiResponse({ status: 200, description: 'Returns all templates' })
+  async listTemplates(@Res() res: Response) {
+    try {
+      const templates = await this.templatesService.findAll();
+      res.json({ data: templates });
+    } catch (e) {
+      console.error('Database Error:', e);
+      res.status(500).json({ error: 'Database Error' });
+    }
   }
 }

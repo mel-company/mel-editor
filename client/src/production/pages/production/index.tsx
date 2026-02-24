@@ -13,13 +13,15 @@ const ProductionPage = () => {
     const [currentPageId, setCurrentPageId] = useState<string>("");
 
     useEffect(() => {
+        const url = import.meta.env.VITE_EDITOR_API_URL
+
         const fetchData = async () => {
             try {
                 const [pagesResult, settingsResult, productsResult, categoriesResult] = await Promise.all([
                     fetchPublishedStoreData("editor-pages-storage"),
                     fetchPublishedStoreData("editor-store-settings-storage"),
-                    fetch("/api/v1/products").then(res => res.json()),
-                    fetch("/api/v1/categories").then(res => res.json())
+                    fetch(`${url}/products`).then(res => res.json()),
+                    fetch(`${url}/categories`).then(res => res.json())
                 ]);
 
                 // Parse the Zustand persist structure

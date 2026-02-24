@@ -49,52 +49,53 @@ export const useR2Upload = ({
             // Upload via server (server handles R2 or local storage)
             const formData = new FormData();
             formData.append('file', file);
+            const url = import.meta.env.VITE_EDITOR_API_URL + '/upload';
 
-            fetch('/api/v1/upload', {
+            fetch(url, {
                 method: 'POST',
                 body: formData,
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                if (!data.success) {
-                    throw new Error('Upload failed');
-                }
-                return data.fileUrl;
-            })
-            .then((fileUrl) => {
-                const newFile: FileType = {
-                    id: crypto.randomUUID(),
-                    name: file.name,
-                    url: fileUrl,
-                    base64Content: undefined, // Don't store base64 for R2 uploads
-                };
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    if (!data.success) {
+                        throw new Error('Upload failed');
+                    }
+                    return data.fileUrl;
+                })
+                .then((fileUrl) => {
+                    const newFile: FileType = {
+                        id: crypto.randomUUID(),
+                        name: file.name,
+                        url: fileUrl,
+                        base64Content: undefined, // Don't store base64 for R2 uploads
+                    };
 
-                setUploadState(prev => ({
-                    ...prev,
-                    file: newFile,
-                    isLoading: false,
-                    uploadProgress: 100,
-                }));
+                    setUploadState(prev => ({
+                        ...prev,
+                        file: newFile,
+                        isLoading: false,
+                        uploadProgress: 100,
+                    }));
 
-                if (onUpload) {
-                    onUpload(newFile);
-                }
+                    if (onUpload) {
+                        onUpload(newFile);
+                    }
 
-                resolve(newFile);
-            })
-            .catch(error => {
-                console.error('R2 Upload error:', error);
-                setUploadState(prev => ({
-                    ...prev,
-                    isLoading: false,
-                    error: error.message || 'Upload failed',
-                    uploadProgress: 0,
-                }));
-                reject(error);
-            });
+                    resolve(newFile);
+                })
+                .catch(error => {
+                    console.error('R2 Upload error:', error);
+                    setUploadState(prev => ({
+                        ...prev,
+                        isLoading: false,
+                        error: error.message || 'Upload failed',
+                        uploadProgress: 0,
+                    }));
+                    reject(error);
+                });
         });
     }, [maxSizeMB, acceptedTypes, onUpload]);
 

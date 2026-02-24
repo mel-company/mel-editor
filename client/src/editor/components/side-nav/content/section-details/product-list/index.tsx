@@ -1,9 +1,27 @@
 import { ImageIcon } from "lucide-react";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
-import { ProductType } from "../../../../../../types";
+import { ProductType } from "../../../../../../shared/types";
+import { useEffect, useState } from "react";
 
 const EditorProductList = () => {
   const { option } = useSectionDetails();
+
+  const [products, setProducts] = useState<ProductType[]>([])
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_EDITOR_API_URL}/products`)
+      const data = await res.json()
+      setProducts(data)
+    } catch (error) {
+      console.error("Failed to fetch products:", error)
+    }
+  }
+
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
 
   if (!option?.products?.length) return null;
 

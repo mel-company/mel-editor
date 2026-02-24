@@ -146,6 +146,17 @@ registry["our-story:3"] = {
     component: lazy(() => import("@templates/sections/our-story/components").then(m => ({ default: m.OurStorySection3 }))),
 };
 
+// Our Story Sections (camelCase alias)
+registry["ourStory:1"] = {
+    component: lazy(() => import("@templates/sections/our-story/components").then(m => ({ default: m.OurStorySection1 }))),
+};
+registry["ourStory:2"] = {
+    component: lazy(() => import("@templates/sections/our-story/components").then(m => ({ default: m.OurStorySection2 }))),
+};
+registry["ourStory:3"] = {
+    component: lazy(() => import("@templates/sections/our-story/components").then(m => ({ default: m.OurStorySection3 }))),
+};
+
 
 // Legacy/Static Registration Handling
 // All sections are now lazy loaded!

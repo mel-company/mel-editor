@@ -16,7 +16,7 @@ export default function AuthTokenPage() {
     })
 
     const categories = await fetchAPI({
-      endPoint: `/store/categories`,
+      endPoint: `/category`,
       method: 'GET'
     })
 

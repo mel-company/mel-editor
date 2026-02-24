@@ -62,7 +62,7 @@ export const isAuthenticated = (): boolean => {
  * Validate store token by calling backend API
  */
 export const validateStoreToken = async (token: string, backendUrl?: string): Promise<AuthData> => {
-  const apiUrl = backendUrl || import.meta.env.VITE_API_BASE_URL || 'https://api.mel.iq/api/v1';
+  const apiUrl = backendUrl || import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1';
 
   const response = await fetch(`${apiUrl}/auth/refresh-dual`, {
     method: 'POST',

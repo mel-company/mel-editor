@@ -1,65 +1,32 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../shared/services/prisma.service';
-import { CreateStoreDto } from './dto/create-store.dto';
-import { UpdateStoreDto } from './dto/update-store.dto';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class StoresService {
-  constructor(private readonly prisma: PrismaService) {}
 
-  async findAll() {
-    return this.prisma.store.findMany();
-  }
+  resolveStore(host: string): string {
+    // Extract subdomain from host or return default
+    if (!host) return 'demo';
 
-  async findOne(storeId: string) {
-    const store = await this.prisma.store.findUnique({
-      where: { storeId },
-    });
-
-    if (!store) {
-      throw new NotFoundException(`Store with ID ${storeId} not found`);
+    const parts = host.split('.');
+    if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'localhost') {
+      return parts[0];
     }
 
-    return store;
+    return 'demo';
   }
 
-  async findBySubdomain(subdomain: string) {
-    const store = await this.prisma.store.findUnique({
-      where: { subdomain },
-    });
+  // Simple in-memory storage for demo purposes
+  private storage: Map<string, any> = new Map();
 
-    if (!store) {
-      throw new NotFoundException(`Store with subdomain ${subdomain} not found`);
-    }
-
-    return store;
+  async getStoreData(key: string, host: string): Promise<any> {
+    const subdomain = this.resolveStore(host);
+    const storageKey = `${subdomain}:${key}`;
+    return this.storage.get(storageKey) || null;
   }
 
-  async create(createStoreDto: CreateStoreDto) {
-    return this.prisma.store.create({
-      data: createStoreDto,
-    });
-  }
-
-  async update(storeId: string, updateStoreDto: UpdateStoreDto) {
-    try {
-      return await this.prisma.store.update({
-        where: { storeId },
-        data: updateStoreDto,
-      });
-    } catch (error) {
-      throw new NotFoundException(`Store with ID ${storeId} not found`);
-    }
-  }
-
-  async remove(storeId: string) {
-    try {
-      await this.prisma.store.delete({
-        where: { storeId },
-      });
-      return { message: 'Store deleted successfully' };
-    } catch (error) {
-      throw new NotFoundException(`Store with ID ${storeId} not found`);
-    }
+  async setStoreData(key: string, value: any, host: string): Promise<void> {
+    const subdomain = this.resolveStore(host);
+    const storageKey = `${subdomain}:${key}`;
+    this.storage.set(storageKey, value);
   }
 }

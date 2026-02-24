@@ -20,7 +20,7 @@ export const fetchAPI = async ({
 
     const { storeUserToken } = credentials
 
-    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'https://api.mel.iq/api/v1';
+    const apiUrl = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1';
 
 
 
