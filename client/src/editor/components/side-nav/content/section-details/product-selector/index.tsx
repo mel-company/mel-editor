@@ -1,10 +1,10 @@
-import { useState } from "react";
-import React from "react";
-import { ProductType } from "../../../../../../types";
+import { useEffect, useState } from "react";
+import { ProductType, SectionOptionType } from "../../../../../../shared/types";
 import { mockProducts } from "@templates/data/products";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 import classNames from "classnames";
+import { imageLink } from "@/shared/api/imageLink";
 
 const ProductSelector = () => {
   const { section, option, setSection } = useSectionDetails();
@@ -13,6 +13,26 @@ const ProductSelector = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
+  const [products, setProducts] = useState<ProductType[]>(mockProducts)
+
+  const fetchProducts = async () => {
+    try {
+      const products = await fetch(`${import.meta.env.VITE_API_BASE_URL}/product/by-store-domain/cursor?store=azyaa&limit=20`)
+      const result = await products.json()
+      console.log(result)
+      console.log("productsx")
+      console.log(result?.data)
+      setProducts(result?.data)
+    } catch (error) {
+      console.error("Failed to fetch products:", error)
+    }
+  }
+
+
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
   if (!section || !option) return null;
 
   // Get current selected products
@@ -20,11 +40,11 @@ const ProductSelector = () => {
   const selectedProducts: ProductType[] = option.products || [];
 
   // Filter products
-  let filteredProducts = mockProducts;
+  let filteredProducts = products;
   if (filter === "discount") {
-    filteredProducts = mockProducts.filter((p) => p.discount > 0);
+    filteredProducts = products.filter((p) => p?.variants?.some((v: any) => v.price < p.price));
   } else if (filter === "category" && selectedCategory) {
-    filteredProducts = mockProducts.filter((p) => p.category === selectedCategory);
+    filteredProducts = products.filter((p) => p?.categories?.some((cat: any) => cat.name === selectedCategory));
   }
 
   // Apply search filter
@@ -33,25 +53,25 @@ const ProductSelector = () => {
       (p) =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.category?.toLowerCase().includes(searchTerm.toLowerCase())
+        p.categories?.some((cat: any) => cat.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }
 
   // Get unique categories
-  const categories = Array.from(new Set(mockProducts.map((p) => p.category)));
+  const categories = Array.from(new Set(products.flatMap((p) => p?.categories?.map((cat: any) => cat.name) || [])));
 
   const toggleProduct = (product: ProductType) => {
     const currentProducts: ProductType[] = option.products || [];
-    const isSelected = selectedProductIds.includes(product.id);
+    const isSelected = selectedProductIds.includes(product?.id);
 
     let newProducts: ProductType[];
     if (isSelected) {
-      newProducts = currentProducts.filter((p) => p.id !== product.id);
+      newProducts = currentProducts.filter((p) => p.id !== product?.id);
     } else {
       newProducts = [...currentProducts, product];
     }
 
-    const newOptions = section.options?.map((op) => {
+    const newOptions = section.options?.map((op: SectionOptionType) => {
       if (op.id === section.section_id) {
         return { ...op, products: newProducts };
       }
@@ -67,18 +87,18 @@ const ProductSelector = () => {
       <h3 className="text-sm font-semibold text-slate-700">المنتجات</h3>
 
       {/* Selected Products List - Pill Style */}
-      <div className="flex flex-col gap-2">
+      {!showSelector && <div className="flex flex-col gap-2">
         {selectedProducts.map((product: ProductType) => (
           <div
-            key={product.id}
-            className="flex items-center gap-3 px-3 py-2 bg-slate-50 rounded-full"
+            key={product?.id}
+            className="flex items-center gap-3 px-3 py-2 bg-slate-50 rounded-xl w-full"
           >
             {/* Product Thumbnail */}
             <div className="w-10 h-10 bg-slate-200 rounded-lg overflow-hidden shrink-0">
-              {product.thumbnail?.url ? (
+              {imageLink(product?.image) ? (
                 <img
-                  src={product.thumbnail.url}
-                  alt={product.name}
+                  src={imageLink(product?.image)}
+                  alt={product?.title}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -88,9 +108,15 @@ const ProductSelector = () => {
               )}
             </div>
             {/* Product Name */}
-            <p className="flex-1 text-sm font-medium text-slate-700 truncate">
-              {product.name}
-            </p>
+            <div className="space-y-1">
+              <p className="flex-1 text-xs font-medium text-slate-700 line-clamp-1">
+                {product?.title}
+              </p>
+              <p className="flex-1 text-xs font-medium text-slate-500">
+                {product?.price}
+              </p></div>
+
+
           </div>
         ))}
 
@@ -101,17 +127,11 @@ const ProductSelector = () => {
           </p>
         )}
       </div>
+      }
 
-      {/* Add/Remove Button */}
-      <button
-        onClick={() => setShowSelector(!showSelector)}
-        className="w-full py-2.5 text-sm font-medium text-blue-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
-      >
-        اضافة | ازالة
-      </button>
 
       {showSelector && (
-        <div className="border border-slate-200 rounded-lg p-4 bg-white shadow-sm">
+        <div className="">
           {/* Filters */}
           <div className="flex flex-col gap-3 mb-4">
             <div className="flex gap-2 flex-wrap">
@@ -125,7 +145,7 @@ const ProductSelector = () => {
                   }
                 )}
               >
-                الكل ({mockProducts.length})
+                الكل ({products.length})
               </button>
               <button
                 onClick={() => setFilter("discount")}
@@ -137,7 +157,7 @@ const ProductSelector = () => {
                   }
                 )}
               >
-                مع خصم ({mockProducts.filter((p) => p.discount > 0).length})
+                مع خصم ({products.filter((p) => p?.variants?.some((v: any) => v.price < p.price)).length})
               </button>
               <button
                 onClick={() => setFilter("category")}
@@ -162,7 +182,7 @@ const ProductSelector = () => {
                 <option value="">اختر التصنيف</option>
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
-                    {cat} ({mockProducts.filter((p) => p.category === cat).length})
+                    {cat} ({products.filter((p) => p?.category === cat).length})
                   </option>
                 ))}
               </select>
@@ -188,74 +208,62 @@ const ProductSelector = () => {
             )}
           </div>
 
-          {/* Product List - Grid Layout */}
-          <div className="max-h-96 overflow-y-auto">
+          {/* Product List - Enhanced Grid Layout */}
+          <div className="max-h-96 overflow-y-auto space-y-2">
             {filteredProducts.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-sm text-slate-500">لا توجد منتجات</p>
+                <div className="w-16 h-16 mx-auto mb-3 bg-slate-100 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-slate-300 rounded"></div>
+                </div>
+                <p className="text-sm text-slate-500 font-medium">لا توجد منتجات</p>
+                <p className="text-xs text-slate-400 mt-1">جرب تغيير الفلتر أو البحث</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-2">
+              <div>
                 {filteredProducts.map((product) => {
-                  const isSelected = selectedProductIds.includes(product.id);
+                  const isSelected = selectedProductIds.includes(product?.id);
                   return (
                     <div
-                      key={product.id}
+                      key={product?.id}
                       onClick={() => toggleProduct(product)}
-                      className={classNames(
-                        "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
-                        {
-                          "bg-blue-50 border-blue-400 shadow-sm": isSelected,
-                          "bg-white border-slate-200 hover:border-blue-300 hover:bg-blue-50": !isSelected,
-                        }
-                      )}
+                      className={"group hover:bg-slate-50 select-none py-3 border-b relative overflow-hidden cursor-pointer transition-all duration-200"}
                     >
-                      <div className="w-16 h-16 border-2 border-slate-200 bg-slate-100 rounded-lg overflow-hidden shrink-0">
-                        {product.thumbnail?.url ? (
-                          <img
-                            src={product.thumbnail.url}
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
-                            IMG
+                      <div className="flex items-center gap-1">
+                        {/* Compact Product Image */}
+                        <div className="relative">
+                          <div className="w-10 h-10 relative border border-slate-200 bg-slate-100 rounded-xl overflow-hidden shrink-0 group-hover:border-blue-300 transition-colors">
+                            {isSelected && <SelectChecker />}  {imageLink(product?.image) ? (
+
+                              <img
+                                src={imageLink(product?.image)}
+                                alt={product?.title}
+                                className="w-full h-full object-cover"
+                              />
+
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-slate-400">
+                                <div className="w-5 h-5 bg-slate-300 rounded"></div>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-slate-900 mb-1 truncate">
-                          {product.name}
-                        </p>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-bold text-green-600">
-                            {product.price} ر.س
-                          </span>
-                          {product.discount > 0 && (
-                            <span className="text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded font-medium">
-                              خصم {product.discount}%
-                            </span>
+                          {product?.variants?.some((v: any) => v.price < product.price) && (
+                            <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold px-1 py-0.5 rounded-full shadow">
+                              خصم
+                            </div>
                           )}
-                          <span className="text-xs text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                            الكمية: {product.stock}
+                        </div>
+
+                        {/* Compact Product Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-slate-900 truncate mb-0.5">
+                            {product?.title}
+                          </p>
+                          <span className="text-xs text-slate-600">
+                            {product?.price}
                           </span>
                         </div>
-                        {product.category && (
-                          <p className="text-xs text-slate-500 mt-1">
-                            {product.category}
-                          </p>
-                        )}
-                      </div>
-                      <div
-                        className={classNames(
-                          "w-6 h-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all",
-                          {
-                            "bg-blue-600 border-blue-600 shadow-sm": isSelected,
-                            "border-slate-300 bg-white": !isSelected,
-                          }
-                        )}
-                      >
-                        {isSelected && <Check size={14} className="text-white" />}
+
+
                       </div>
                     </div>
                   );
@@ -263,6 +271,7 @@ const ProductSelector = () => {
               </div>
             )}
           </div>
+
 
           <div className="mt-4 pt-4 border-t border-slate-200 bg-blue-50 rounded-lg p-3">
             <div className="flex items-center justify-between">
@@ -272,8 +281,7 @@ const ProductSelector = () => {
               {selectedProductIds.length > 0 && (
                 <button
                   onClick={() => {
-                    // Clear all selections
-                    const newOptions = section.options?.map((op) => {
+                    const newOptions = section.options?.map((op: SectionOptionType) => {
                       if (op.id === section.section_id) {
                         return { ...op, products: [] };
                       }
@@ -290,8 +298,22 @@ const ProductSelector = () => {
           </div>
         </div>
       )}
+      <button
+        onClick={() => setShowSelector(!showSelector)}
+        className="w-full py-2.5 text-sm font-medium text-blue-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
+      >
+        {showSelector ? "حفظ المنتجات" : "تعديل المنتجات"}
+
+      </button>
+
     </div>
   );
 };
 
 export default ProductSelector;
+
+
+const SelectChecker = () =>
+  <div className={"bg-gradient-to-t from-blue-700/80 to-blue-600/5 w-full h-full absolute top-0 end-0 flex items-center justify-center shrink-0 transition-all"}>
+    <Check size={16} className="text-white" />
+  </div>

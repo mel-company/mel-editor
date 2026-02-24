@@ -1,11 +1,7 @@
 // Get API base URL from environment or use default
 const getApiBaseUrl = (): string => {
-    try {
-        const envUrl = import.meta.env?.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1';
-        return envUrl;
-    } catch {
-        return 'http://localhost:4000/api/v1';
-    }
+    const envUrl = import.meta.env?.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1';
+    return envUrl;
 };
 
 const API_BASE_URL = getApiBaseUrl();

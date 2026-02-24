@@ -61,13 +61,12 @@ export type FileType = {
 export type ProductType = {
   id?: string;
   name: string;
-  photos: FileType[];
-  thumbnail: FileType;
-  stock: number;
+  image: string;
   price: number;
-  discount: number;
-  description: string;
-  category: string;
+  variants: Array<{ id: string, name: string, price: number, image: string }>;
+  description?: string;
+  title: string;
+  categories?: { id: string, name: string; image: string }[]
 };
 
 export type SectionPropsType = {
