@@ -1,10 +1,9 @@
 import { TemplateType, ProductType, CategoryType } from "@/shared/types";
-import { categories_sections } from "../template/sections/categories";
-import { hero_sections } from "../template/sections/hero";
+import { categories_sections } from "../../sections/categories/data";
+import { hero_sections } from "../../sections/hero/data";
 import { navigation_sections } from "../../sections/navbar/data";
-import { recent_products_sections } from "../template/sections/recent-products";
-import { menu_sections } from "../template/sections/menu";
-import { footer_sections } from "../template/sections/footer";
+import { recent_products_sections } from "../../sections/recent-products/data";
+import { footer_sections } from "../../sections/footer/data";
 import { mockProducts } from "../products";
 
 // Mock data for templates
@@ -426,7 +425,7 @@ const restaurantMenuItems: ProductType[] = [
 ];
 
 const createMenuSection = (sectionId: string, title: string, products: ProductType[]) => {
-  const menuOption = menu_sections.find((m) => m.id === sectionId);
+  const menuOption = recent_products_sections.find((m) => m.id === sectionId);
   if (!menuOption) return null;
 
   return {
@@ -478,8 +477,8 @@ export const minimalRestaurantTemplate: TemplateType = {
       type: "recentProducts",
       view_all_link: "",
       options: [
-        ...menu_sections.filter((m) => m.id !== "1"),
-        createMenuSection("1", "قائمة الطعام", restaurantMenuItems.slice(0, 6)) || menu_sections[0],
+        ...recent_products_sections.filter((m) => m.id !== "1"),
+        createMenuSection("1", "قائمة الطعام", restaurantMenuItems.slice(0, 6)) || recent_products_sections[0],
       ],
       editable: true,
     },
@@ -535,8 +534,8 @@ export const modernRestaurantTemplate: TemplateType = {
       type: "recentProducts",
       view_all_link: "",
       options: [
-        ...menu_sections.filter((m) => m.id !== "2"),
-        createMenuSection("2", "قائمة الطعام", restaurantMenuItems) || menu_sections[1],
+        ...recent_products_sections.filter((m) => m.id !== "2"),
+        createMenuSection("2", "قائمة الطعام", restaurantMenuItems) || recent_products_sections[1],
       ],
       editable: true,
     },
@@ -610,8 +609,8 @@ export const elegantRestaurantTemplate: TemplateType = {
       type: "recentProducts",
       view_all_link: "",
       options: [
-        ...menu_sections.filter((m) => m.id !== "3"),
-        createMenuSection("3", "قائمة الطعام", restaurantMenuItems) || menu_sections[2],
+        ...recent_products_sections.filter((m) => m.id !== "3"),
+        createMenuSection("3", "قائمة الطعام", restaurantMenuItems) || recent_products_sections[2],
       ],
       editable: true,
     },
@@ -786,8 +785,8 @@ export const classicRestaurantTemplate: TemplateType = {
       type: "recentProducts",
       view_all_link: "",
       options: [
-        ...menu_sections.filter((m) => m.id !== "1"),
-        createMenuSection("1", "قائمة الطعام", restaurantMenuItems) || menu_sections[0],
+        ...recent_products_sections.filter((m) => m.id !== "1"),
+        createMenuSection("1", "قائمة الطعام", restaurantMenuItems) || recent_products_sections[0],
       ],
       editable: true,
     },
@@ -860,8 +859,8 @@ export const premiumRestaurantTemplate: TemplateType = {
       type: "recentProducts",
       view_all_link: "",
       options: [
-        ...menu_sections.filter((m) => m.id !== "3"),
-        createMenuSection("3", "قائمة الطعام", restaurantMenuItems) || menu_sections[2],
+        ...recent_products_sections.filter((m) => m.id !== "3"),
+        createMenuSection("3", "قائمة الطعام", restaurantMenuItems) || recent_products_sections[2],
       ],
       editable: true,
     },

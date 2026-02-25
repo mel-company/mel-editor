@@ -49,7 +49,7 @@ export const useR2Upload = ({
             // Upload via server (server handles R2 or local storage)
             const formData = new FormData();
             formData.append('file', file);
-            const url = import.meta.env.VITE_EDITOR_API_URL + '/upload';
+            const url = (import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1') + '/upload';
 
             fetch(url, {
                 method: 'POST',

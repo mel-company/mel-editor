@@ -7,7 +7,7 @@ const COMPONENT_IMPORTS: Record<string, string> = {
     "HeroSection4": "@templates/sections/hero/components",
     "HeroSection5": "@templates/sections/hero/components",
     "HeroCarousel": "@templates/sections/hero/components",
-    "Footer1": "@templates/data/template/sections/footer", // Mock path
+    "Footer1": "@templates/sections/footer/components", // Mock path
     // Add other components as needed
 };
 

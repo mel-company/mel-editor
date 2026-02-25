@@ -76,7 +76,7 @@ export const usePageTemplateStore = create<PageTemplateStore>()(
 
         if (!selection) return;
 
-        const url = import.meta.env.VITE_EDITOR_API_URL
+        const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
         try {
           await fetch(`${url}/page-templates/${pageId}`, {
@@ -92,7 +92,7 @@ export const usePageTemplateStore = create<PageTemplateStore>()(
       },
 
       loadFromServer: async () => {
-        const url = import.meta.env.VITE_EDITOR_API_URL
+        const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
         try {
           const response = await fetch(`${url}/page-templates`);

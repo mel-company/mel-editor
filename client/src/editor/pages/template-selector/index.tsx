@@ -17,13 +17,12 @@ import { mockProducts } from "@templates/data/products";
 
 // Convert API templates to TemplateType
 
-import { hero_sections } from "@templates/data/template/sections/hero";
-import { menu_sections } from "@templates/data/template/sections/menu";
-import { categories_sections } from "@templates/data/template/sections/categories";
-import { recent_products_sections } from "@templates/data/template/sections/recent-products";
-import { footer_sections } from "@templates/data/template/sections/footer";
-import { our_story_sections } from "@templates/data/template/sections/our-story";
-import { contact_sections } from "@templates/data/template/sections/contact";
+import { hero_sections } from "@templates/sections/hero/data";
+import { categories_sections } from "@templates/sections/categories/data";
+import { recent_products_sections } from "@templates/sections/recent-products/data";
+import { footer_sections } from "@templates/sections/footer/data";
+import { our_story_sections } from "@templates/sections/our-story/data";
+import { contact_sections } from "@templates/sections/contact/data";
 
 // Sample data for pages
 const sampleProducts = mockProducts.slice(0, 8);
@@ -468,10 +467,7 @@ const TemplateSelector = () => {
       if (type === "hero") {
         options = hero_sections;
       } else if (type === "recentProducts") {
-        options =
-          storeSettings.type === "restaurant"
-            ? menu_sections
-            : recent_products_sections;
+        options = recent_products_sections;
       } else if (type === "categories") {
         options = categories_sections;
       } else if (type === "footer") {

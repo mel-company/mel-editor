@@ -13,7 +13,7 @@ const ProductionPage = () => {
     const [currentPageId, setCurrentPageId] = useState<string>("");
 
     useEffect(() => {
-        const url = import.meta.env.VITE_EDITOR_API_URL
+        const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
         const fetchData = async () => {
             try {

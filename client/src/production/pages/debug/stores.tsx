@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 const DebugStoresPage = () => {
     const [stores, setStores] = useState<any[]>([]);
     const [error, setError] = useState("");
-    const url = import.meta.env.VITE_EDITOR_API_URL
+    const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
     useEffect(() => {
         fetch(`${url}/debug/stores`)

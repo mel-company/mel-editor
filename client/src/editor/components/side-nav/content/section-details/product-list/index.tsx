@@ -1,6 +1,7 @@
 import { ImageIcon } from "lucide-react";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { ProductType } from "../../../../../../shared/types";
+import { imageLink } from "@/shared/api/imageLink";
 
 const EditorProductList = () => {
   const { option } = useSectionDetails();
@@ -20,9 +21,9 @@ const EditorProductList = () => {
           <p className="sub-title">{product.name}</p>
           <div className="w-9 h-8 border border-slate-200 bg-slate-100 max-h-9 max-w-9 flex items-center justify-center aspect-square rounded-md overflow-hidden">
             <>
-              {product.thumbnail ? (
+              {product.image ? (
                 <img
-                  src={product.thumbnail.url}
+                  src={imageLink(product.image)}
                   alt="Preview"
                   className="h-full w-full object-cover"
                 />

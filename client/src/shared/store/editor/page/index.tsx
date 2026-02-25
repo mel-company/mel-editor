@@ -3,14 +3,13 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import createDbStorage from "../../../utils/db-storage";
 import { PageType } from "../../../types";
 import { navigation_sections } from "@templates/sections/navbar/data";
-import { hero_sections } from "@templates/data/template/sections/hero";
-import { categories_sections } from "@templates/data/template/sections/categories";
-import { recent_products_sections } from "@templates/data/template/sections/recent-products";
-import { menu_sections } from "@templates/data/template/sections/menu";
-import { our_story_sections } from "@templates/data/template/sections/our-story";
-import { contact_sections } from "@templates/data/template/sections/contact";
+import { hero_sections } from "@templates/sections/hero/data";
+import { categories_sections } from "@templates/sections/categories/data";
+import { recent_products_sections } from "@templates/sections/recent-products/data";
+import { our_story_sections } from "@templates/sections/our-story/data";
+import { contact_sections } from "@templates/sections/contact/data";
 import { resolveComponent } from "../../../utils/component-registry";
-import { footer_sections } from "@templates/data/template/sections/footer";
+import { footer_sections } from "@templates/sections/footer/data";
 import { mockTemplate } from "@templates/data/template";
 
 // Map section types to their section definitions
@@ -22,7 +21,7 @@ const sectionTypesMap: Record<string, any[]> = {
   categoryGrid: categories_sections, // categoryGrid uses categories_sections
   recentProducts: recent_products_sections,
   productGrid: recent_products_sections, // productGrid uses recent_products_sections
-  menu: menu_sections,
+  menu: recent_products_sections, // menu uses recent_products_sections as fallback
   // Add support for other section types from API
   featuresGrid: categories_sections, // featuresGrid uses categories_sections
   testimonialSlider: contact_sections, // testimonialSlider uses contact_sections

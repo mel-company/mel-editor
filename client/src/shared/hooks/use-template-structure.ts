@@ -28,7 +28,7 @@ export const useTemplateStructure = (isEditor = false) => {
     useEffect(() => {
         if (!isSSR) {
             const fetchGlobalData = async () => {
-                const url = import.meta.env.VITE_EDITOR_API_URL
+                const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
                 try {
                     const [pRes, cRes] = await Promise.all([

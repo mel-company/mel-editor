@@ -1,12 +1,11 @@
 import { TemplateType, PageType, SectionType } from "../types";
 import { ApiTemplateResponse } from "../services/api";
-import { hero_sections } from "@templates/data/template/sections/hero";
-import { menu_sections } from "@templates/data/template/sections/menu";
-import { categories_sections } from "@templates/data/template/sections/categories";
-import { recent_products_sections } from "@templates/data/template/sections/recent-products";
-import { footer_sections } from "@templates/data/template/sections/footer";
-import { our_story_sections } from "@templates/data/template/sections/our-story";
-import { contact_sections } from "@templates/data/template/sections/contact";
+import { hero_sections } from "@templates/sections/hero/data";
+import { categories_sections } from "@templates/sections/categories/data";
+import { recent_products_sections } from "@templates/sections/recent-products/data";
+import { footer_sections } from "@templates/sections/footer/data";
+import { our_story_sections } from "@templates/sections/our-story/data";
+import { contact_sections } from "@templates/sections/contact/data";
 import { navigation_sections } from "@templates/sections/navbar/data";
 
 /**

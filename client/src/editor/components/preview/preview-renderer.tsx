@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import React from "react";
 import { SectionType, StoreType, PageType } from "../../../shared/types";
 import { Navigation1 } from "@templates/sections/navbar/components";
-import { footer_sections } from "@templates/data/template/sections/footer";
+import { footer_sections } from "@templates/sections/footer/data";
 import { mockTemplate } from "@templates/data/template";
 import { getSectionProps } from "../../../shared/utils/section-props";
 

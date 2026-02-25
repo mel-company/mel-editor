@@ -1,6 +1,6 @@
 
 export const generateStyles = async () => {
-    const url = import.meta.env.VITE_EDITOR_API_URL
+    const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
     try {
         const response = await fetch(`${url}/generate-styles`, {
@@ -17,7 +17,7 @@ export const generateStyles = async () => {
 };
 
 export const fetchPublishedStoreData = async (key: string) => {
-    const url = import.meta.env.VITE_EDITOR_API_URL
+    const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
     try {
         const response = await fetch(`${url}/published/store/${key}`);
@@ -33,7 +33,7 @@ export const fetchPublishedStoreData = async (key: string) => {
 };
 
 export const publishStore = async () => {
-    const url = import.meta.env.VITE_EDITOR_API_URL
+    const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
     try {
         const response = await fetch(`${url}/publish`, {

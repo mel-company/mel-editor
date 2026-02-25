@@ -15,12 +15,12 @@ import { TemplateType, PageType } from "@/shared/types";
 import { TemplateBuilder, PageBuilder, SectionFactory } from "@templates/shared";
 
 // Import section definitions
-import { categories_sections } from "./sections/categories";
-import { recent_products_sections } from "./sections/recent-products";
-import { footer_sections } from "./sections/footer";
-import { our_story_sections } from "./sections/our-story";
-import { contact_sections } from "./sections/contact";
-import { hero_sections } from "./sections/hero";
+import { categories_sections } from "../../sections/categories/data";
+import { recent_products_sections } from "../../sections/recent-products/data";
+import { footer_sections } from "../../sections/footer/data";
+import { our_story_sections } from "../../sections/our-story/data";
+import { contact_sections } from "../../sections/contact/data";
+import { hero_sections } from "../../sections/hero/data";
 import { navigation_sections } from "../../sections/navbar/data";
 
 /**
