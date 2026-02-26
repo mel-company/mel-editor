@@ -37,7 +37,6 @@ export default function AuthTokenPage() {
 
       try {
         const authData = await validateStoreToken(token)
-
         // Save the new token to session storage
         saveAuthData(authData)
 

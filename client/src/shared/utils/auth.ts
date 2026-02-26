@@ -2,6 +2,8 @@
  * Authentication utilities for managing store tokens and user data
  */
 
+import { fetchAPI } from "../api/fetchy";
+
 export interface AuthData {
   storeUserToken: string;
   storeUsername: string;
@@ -61,28 +63,24 @@ export const isAuthenticated = (): boolean => {
 /**
  * Validate store token by calling backend API
  */
-export const validateStoreToken = async (token: string, backendUrl?: string): Promise<AuthData> => {
-  const apiUrl = backendUrl || import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1';
+export const validateStoreToken = async (token: string): Promise<AuthData> => {
 
-  const response = await fetch(`${apiUrl}/auth/refresh-dual`, {
+  const response = await fetchAPI({
+    endPoint: `/auth/refresh-dual`,
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
       storeUserToken: token
-    })
+    }),
+    ignoreAuth: true
   });
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
 
-  const data = await response.json();
-
-  if (!data.storeUserToken || !data.storeUsername) {
+  if (!response.storeUserToken || !response.storeUsername) {
     throw new Error('Invalid response from server');
   }
 
-  return data;
+  return response;
 };

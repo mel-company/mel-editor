@@ -1,4 +1,3 @@
-import React from "react";
 
 // Our Story 1: Text with Image
 export const OurStorySection1 = ({
@@ -33,7 +32,7 @@ export const OurStorySection1 = ({
                     </div>
                     <div className="order-1 md:order-2">
                         {title && (
-                            <h2 
+                            <h2
                                 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-4 sm:mb-6"
                                 data-type="text"
                                 data-name="title"
@@ -71,7 +70,7 @@ export const OurStorySection2 = ({
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
             <div className="max-w-4xl mx-auto text-center">
                 {title && (
-                    <h2 
+                    <h2
                         className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-6 sm:mb-8"
                         data-type="text"
                         data-name="title"
@@ -111,7 +110,7 @@ export const OurStorySection3 = ({
         <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20">
             <div className="max-w-5xl mx-auto">
                 {title && (
-                    <h2 
+                    <h2
                         className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-8 sm:mb-12 text-center"
                         data-type="text"
                         data-name="title"

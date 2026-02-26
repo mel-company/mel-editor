@@ -220,6 +220,7 @@ export const saveTemplate = async (templateData: {
     }
 };
 
+import { fetchAPI } from '../api/fetchy';
 import { ProductType, CategoryType } from '../types';
 
 export interface ProductsResponse {
@@ -267,12 +268,8 @@ export const fetchProducts = async (): Promise<ProductType[]> => {
  */
 export const fetchCategories = async (): Promise<CategoryType[]> => {
     try {
-        const response = await fetch(`${API_BASE_URL}/categories`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-            },
+        const response = await fetchAPI({
+            endPoint: "/category",
         });
 
         if (!response.ok) {
