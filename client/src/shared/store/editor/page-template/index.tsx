@@ -108,7 +108,16 @@ export const usePageTemplateStore = create<PageTemplateStore>()(
     }),
     {
       name: "editor-page-template-storage",
-      storage: createJSONStorage(() => createDbStorage()),
+      storage: createJSONStorage(() => {
+        if (typeof window === "undefined") {
+          return {
+            getItem: () => Promise.resolve(null),
+            setItem: () => Promise.resolve(),
+            removeItem: () => Promise.resolve(),
+          };
+        }
+        return createDbStorage();
+      }),
     }
   )
 );

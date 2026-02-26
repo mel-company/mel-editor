@@ -45,22 +45,22 @@ export const useZundoHistoryStore = create<ZundoHistoryState>()(
 
 // Helper hook to access temporal methods with reactive state
 export const useZundoTemporal = () => {
-  // Check if we're in a browser environment
-  const isClient = typeof window !== 'undefined';
+  const [isClient, setIsClient] = useState(false);
+  const [pastStatesLength, setPastStatesLength] = useState(0);
+  const [futureStatesLength, setFutureStatesLength] = useState(0);
+  const [temporalApi, setTemporalApi] = useState<any>(null);
 
-  // Initialize state with current temporal state values
-  const initialPastLength = isClient && useZundoHistoryStore.temporal
-    ? useZundoHistoryStore.temporal.getState().pastStates.length
-    : 0;
-  const initialFutureLength = isClient && useZundoHistoryStore.temporal
-    ? useZundoHistoryStore.temporal.getState().futureStates.length
-    : 0;
+  // Set client flag and initialize state on mount
+  useEffect(() => {
+    setIsClient(true);
 
-  // Use state to track history lengths for reactive updates
-  const [pastStatesLength, setPastStatesLength] = useState(initialPastLength);
-  const [futureStatesLength, setFutureStatesLength] = useState(initialFutureLength);
-
-  const temporalApi = isClient ? (useZundoHistoryStore.temporal?.getState() || null) : null;
+    if (useZundoHistoryStore.temporal) {
+      const state = useZundoHistoryStore.temporal.getState();
+      setPastStatesLength(state.pastStates.length);
+      setFutureStatesLength(state.futureStates.length);
+      setTemporalApi(state);
+    }
+  }, []);
 
   // Subscribe to temporal state changes
   useEffect(() => {

@@ -2,6 +2,7 @@ import { StateStorage } from "zustand/middleware";
 
 const createDbStorage = (): StateStorage => ({
     getItem: async (name: string): Promise<string | null> => {
+        // Always return null on server to prevent hydration issues
         if (typeof window === "undefined") return null;
         const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
         try {
@@ -33,6 +34,7 @@ const createDbStorage = (): StateStorage => ({
         }
     },
     setItem: async (name: string, value: string): Promise<void> => {
+        // Always return on server to prevent hydration issues
         if (typeof window === "undefined") return;
         const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
         try {

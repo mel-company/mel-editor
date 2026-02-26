@@ -13,35 +13,37 @@ const fullSSRData: SSRData = (window as any).__SSR_DATA__ || { products: [], cat
 
 const { templateConfig, ...ssrData } = fullSSRData;
 
-// Hydrate stores immediately if config is present
-if (templateConfig) {
-    if (templateConfig.pages) {
-        usePageStore.getState().setPages(templateConfig.pages);
-
-        if (templateConfig.pages.length > 0) {
-            // Set current page based on URL or default to first page
-            const urlPageId = window.location.pathname.split('/').pop();
-            const isValidUrlPageId = urlPageId && templateConfig.pages.some((p: any) => p.id === urlPageId);
-
-            if (isValidUrlPageId && urlPageId) {
-                usePageStore.getState().setCurrentPageId(urlPageId);
-            } else {
-                const firstPageId = templateConfig.pages[0].id;
-                usePageStore.getState().setCurrentPageId(firstPageId);
-            }
-        }
-    } else {
-        console.warn("Template config exists but no pages found");
-    }
-    if (templateConfig.storeSettings) {
-        useStoreSettingsStore.getState().setStoreSettings(templateConfig.storeSettings);
-    }
-} else {
-    console.warn("No template config found in SSR data");
-}
-
 // Remove SSR data from window after reading
 delete (window as any).__SSR_DATA__;
+
+// Defer store updates until after hydration to prevent hydration mismatch
+setTimeout(() => {
+    if (templateConfig) {
+        if (templateConfig.pages) {
+            usePageStore.getState().setPages(templateConfig.pages);
+
+            if (templateConfig.pages.length > 0) {
+                // Set current page based on URL or default to first page
+                const urlPageId = window.location.pathname.split('/').pop();
+                const isValidUrlPageId = urlPageId && templateConfig.pages.some((p: any) => p.id === urlPageId);
+
+                if (isValidUrlPageId && urlPageId) {
+                    usePageStore.getState().setCurrentPageId(urlPageId);
+                } else {
+                    const firstPageId = templateConfig.pages[0].id;
+                    usePageStore.getState().setCurrentPageId(firstPageId);
+                }
+            }
+        } else {
+            console.warn("Template config exists but no pages found");
+        }
+        if (templateConfig.storeSettings) {
+            useStoreSettingsStore.getState().setStoreSettings(templateConfig.storeSettings);
+        }
+    } else {
+        console.warn("No template config found in SSR data");
+    }
+}, 0);
 
 hydrateRoot(
     document.getElementById('root')!,

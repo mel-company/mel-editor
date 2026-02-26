@@ -53,9 +53,6 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
     }));
   }, [detectedImages, sectionPhotos, isCarousel]);
 
-  // If no images available at all, don't show
-  if (imagesToEdit.length === 0) return null;
-
   // Helper to find photo data by image name
   const getPhotoByName = useCallback((imageName: string) => {
     return sectionPhotos.find((photo) => photo.id === imageName || photo.label === imageName);
@@ -129,7 +126,7 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
         : [];
 
     const newSlide = {
-      id: `slide_${Date.now()}`,
+      id: `slide_${currentPhotos.length}`,
       label: `شريحة ${currentPhotos.length + 1}`,
       url: '',
       base64Content: ''
@@ -181,6 +178,9 @@ const SectionImageList = React.memo(({ detectedImages }: SectionImageListProps) 
       options: newOptions,
     });
   }, [section, option, setSection]);
+
+  // If no images available at all, don't show
+  if (imagesToEdit.length === 0) return null;
 
   return (
     <div className="flex flex-col gap-1">

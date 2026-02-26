@@ -60,7 +60,7 @@ export const useNavigationLinks = () => {
     }
 
     const newLink = {
-      id: Date.now().toString(),
+      id: `link-${links.length}`,
       label: newLabel,
       url: newLinkType === 'external' ? newUrl : "",
       linkType: newLinkType,

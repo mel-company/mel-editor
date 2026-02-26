@@ -237,7 +237,7 @@ const useSectionDetails = () => {
     // Ensure the array is large enough
     while (currentPhotos.length <= index) {
       currentPhotos.push({
-        id: `photo-${Date.now()}-${currentPhotos.length}`,
+        id: `photo-${currentPhotos.length}`,
         label: `صورة ${currentPhotos.length + 1}`,
         url: '',
         base64Content: ''
@@ -246,7 +246,7 @@ const useSectionDetails = () => {
 
     // Convert FileType to PhotoItem by adding required 'label' property
     currentPhotos[index] = {
-      id: file.id || `photo-${Date.now()}`,
+      id: file.id || `photo-${index}`,
       label: file.name || `صورة ${index + 1}`,
       url: file.url,
       base64Content: file.base64Content

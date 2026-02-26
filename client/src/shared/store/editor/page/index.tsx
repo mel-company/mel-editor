@@ -210,7 +210,18 @@ export const usePageStore = create<Store>()(
     }),
     {
       name: "editor-pages-storage",
-      storage: createJSONStorage(() => createDbStorage()),
+      storage: createJSONStorage(() => {
+        // Only use storage on client side
+        if (typeof window === "undefined") {
+          // Return a noop storage for SSR
+          return {
+            getItem: () => Promise.resolve(null),
+            setItem: () => Promise.resolve(),
+            removeItem: () => Promise.resolve(),
+          };
+        }
+        return createDbStorage();
+      }),
       onRehydrateStorage: () => (state) => {
         if (state) {
           const mockPages = mockTemplate.pages || [];

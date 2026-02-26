@@ -54,8 +54,9 @@ const CategorySelector = () => {
   const handleAddCategory = () => {
     if (!newCategoryName.trim()) return;
 
+    const currentCategories: CategoryType[] = option.categories || [];
     const newCategory: CategoryType = {
-      id: `custom-${Date.now()}`,
+      id: `custom-${currentCategories.length}`,
       name: newCategoryName,
       thumbnail: newCategoryImage
         ? {
@@ -64,8 +65,6 @@ const CategorySelector = () => {
         }
         : undefined as any,
     };
-
-    const currentCategories: CategoryType[] = option.categories || [];
     const newCategories = [...currentCategories, newCategory];
 
     const newOptions = section.options?.map((op: SectionOptionType) => {

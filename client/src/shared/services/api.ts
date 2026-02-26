@@ -220,9 +220,6 @@ export const saveTemplate = async (templateData: {
     }
 };
 
-// Import mock data for fallback
-import { mockProducts } from '@templates/data/products';
-import { mockCategories } from '@templates/data/categories';
 import { ProductType, CategoryType } from '../types';
 
 export interface ProductsResponse {
@@ -240,8 +237,7 @@ export interface CategoriesResponse {
 }
 
 /**
- * Fetch products from the backend API
- * Falls back to mock data if API is unavailable
+ * Fetch products from the backend API (proxied from api.mel.iq)
  */
 export const fetchProducts = async (): Promise<ProductType[]> => {
     try {
@@ -254,21 +250,20 @@ export const fetchProducts = async (): Promise<ProductType[]> => {
         });
 
         if (!response.ok) {
-            console.warn(`Products API returned ${response.status}, using mock data`);
-            return mockProducts;
+            console.error(`Products API returned ${response.status}: ${response.statusText}`);
+            throw new Error(`Failed to fetch products: ${response.statusText}`);
         }
 
         const data: ProductsResponse = await response.json();
-        return data.data || data || mockProducts;
+        return data.data || [];
     } catch (error: any) {
-        console.warn('⚠️ Could not fetch products from API, using mock data:', error.message);
-        return mockProducts;
+        console.error('❌ Failed to fetch products from API:', error.message);
+        throw error;
     }
 };
 
 /**
- * Fetch categories from the backend API
- * Falls back to mock data if API is unavailable
+ * Fetch categories from the backend API (proxied from api.mel.iq)
  */
 export const fetchCategories = async (): Promise<CategoryType[]> => {
     try {
@@ -281,14 +276,14 @@ export const fetchCategories = async (): Promise<CategoryType[]> => {
         });
 
         if (!response.ok) {
-            console.warn(`Categories API returned ${response.status}, using mock data`);
-            return mockCategories;
+            console.error(`Categories API returned ${response.status}: ${response.statusText}`);
+            throw new Error(`Failed to fetch categories: ${response.statusText}`);
         }
 
         const data: CategoriesResponse = await response.json();
-        return data.data || data || mockCategories;
+        return data.data || [];
     } catch (error: any) {
-        console.warn('⚠️ Could not fetch categories from API, using mock data:', error.message);
-        return mockCategories;
+        console.error('❌ Failed to fetch categories from API:', error.message);
+        throw error;
     }
 };

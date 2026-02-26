@@ -165,6 +165,14 @@ const EditorPage = () => {
   // Auto-save page changes to history
   useAutoSaveHistory();
 
+  // Start loading on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     if (currentPageId) {
       const url = new URL(window.location.href);
@@ -174,16 +182,7 @@ const EditorPage = () => {
   }, [currentPageId]);
 
   useEffect(() => {
-    // Simulate loading delay for better UX
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Check if screen is mobile on mount
+    // Check if screen is mobile on mount (client-side only)
     const checkMobile = () => {
       if (window.innerWidth < 1024) {
         setShowMobileWarning(true);
@@ -220,6 +219,7 @@ const EditorPage = () => {
     <main
       dir="rtl"
       className="bg-slate-100 text-sm font-medium w-screen h-screen max-w-screen max-h-screen flex relative overflow-hidden"
+      suppressHydrationWarning={true}
     >
       {showMobileWarning && <MobileWarningPopup onClose={() => setShowMobileWarning(false)} />}
 

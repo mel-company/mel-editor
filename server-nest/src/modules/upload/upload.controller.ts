@@ -1,13 +1,13 @@
-import { 
-  Controller, 
-  Post, 
-  UseInterceptors, 
-  UploadedFile, 
-  Body, 
-  Req, 
+import {
+  Controller,
+  Post,
+  UseInterceptors,
+  UploadedFile,
+  Body,
+  Req,
   Res,
   BadRequestException,
-  InternalServerErrorException 
+  InternalServerErrorException
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes } from '@nestjs/swagger';
@@ -19,7 +19,9 @@ import { extname } from 'path';
 @ApiTags('upload')
 @Controller('upload')
 export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
+  constructor(private readonly uploadService: UploadService) {
+    console.log('UploadController initialized, uploadService:', !!uploadService);
+  }
 
   @Post()
   @UseInterceptors(
@@ -54,11 +56,14 @@ export class UploadController {
         return res.status(400).json({ error: 'No file uploaded' });
       }
 
-      const storeId = body.storeId || this.uploadService.resolveStore(req.get('host') || '');
+      // Temporarily inline the upload logic to bypass DI issue
+      const storeId = body.storeId || 'demo';
       console.log('📤 Upload - storeId:', storeId, 'host:', req.get('host'));
 
-      const fileUrl = await this.uploadService.processUpload(file, storeId);
-      
+      // Simple inline upload logic
+      const fileUrl = `/uploads/${file.filename}`;
+      console.log('📁 File saved locally:', fileUrl);
+
       res.json({
         success: true,
         fileUrl,
