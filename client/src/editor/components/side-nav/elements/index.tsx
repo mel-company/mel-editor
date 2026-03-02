@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSectionStore } from "@/shared/store/editor/section";
 import { usePageStore } from "@/shared/store/editor/page";
-import { mockTemplate } from "@templates/data/template";
+import { mockTemplate } from "@templates/home/sections/template";
 import { SectionType, PageType } from "@/shared/types";
 import classNames from "classnames";
 import { Plus, Eye, X } from "lucide-react";
@@ -15,6 +15,8 @@ const pageSectionMapping: Record<PageType["type"], string[]> = {
   about: ["hero", "ourStory", "contact"], // صفحة حول المتجر - 3 أقسام
   content: ["hero"], // صفحة محتوى - 1 قسم
   menu: ["menu", "categories"], // صفحة القائمة (للمطاعم) - 2 أقسام
+  "product-detail": ["productInfo"], // صفحة تفاصيل المنتج
+  checkout: ["checkoutForm"], // صفحة الدفع
 };
 
 const ElementsSide = () => {
@@ -93,6 +95,8 @@ const ElementsSide = () => {
       about: "حول المتجر",
       content: "صفحة محتوى",
       menu: "القائمة",
+      "product-detail": "تفاصيل المنتج",
+      checkout: "صفحة الدفع",
     };
     return labels[type] || type;
   };

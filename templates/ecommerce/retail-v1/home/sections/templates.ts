@@ -1,12 +1,11 @@
 import { TemplateType, ProductType, CategoryType } from "@/shared/types";
-import { categories_sections } from "../../sections/categories/data";
-import { hero_sections } from "../../sections/hero/data";
-import { navigation_sections } from "../../sections/navbar/data";
-import { recent_products_sections } from "../../sections/recent-products/data";
-import { footer_sections } from "../../sections/footer/data";
-import { mockProducts } from "../products";
+import { categories_sections } from "./categories/data";
+import { hero_sections } from "./hero/data";
+import { navigation_sections } from "./navbar/data";
+import { recent_products_sections } from "./recent-products/data";
+import { footer_sections } from "./footer/data";
+import { mockProducts } from "./products";
 
-// Mock data for templates
 const ecommerceCategories: CategoryType[] = [
   {
     id: "1",
@@ -85,11 +84,6 @@ const restaurantCategories: CategoryType[] = [
 
 const sampleProducts: ProductType[] = mockProducts.slice(0, 8);
 
-// ============================================================================
-// E-COMMERCE TEMPLATES - قوالب المتاجر الإلكترونية
-// ============================================================================
-
-// Helper function to create sections with default content
 const createHeroSection = (sectionId: string, title: string, description: string, photoUrl?: string) => {
   const heroOption = hero_sections.find((h) => h.id === sectionId);
   if (!heroOption) return null;
@@ -145,7 +139,6 @@ const createCategoriesSection = (categories: CategoryType[]) => {
   };
 };
 
-// Minimal E-commerce Template - Simple and clean (Text only hero, Simple grid products)
 export const minimalEcommerceTemplate: TemplateType = {
   id: "minimal-ecommerce",
   title: "Minimalist",
@@ -164,7 +157,7 @@ export const minimalEcommerceTemplate: TemplateType = {
     },
     {
       id: "1",
-      section_id: "1", // Hero Section 1 - Text only, centered
+      section_id: "1",
       type: "hero",
       view_all_link: "",
       editable: true,
@@ -175,7 +168,7 @@ export const minimalEcommerceTemplate: TemplateType = {
     },
     {
       id: "2",
-      section_id: "1", // Recent Products 1 - Simple grid
+      section_id: "1",
       type: "recentProducts",
       view_all_link: "",
       options: [
@@ -187,7 +180,6 @@ export const minimalEcommerceTemplate: TemplateType = {
   ],
 };
 
-// Modern E-commerce Template - More sections (Hero with image, Categories, Carousel products)
 export const modernEcommerceTemplate: TemplateType = {
   id: "modern-ecommerce",
   title: "Modern",
@@ -206,7 +198,7 @@ export const modernEcommerceTemplate: TemplateType = {
     },
     {
       id: "1",
-      section_id: "2", // Hero Section 2 - With image, side by side
+      section_id: "2",
       type: "hero",
       view_all_link: "",
       editable: true,
@@ -222,7 +214,7 @@ export const modernEcommerceTemplate: TemplateType = {
     },
     {
       id: "2",
-      section_id: "1", // Categories Section 1 - Grid layout
+      section_id: "1",
       type: "categories",
       view_all_link: "",
       options: [
@@ -232,7 +224,7 @@ export const modernEcommerceTemplate: TemplateType = {
     },
     {
       id: "3",
-      section_id: "2", // Recent Products 2 - Carousel style
+      section_id: "2",
       type: "recentProducts",
       view_all_link: "",
       options: [
@@ -243,7 +235,7 @@ export const modernEcommerceTemplate: TemplateType = {
     },
     {
       id: "4",
-      section_id: "1", // Footer - Dark Gradient
+      section_id: "1",
       type: "footer",
       editable: true,
       options: footer_sections,
@@ -251,7 +243,6 @@ export const modernEcommerceTemplate: TemplateType = {
   ],
 };
 
-// Elegant E-commerce Template - Full featured (Hero with image, Categories, Grid products)
 export const elegantEcommerceTemplate: TemplateType = {
   id: "elegant-ecommerce",
   title: "Elegant",
@@ -270,7 +261,7 @@ export const elegantEcommerceTemplate: TemplateType = {
     },
     {
       id: "1",
-      section_id: "3", // Hero Section 3 - Carousel for elegance
+      section_id: "3",
       type: "hero",
       view_all_link: "",
       editable: true,
@@ -304,7 +295,7 @@ export const elegantEcommerceTemplate: TemplateType = {
     },
     {
       id: "2",
-      section_id: "1", // Categories Section 1 - Grid layout
+      section_id: "1",
       type: "categories",
       view_all_link: "",
       options: [
@@ -314,7 +305,7 @@ export const elegantEcommerceTemplate: TemplateType = {
     },
     {
       id: "3",
-      section_id: "1", // Recent Products 1 - Elegant grid
+      section_id: "1",
       type: "recentProducts",
       view_all_link: "",
       options: [
@@ -326,11 +317,6 @@ export const elegantEcommerceTemplate: TemplateType = {
   ],
 };
 
-// ============================================================================
-// RESTAURANT TEMPLATES - قوالب المطاعم
-// ============================================================================
-
-// Restaurant menu items
 const restaurantMenuItems: ProductType[] = [
   {
     id: "r1",
@@ -443,7 +429,6 @@ const createMenuSection = (sectionId: string, title: string, products: ProductTy
   };
 };
 
-// Minimal Restaurant Template - Simple and clean (Text only hero, Simple menu list)
 export const minimalRestaurantTemplate: TemplateType = {
   id: "minimal-restaurant",
   title: "Minimalist",
@@ -462,7 +447,7 @@ export const minimalRestaurantTemplate: TemplateType = {
     },
     {
       id: "1",
-      section_id: "1", // Hero Section 1 - Text only, centered
+      section_id: "1",
       type: "hero",
       view_all_link: "",
       editable: true,
@@ -473,7 +458,7 @@ export const minimalRestaurantTemplate: TemplateType = {
     },
     {
       id: "2",
-      section_id: "1", // Menu Section 1 - Simple grid
+      section_id: "1",
       type: "recentProducts",
       view_all_link: "",
       options: [
@@ -485,7 +470,6 @@ export const minimalRestaurantTemplate: TemplateType = {
   ],
 };
 
-// Modern Restaurant Template - More sections (Hero with image, Categories, Menu grid)
 export const modernRestaurantTemplate: TemplateType = {
   id: "modern-restaurant",
   title: "Modern",
@@ -504,7 +488,7 @@ export const modernRestaurantTemplate: TemplateType = {
     },
     {
       id: "1",
-      section_id: "2", // Hero Section 2 - With image, side by side
+      section_id: "2",
       type: "hero",
       view_all_link: "",
       editable: true,
@@ -520,7 +504,7 @@ export const modernRestaurantTemplate: TemplateType = {
     },
     {
       id: "2",
-      section_id: "1", // Categories Section 1 - Food categories grid
+      section_id: "1",
       type: "categories",
       view_all_link: "",
       options: [
@@ -530,7 +514,7 @@ export const modernRestaurantTemplate: TemplateType = {
     },
     {
       id: "3",
-      section_id: "2", // Menu Section 2 - Grid layout with images
+      section_id: "2",
       type: "recentProducts",
       view_all_link: "",
       options: [
@@ -542,7 +526,6 @@ export const modernRestaurantTemplate: TemplateType = {
   ],
 };
 
-// Elegant Restaurant Template - Full featured (Hero with image, Categories, Elegant menu list)
 export const elegantRestaurantTemplate: TemplateType = {
   id: "elegant-restaurant",
   title: "Elegant",
@@ -561,7 +544,7 @@ export const elegantRestaurantTemplate: TemplateType = {
     },
     {
       id: "1",
-      section_id: "3", // Hero Section 3 - Carousel for elegance
+      section_id: "3",
       type: "hero",
       view_all_link: "",
       editable: true,
@@ -595,7 +578,7 @@ export const elegantRestaurantTemplate: TemplateType = {
     },
     {
       id: "2",
-      section_id: "1", // Categories Section 1 - Food categories grid
+      section_id: "1",
       type: "categories",
       view_all_link: "",
       options: [
@@ -605,7 +588,7 @@ export const elegantRestaurantTemplate: TemplateType = {
     },
     {
       id: "3",
-      section_id: "3", // Menu Section 3 - Elegant list layout
+      section_id: "3",
       type: "recentProducts",
       view_all_link: "",
       options: [
@@ -617,11 +600,6 @@ export const elegantRestaurantTemplate: TemplateType = {
   ],
 };
 
-// ============================================================================
-// ADDITIONAL E-COMMERCE TEMPLATES - قوالب إضافية للمتاجر الإلكترونية
-// ============================================================================
-
-// Classic E-commerce Template
 export const classicEcommerceTemplate: TemplateType = {
   id: "classic-ecommerce",
   title: "Classic",
@@ -673,7 +651,6 @@ export const classicEcommerceTemplate: TemplateType = {
   ],
 };
 
-// Premium E-commerce Template
 export const premiumEcommerceTemplate: TemplateType = {
   id: "premium-ecommerce",
   title: "Premium",
@@ -747,11 +724,6 @@ export const premiumEcommerceTemplate: TemplateType = {
   ],
 };
 
-// ============================================================================
-// ADDITIONAL RESTAURANT TEMPLATES - قوالب إضافية للمطاعم
-// ============================================================================
-
-// Classic Restaurant Template
 export const classicRestaurantTemplate: TemplateType = {
   id: "classic-restaurant",
   title: "Classic",
@@ -793,7 +765,6 @@ export const classicRestaurantTemplate: TemplateType = {
   ],
 };
 
-// Premium Restaurant Template
 export const premiumRestaurantTemplate: TemplateType = {
   id: "premium-restaurant",
   title: "Premium",
@@ -867,18 +838,12 @@ export const premiumRestaurantTemplate: TemplateType = {
   ],
 };
 
-// ============================================================================
-// TEMPLATE MAP - خريطة القوالب
-// ============================================================================
-
 export const templatesMap: Record<string, TemplateType> = {
-  // E-commerce templates
   "minimal-ecommerce": minimalEcommerceTemplate,
   "modern-ecommerce": modernEcommerceTemplate,
   "elegant-ecommerce": elegantEcommerceTemplate,
   "classic-ecommerce": classicEcommerceTemplate,
   "premium-ecommerce": premiumEcommerceTemplate,
-  // Restaurant templates
   "minimal-restaurant": minimalRestaurantTemplate,
   "modern-restaurant": modernRestaurantTemplate,
   "elegant-restaurant": elegantRestaurantTemplate,

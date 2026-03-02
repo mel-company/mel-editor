@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { CategoryType, FileType, SectionOptionType } from "../../../../../../shared/types";
-import { mockCategories } from "@templates/data/categories";
+import { mockCategories } from "@templates/home/sections/categories";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { Check, X, Search, Tag } from "lucide-react";
 import classNames from "classnames";

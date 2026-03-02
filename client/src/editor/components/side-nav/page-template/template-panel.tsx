@@ -33,20 +33,33 @@ export const TemplatePanel: React.FC = () => {
     );
   }
 
+  // Show template selector for pages with variants (product-detail, checkout, etc.)
+  const hasTemplateVariants = currentPage.templateVariants && currentPage.templateVariants.length > 0;
+
   return (
     <div className="space-y-4">
       <PageNavigation />
 
       <div className="border-t border-gray-200"></div>
 
-      <div className="px-4 pb-2">
-        <h2 className="text-sm font-bold text-gray-900">قوالب الصفحة</h2>
-        <p className="text-xs text-gray-600 mt-1">
-          اختر قالب تخطيط كامل لهذه الصفحة
-        </p>
-      </div>
-
-      <TemplateSelector page={currentPage} />
+      {hasTemplateVariants ? (
+        <>
+          <div className="px-4 pb-2">
+            <h2 className="text-sm font-bold text-gray-900">تصميمات الصفحة</h2>
+            <p className="text-xs text-gray-600 mt-1">
+              اختر تصميم مناسب لهذه الصفحة
+            </p>
+          </div>
+          <TemplateSelector page={currentPage} />
+        </>
+      ) : (
+        <div className="p-4 text-sm text-gray-500 bg-gray-50 border border-gray-200 rounded-lg mx-4">
+          <p className="font-medium text-gray-900 mb-1">{currentPage.name}</p>
+          <p className="text-xs text-gray-600">
+            لا توجد تصميمات متاحة لهذه الصفحة
+          </p>
+        </div>
+      )}
     </div>
   );
 };

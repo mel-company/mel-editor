@@ -10,19 +10,19 @@ import {
   convertApiTemplateToTemplateType,
   convertApiPagesToPageTypes,
 } from "../../../shared/utils/template-converter";
-import { modernEcommerceTemplate } from "@templates/data/templates";
-import { mockProducts } from "@templates/data/products";
+import { modernEcommerceTemplate } from "@templates/home/sections/templates";
+import { mockProducts } from "@templates/home/sections/products";
 
 // ... existing code ...
 
 // Convert API templates to TemplateType
 
-import { hero_sections } from "@templates/sections/hero/data";
-import { categories_sections } from "@templates/sections/categories/data";
-import { recent_products_sections } from "@templates/sections/recent-products/data";
-import { footer_sections } from "@templates/sections/footer/data";
-import { our_story_sections } from "@templates/sections/our-story/data";
-import { contact_sections } from "@templates/sections/contact/data";
+import { hero_sections } from "@templates/home/sections/hero/data";
+import { categories_sections } from "@templates/home/sections/categories/data";
+import { recent_products_sections } from "@templates/home/sections/recent-products/data";
+import { footer_sections } from "@templates/home/sections/footer/data";
+import { our_story_sections } from "@templates/home/sections/our-story/data";
+import { contact_sections } from "@templates/home/sections/contact/data";
 
 // Sample data for pages
 const sampleProducts = mockProducts.slice(0, 8);

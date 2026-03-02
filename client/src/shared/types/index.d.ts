@@ -61,12 +61,17 @@ export type FileType = {
 export type ProductType = {
   id?: string;
   name: string;
-  image: string;
+  image?: string;
   price: number;
-  variants: Array<{ id: string, name: string, price: number, image: string }>;
+  variants?: Array<{ id: string, name: string, price: number, image: string }>;
   description?: string;
-  title: string;
-  categories?: { id: string, name: string; image: string }[]
+  title?: string;
+  categories?: { id: string, name: string; image: string }[];
+  discount?: number;
+  stock?: number;
+  category?: string;
+  photos?: FileType[];
+  thumbnail?: FileType;
 };
 
 export type SectionPropsType = {
@@ -193,7 +198,7 @@ export type TemplateType = {
 export type PageType = {
   id: string;
   name: string;
-  type: "home" | "about" | "content" | "menu";
+  type: "home" | "about" | "content" | "menu" | "product-detail" | "checkout";
   sections: SectionType[];
   templateVariants?: PageTemplateVariant[]; // Available template layouts for this page
   selectedTemplateId?: string; // Currently selected template variant

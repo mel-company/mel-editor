@@ -2,15 +2,15 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import createDbStorage from "../../../utils/db-storage";
 import { PageType } from "../../../types";
-import { navigation_sections } from "@templates/sections/navbar/data";
-import { hero_sections } from "@templates/sections/hero/data";
-import { categories_sections } from "@templates/sections/categories/data";
-import { recent_products_sections } from "@templates/sections/recent-products/data";
-import { our_story_sections } from "@templates/sections/our-story/data";
-import { contact_sections } from "@templates/sections/contact/data";
+import { navigation_sections } from "@templates/home/sections/navbar/data";
+import { hero_sections } from "@templates/home/sections/hero/data";
+import { categories_sections } from "@templates/home/sections/categories/data";
+import { recent_products_sections } from "@templates/home/sections/recent-products/data";
+import { our_story_sections } from "@templates/home/sections/our-story/data";
+import { contact_sections } from "@templates/home/sections/contact/data";
 import { resolveComponent } from "../../../utils/component-registry";
-import { footer_sections } from "@templates/sections/footer/data";
-import { mockTemplate } from "@templates/data/template";
+import { footer_sections } from "@templates/home/sections/footer/data";
+import { mockTemplate } from "@templates/home/sections/template";
 
 // Map section types to their section definitions
 const sectionTypesMap: Record<string, any[]> = {

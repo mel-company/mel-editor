@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import { SectionType, StoreType, PageType } from "../../../shared/types";
-import { Navigation1 } from "@templates/sections/navbar/components";
-import { footer_sections } from "@templates/sections/footer/data";
-import { mockTemplate } from "@templates/data/template";
+import { Navigation1 } from "@templates/home/sections/navbar/components";
+import { footer_sections } from "@templates/home/sections/footer/data";
+import { Footer1, Footer2, Footer3 } from "@templates/home/sections/footer/components";
+import { mockTemplate } from "@templates/home/sections/template";
 import { getSectionProps } from "../../../shared/utils/section-props";
+
+// Component mapping for footer variants
+const FOOTER_COMPONENTS: Record<string, React.ComponentType<any>> = {
+    Footer1,
+    Footer2,
+    Footer3,
+};
 
 interface PreviewRendererProps {
     pages: PageType[];
@@ -168,6 +176,7 @@ const PreviewRenderer = ({ pages, storeSettings }: PreviewRendererProps) => {
                                 logo={storeSettings.logo}
                                 navigationLinks={storeSettings.header?.navigationLinks}
                                 footerVariant={storeSettings.footer?.footerVariant || "1"}
+                                setCurrentPageId={setCurrentPageId}
                             />
                         </div>
                     )}
@@ -181,15 +190,23 @@ const Footer = ({
     logo,
     navigationLinks,
     footerVariant,
+    setCurrentPageId,
 }: {
     footer: any;
     logo: any;
     navigationLinks?: any[];
     footerVariant?: string;
+    setCurrentPageId: (pageId: string) => void;
 }) => {
     const variantIndex = footerVariant ? parseInt(footerVariant) - 1 : 0;
-    const FooterComponent =
+    const componentName =
         footer_sections[variantIndex]?.component || footer_sections[0]?.component;
+
+    if (!componentName || typeof componentName !== 'string') {
+        return null;
+    }
+
+    const FooterComponent = FOOTER_COMPONENTS[componentName];
 
     if (!FooterComponent) {
         return null;

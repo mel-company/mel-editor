@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCartStore } from "../../../shared/store/cart";
 import { useStoreSettingsStore } from "../../../shared/store/editor/store-settings";
 import { usePageStore } from "../../../shared/store/editor/page";
-import { Navigation1 } from "@templates/sections/navbar/components";
+import { Navigation1 } from "@templates/home/sections/navbar/components";
 import {
   ShoppingCart,
   Trash2,

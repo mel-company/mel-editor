@@ -1,7 +1,7 @@
 import { useSectionStore } from "../../../../../../shared/store/editor/section";
 import { Plus } from "lucide-react";
 import { useState, useRef } from "react";
-import { mockTemplate } from "@templates/data/template";
+import { mockTemplate } from "@templates/home/sections/template";
 
 const NewSectionBtn = () => {
   const { addSection } = useSectionStore();

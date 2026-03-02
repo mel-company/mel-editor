@@ -10,6 +10,8 @@ const PageList = () => {
     about: "حول المتجر",
     content: "صفحة محتوى",
     menu: "القائمة",
+    "product-detail": "تفاصيل المنتج",
+    checkout: "صفحة الدفع",
   };
 
   if (pages.length === 0) {

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useSectionStore } from "@/shared/store/editor/section";
 import { usePageStore } from "@/shared/store/editor/page";
 import { SectionType, PageType } from "@/shared/types";
-import { mockTemplate } from "@templates/data/template";
+import { mockTemplate } from "@templates/home/sections/template";
 import { Select } from "@/shared/components/ui/select";
 
 const pageSectionMapping: Record<PageType["type"], string[]> = {
@@ -11,6 +11,8 @@ const pageSectionMapping: Record<PageType["type"], string[]> = {
   about: ["hero", "ourStory", "contact"],
   content: ["hero"],
   menu: ["menu", "categories"],
+  "product-detail": ["productInfo"],
+  checkout: ["checkoutForm"],
 };
 
 const AddSectionBtn = () => {

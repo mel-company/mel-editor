@@ -1,4 +1,6 @@
-export const footer_sections = [
+import { SectionOptionType } from "@/shared/types";
+
+export const footer_sections: SectionOptionType[] = [
     {
         id: "1",
         title: "Footer - Dark Gradient",
@@ -12,21 +14,21 @@ export const footer_sections = [
                 id: "text",
                 label: "نص الفوتر",
                 name: "text",
-                type: "textarea",
+                type: "textarea" as const,
                 value: "وصف المتجر أو الشركة",
             },
             {
                 id: "title",
                 label: "عنوان الفوتر",
                 name: "title",
-                type: "text",
+                type: "text" as const,
                 value: "اسم المتجر",
             },
             {
                 id: "description",
                 label: "وصف الفوتر",
                 name: "description",
-                type: "textarea",
+                type: "textarea" as const,
                 value: "نقدم أفضل المنتجات والخدمات لعملائنا الكرام",
             },
         ],
@@ -44,7 +46,7 @@ export const footer_sections = [
                 id: "text",
                 label: "نص الفوتر",
                 name: "text",
-                type: "textarea",
+                type: "textarea" as const,
                 value: "وصف المتجر أو الشركة",
             },
         ],
@@ -62,21 +64,21 @@ export const footer_sections = [
                 id: "text",
                 label: "نص الفوتر",
                 name: "text",
-                type: "textarea",
+                type: "textarea" as const,
                 value: "وصف المتجر أو الشركة",
             },
             {
                 id: "title",
                 label: "عنوان الفوتر",
                 name: "title",
-                type: "text",
+                type: "text" as const,
                 value: "اسم المتجر",
             },
             {
                 id: "description",
                 label: "وصف الفوتر",
                 name: "description",
-                type: "textarea",
+                type: "textarea" as const,
                 value: "نقدم أفضل المنتجات والخدمات لعملائنا الكرام",
             },
         ],

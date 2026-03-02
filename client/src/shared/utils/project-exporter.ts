@@ -12,7 +12,7 @@ const uiFiles = import.meta.glob('../components/ui/**/*.{tsx,ts,css}', { as: 'ra
 const utilFiles = import.meta.glob('./**/*.{tsx,ts}', { as: 'raw', eager: true });
 const hookFiles = import.meta.glob('../hooks/**/*.{tsx,ts}', { as: 'raw', eager: true });
 const typeFiles = import.meta.glob('../types/**/*.{tsx,ts}', { as: 'raw', eager: true });
-const mockFiles = import.meta.glob('@templates/data/**/*.{tsx,ts}', { as: 'raw', eager: true });
+const mockFiles = import.meta.glob('@templates/sections/**/*.{tsx,ts}', { as: 'raw', eager: true });
 
 export const generateProjectZip = async (templateData: any) => {
   const zip = new JSZip();

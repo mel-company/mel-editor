@@ -4,7 +4,7 @@ import { useStoreSettingsStore } from "../../../shared/store/editor/store-settin
 import { useCartStore } from "../../../shared/store/cart";
 import { ProductType } from "../../types";
 import { ArrowLeft, ShoppingCart, Plus, Minus } from "lucide-react";
-import { mockProducts } from "@templates/data/products";
+import { mockProducts } from "@templates/home/sections/products";
 
 const ProductDetailPage = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -36,10 +36,10 @@ const ProductDetailPage = () => {
     );
   }
 
-  const imageUrl = product.photos?.[0]?.base64Content || product.photos?.[0]?.url || product.thumbnail?.base64Content || product.thumbnail?.url || "";
-  const finalPrice = product.discount > 0 ? product.price - product.discount : product.price;
+  const imageUrl = product?.photos?.[0]?.base64Content || product?.photos?.[0]?.url || product?.thumbnail?.base64Content || product?.thumbnail?.url || "";
+  const finalPrice = (product?.discount ?? 0) > 0 ? product?.price - (product?.discount ?? 0) : product?.price;
   const isRestaurant = storeSettings.type === "restaurant";
-  const cartItem = items.find((item) => item.product.id === product.id);
+  const cartItem = items.find((item) => item.product?.id === product?.id);
 
   const handleAddToCart = () => {
     addItem(product, quantity);
@@ -85,7 +85,7 @@ const ProductDetailPage = () => {
             {imageUrl ? (
               <img
                 src={imageUrl}
-                alt={product.name}
+                alt={product?.name}
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = "none";
@@ -102,11 +102,11 @@ const ProductDetailPage = () => {
           <div className="flex flex-col gap-6">
             <div>
               <h1 className="text-4xl font-bold mb-4" style={{ fontFamily: fonts.heading }}>
-                {product.name}
+                {product?.name}
               </h1>
-              {product.description && (
+              {product?.description && (
                 <p className="text-lg text-slate-600 leading-relaxed">
-                  {product.description}
+                  {product?.description}
                 </p>
               )}
             </div>
@@ -116,23 +116,23 @@ const ProductDetailPage = () => {
               <span className="text-3xl font-bold" style={{ color: colors.primary }}>
                 {finalPrice} ر.س
               </span>
-              {product.discount > 0 && (
+              {(product?.discount ?? 0) > 0 && (
                 <>
                   <span className="text-xl text-slate-400 line-through">
-                    {product.price} ر.س
+                    {product?.price} ر.س
                   </span>
                   <span className="bg-red-500 text-white text-sm font-bold px-3 py-1 rounded">
-                    خصم {product.discount}%
+                    خصم {product?.discount ?? 0}%
                   </span>
                 </>
               )}
             </div>
 
             {/* Category */}
-            {product.category && (
+            {product?.category && (
               <div>
                 <span className="text-sm text-slate-500">الفئة: </span>
-                <span className="text-sm font-medium">{product.category}</span>
+                <span className="text-sm font-medium">{product?.category}</span>
               </div>
             )}
 
@@ -140,8 +140,8 @@ const ProductDetailPage = () => {
             {!isRestaurant && (
               <div>
                 <span className="text-sm text-slate-500">المخزون: </span>
-                <span className={`text-sm font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {product.stock > 0 ? `متوفر (${product.stock})` : 'غير متوفر'}
+                <span className={`text-sm font-medium ${(product?.stock ?? 0) > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {(product?.stock ?? 0) > 0 ? `متوفر (${product?.stock})` : 'غير متوفر'}
                 </span>
               </div>
             )}
@@ -159,9 +159,9 @@ const ProductDetailPage = () => {
                   </button>
                   <span className="px-4 py-2 min-w-[60px] text-center">{quantity}</span>
                   <button
-                    onClick={() => setQuantity(Math.min(product.stock || 1, quantity + 1))}
+                    onClick={() => setQuantity(Math.min(product?.stock ?? 1, quantity + 1))}
                     className="p-2 hover:bg-slate-100 transition-colors"
-                    disabled={quantity >= (product.stock || 1)}
+                    disabled={quantity >= (product?.stock ?? 1)}
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -173,13 +173,12 @@ const ProductDetailPage = () => {
             {!isRestaurant && (
               <button
                 onClick={handleAddToCart}
-                disabled={product.stock === 0}
-                className={`w-full py-4 rounded-lg font-bold text-lg transition-colors flex items-center justify-center gap-2 ${
-                  product.stock > 0
-                    ? 'text-white hover:opacity-90'
-                    : 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                }`}
-                style={product.stock > 0 ? { backgroundColor: colors.primary } : {}}
+                disabled={(product?.stock ?? 0) === 0}
+                className={`w-full py-4 rounded-lg font-bold text-lg transition-colors flex items-center justify-center gap-2 ${(product?.stock ?? 0) > 0
+                  ? 'text-white hover:opacity-90'
+                  : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                  }`}
+                style={(product?.stock ?? 0) > 0 ? { backgroundColor: colors.primary } : {}}
               >
                 <ShoppingCart className="w-5 h-5" />
                 <span>

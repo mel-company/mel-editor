@@ -48,3 +48,4 @@ export const fetchAPI = async ({
 
     return response.json();
 };
+

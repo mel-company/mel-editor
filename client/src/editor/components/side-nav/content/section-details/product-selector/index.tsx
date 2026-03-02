@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ProductType, SectionOptionType } from "../../../../../../shared/types";
-import { mockProducts } from "@templates/data/products";
+import { mockProducts } from "@templates/home/sections/products";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { Check } from "lucide-react";
 import classNames from "classnames";

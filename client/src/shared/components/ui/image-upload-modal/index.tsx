@@ -2,8 +2,8 @@ import { useState } from "react";
 import { X, Upload, Image as ImageIcon } from "lucide-react";
 import { FileType, ProductType, CategoryType } from "../../../types";
 import { useR2Upload } from "../../../hooks/use-r2-upload";
-import { mockProducts } from "@templates/data/products";
-import { mockCategories } from "@templates/data/categories";
+import { mockProducts } from "@templates/home/sections/products";
+import { mockCategories } from "@templates/home/sections/categories";
 
 interface ImageUploadModalProps {
   isOpen: boolean;
