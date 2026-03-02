@@ -15,7 +15,7 @@ import { useSSRProducts, useSSRCategories, useSSRData } from "../context/ssr-dat
 export const useTemplateStructure = (isEditor = false) => {
     const { pages: storePages, currentPageId: storeCurrentPageId } = usePageStore();
     const { storeSettings: storeStoreSettings } = useStoreSettingsStore();
-    const { getSelectedTemplateId } = usePageTemplateStore();
+    const { getSelectedTemplateId, pageTemplates } = usePageTemplateStore();
 
     // Get SSR data
     const { isSSR, templateConfig } = useSSRData();
@@ -113,12 +113,25 @@ export const useTemplateStructure = (isEditor = false) => {
             const selectedTemplateId = getSelectedTemplateId(page.id);
             const selectedTemplate = page.templateVariants.find((t: any) => t.id === selectedTemplateId);
 
+            console.log('🔍 Template Variant Debug:', {
+                pageId: page.id,
+                pageType: page.type,
+                selectedTemplateId,
+                availableVariants: page.templateVariants.map((t: any) => t.id),
+                selectedTemplate: selectedTemplate?.id,
+                selectedSections: selectedTemplate?.sections.map((s: any) => ({ id: s.id, type: s.type, section_id: s.section_id })),
+                willUseVariant: !!selectedTemplate
+            });
+
             // If a template is selected, use its sections instead
             if (selectedTemplate) {
+                console.log('✅ Using template variant sections');
                 currentPage = {
                     ...currentPage,
                     sections: selectedTemplate.sections
                 };
+            } else {
+                console.log('⚠️ No template variant selected, using default sections');
             }
         }
 
@@ -204,6 +217,12 @@ export const useTemplateStructure = (isEditor = false) => {
                 const selected_options = hydratedOptions?.find(
                     (option: any) => option.id === section.section_id
                 );
+
+                console.log(`🎯 Resolving section ${section.type}:${section.section_id}`, {
+                    sectionId: section.section_id,
+                    foundOption: !!selected_options,
+                    hasComponent: !!selected_options?.component
+                });
 
                 if (selected_options && selected_options.component) {
                     const Component = selected_options.component as any;
@@ -369,7 +388,7 @@ export const useTemplateStructure = (isEditor = false) => {
             currentPageId,
             pages,
         };
-    }, [pages, currentPageId, storeSettings, ssrProducts, ssrCategories]);
+    }, [pages, currentPageId, storeSettings, ssrProducts, ssrCategories, pageTemplates, getSelectedTemplateId]);
 
     return { ...structure, isLoading };
 };

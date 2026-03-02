@@ -42,26 +42,31 @@ export const usePageTemplateStore = create<PageTemplateStore>()(
       },
 
       setPageTemplate: (pageId: string, templateId: string) => {
+        console.log('📝 Store: setPageTemplate called', { pageId, templateId });
         set((state) => {
           const existingIndex = state.pageTemplates.findIndex(
             (t) => t.pageId === pageId
           );
 
+          let newState;
           if (existingIndex >= 0) {
             // Update existing selection
             const updatedTemplates = [...state.pageTemplates];
             updatedTemplates[existingIndex].selectedTemplateId = templateId;
-            return { pageTemplates: updatedTemplates };
+            newState = { pageTemplates: updatedTemplates };
           } else {
             // Add new selection
-            return {
+            newState = {
               pageTemplates: [
                 ...state.pageTemplates,
                 { pageId, selectedTemplateId: templateId },
               ],
             };
           }
+          console.log('📝 Store: New state set', newState);
+          return newState;
         });
+        console.log('📝 Store: After set, current selection:', get().pageTemplates.find(t => t.pageId === pageId));
       },
 
       removePageTemplate: (pageId: string) => {
