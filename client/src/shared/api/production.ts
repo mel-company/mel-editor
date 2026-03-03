@@ -20,7 +20,8 @@ export const fetchPublishedStoreData = async (key: string) => {
     const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
     try {
-        const response = await fetch(`${url}/published/store/${key}`);
+        // Use existing /store/:key endpoint (no separate published store yet)
+        const response = await fetch(`${url}/store/${key}`);
         if (!response.ok) {
             throw new Error(`Failed to fetch ${key}`);
         }
