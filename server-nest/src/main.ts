@@ -40,8 +40,10 @@ async function bootstrap() {
   // Set global prefix for all routes
   app.setGlobalPrefix('api/v1');
 
-  const port = process.env.PORT || 4000;
-  await app.listen(port);
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0');
+  
+  console.log(`🚀 Server running on port ${port}`);
 
   console.log(`🚀 NestJS Server running at http://localhost:${port}`);
   console.log(`   - API: http://localhost:${port}/api/v1`);

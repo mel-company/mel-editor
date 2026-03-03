@@ -10,7 +10,7 @@
     "build:css": "node scripts/build-css.js",
     "build": "npm run build:css && cd client && vite build --outDir ../dist/client && vite build --ssr src/entry-server.tsx --outDir ../dist/server",
     "build:client": "npm run build:css && cd client && vite build --outDir ../dist/client",
-    "build:nest": "cd server-nest && tsc",
+   "build:nest": "tsc -p server-nest/tsconfig.json",
     "start:nest": "node server-nest/dist/main.js",
     "prisma:generate": "cd server-nest && npx prisma generate",
     "prisma:migrate": "cd server-nest && npx prisma migrate dev",
