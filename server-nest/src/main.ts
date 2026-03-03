@@ -1,53 +1,47 @@
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as express from 'express';
+import * as path from 'path';
 import 'dotenv/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
+  /* -------------------- CORS -------------------- */
   app.enableCors({
-    origin: [
-      '*',
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://127.0.0.1:3000',
-      'http://demo.localhost:5173',
-      'http://localhost:5173'
-    ],
+    origin: true,
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
 
-  // Swagger configuration
-  // const config = new DocumentBuilder()
-  //   .setTitle('Editor API')
-  //   .setDescription('API documentation for the Editor application')
-  //   .setVersion('1.0')
-  //   .addTag('stores', 'Store management endpoints')
-  //   .addTag('templates', 'Template management endpoints')
-  //   .addTag('storage', 'File storage endpoints')
-  //   .addTag('products', 'Product management endpoints')
-  //   .addTag('categories', 'Category management endpoints')
-  //   .addTag('upload', 'File upload endpoints')
-  //   .build();
-
-  // const document = SwaggerModule.createDocument(app, config);
-  // SwaggerModule.setup('api', app, document);
-
-  // Set global prefix for all routes
+  /* -------------------- API Prefix -------------------- */
   app.setGlobalPrefix('api/v1');
 
-  const port = process.env.PORT || 3000;
-  await app.listen(port, '0.0.0.0');
-  
-  console.log(`🚀 Server running on port ${port}`);
+  /* -------------------- Serve React Build -------------------- */
 
-  console.log(`🚀 NestJS Server running at http://localhost:${port}`);
-  console.log(`   - API: http://localhost:${port}/api/v1`);
-  console.log(`   - Swagger Docs: http://localhost:${port}/api`);
+  const clientPath = path.join(__dirname, '../../dist/client');
+
+  // Serve static files
+  app.use(express.static(clientPath));
+
+  // SPA fallback (لا يلمس API)
+  app.use((req, res, next) => {
+    if (req.originalUrl.startsWith('/api')) {
+      return next();
+    }
+
+    res.sendFile(path.join(clientPath, 'index.html'));
+  });
+
+  /* -------------------- Start Server -------------------- */
+
+  const port = process.env.PORT || 3000;
+
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`🚀 Server running on port ${port}`);
+  console.log(`🌐 App URL: http://localhost:${port}`);
+  console.log(`📡 API: http://localhost:${port}/api/v1`);
 }
 
 bootstrap();
