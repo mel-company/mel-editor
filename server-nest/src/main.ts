@@ -33,6 +33,8 @@ async function bootstrap() {
     res.sendFile(path.join(clientPath, 'index.html'));
   });
 
+
+  
   /* -------------------- Start Server -------------------- */
 
   const port = process.env.PORT || 4000;
