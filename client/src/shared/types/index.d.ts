@@ -232,3 +232,16 @@ export interface HydratedSection {
   props: any;
   originalSection: SectionType;
 }
+
+
+export type CategoryType = {
+  "id": string;
+  "image": string;
+  "name": string;
+  "description": string;
+  "enabled": boolean;
+  "createdAt": string;
+  "_count": {
+    "products": 0
+  }
+} 

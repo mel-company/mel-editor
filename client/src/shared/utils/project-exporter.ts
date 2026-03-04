@@ -2,8 +2,7 @@
 
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
-import { generateCodeFromJSON } from './json-to-code';
-import { reactToJSON } from './react-to-json';
+
 
 // Use import.meta.glob to eagerly load all source files as raw text
 // This allows us to bundle the actual source code of the components

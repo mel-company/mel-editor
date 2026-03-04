@@ -18,15 +18,20 @@ export const fetchAPI = async ({
 
     const credentials = getAuthData();
 
-
     const storeUserToken = credentials?.storeUserToken
 
-    const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api/v1';
+    const apiUrl = 'https://api.mel.iq/api/v1';
+
+    console.log("VITE_API_BASE_URL")
+    console.log(import.meta.env.VITE_API_URL)
+    console.log("endPoint")
+    console.log(endPoint)
 
     const url = `${apiUrl}${endPoint?.startsWith('/') ? endPoint : `/${endPoint}`}`;
 
     const requestHeaders: Record<string, string> = {
         'Content-Type': 'application/json',
+        'x-tenant-subdomain': 'azyaa',
         ...headers
     };
 

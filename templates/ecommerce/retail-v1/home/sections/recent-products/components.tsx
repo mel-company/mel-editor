@@ -3,7 +3,40 @@ import { ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useStoreSettingsStore } from "@/shared/store/editor/store-settings";
 import { useCartStore } from "@/shared/store/cart";
+import { useState, useEffect } from "react";
+import { fetchProducts } from "@shared-data";
 import { imageLink } from "@/shared/api/imageLink";
+
+// Custom hook for fetching products
+const useProducts = (shouldFetch = true) => {
+    const [products, setProducts] = useState<ProductType[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!shouldFetch) {
+            setLoading(false);
+            return;
+        }
+
+        const loadProducts = async () => {
+            try {
+                setLoading(true);
+                const data = await fetchProducts();
+                setProducts(data || []);
+            } catch (err) {
+                setError('Failed to fetch products');
+                console.error('Error fetching products:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadProducts();
+    }, [shouldFetch]);
+
+    return { products, loading, error };
+};
 
 // Common components
 const ProductCard = ({
@@ -199,19 +232,44 @@ const EmptyState = ({ title }: { title: string }) => (
 // Products 1: Grid
 export const RecentProducts = ({
     content,
-    products,
+    products: passedProducts,
     view_all_link,
+    isEditor = false,
 }: {
     content: { title: string };
-    products: ProductType[];
+    products?: ProductType[];
     view_all_link: string;
+    isEditor?: boolean;
 }) => {
+    const { products: fetchedProducts, loading, error } = useProducts(!isEditor);
     const navigate = useNavigate();
     const { storeSettings } = useStoreSettingsStore();
     const { addItem, items } = useCartStore();
     const isRestaurant = storeSettings.type === "restaurant";
 
-    if (!products || products.length === 0) {
+    // Use passed products in editor mode, fetched products in production
+    const products = isEditor ? (passedProducts || []) : fetchedProducts;
+
+    if (loading && !isEditor) {
+        return (
+            <div className="container mx-auto px-4 py-12">
+                <SectionHeader title={content.title} viewAllLink={view_all_link} />
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+                    {[...Array(8)].map((_, index) => (
+                        <div key={index} className="bg-white rounded-lg shadow-sm overflow-hidden animate-pulse">
+                            <div className="aspect-square bg-slate-200"></div>
+                            <div className="p-3 sm:p-4">
+                                <div className="h-4 bg-slate-200 rounded mb-2"></div>
+                                <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !products || products.length === 0) {
         return <EmptyState title={content.title} />;
     }
 
@@ -250,19 +308,48 @@ export const RecentProducts = ({
 // Products 2: Carousel
 export const RecentProductsCarousel = ({
     content,
-    products,
+    products: passedProducts,
     view_all_link,
+    isEditor = false,
 }: {
     content: { title: string };
-    products: ProductType[];
+    products?: ProductType[];
     view_all_link: string;
+    isEditor?: boolean;
 }) => {
+    const { products: fetchedProducts, loading, error } = useProducts(!isEditor);
     const navigate = useNavigate();
     const { storeSettings } = useStoreSettingsStore();
     const { addItem, items } = useCartStore();
     const isRestaurant = storeSettings.type === "restaurant";
 
-    if (!products || products.length === 0) {
+    // Use passed products in editor mode, fetched products in production
+    const products = isEditor ? (passedProducts || []) : fetchedProducts;
+
+    if (loading && !isEditor) {
+        return (
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+                    <SectionHeader title={content.title} viewAllLink={view_all_link} titleSize="text-2xl sm:text-3xl" />
+                </div>
+                <div className="overflow-x-auto pb-4 -mx-4 sm:mx-0 px-4 sm:px-0">
+                    <div className="flex gap-3 sm:gap-4 w-max">
+                        {[...Array(6)].map((_, index) => (
+                            <div key={index} className="bg-white rounded-lg shadow-sm overflow-hidden w-64 shrink-0 animate-pulse">
+                                <div className="aspect-square bg-slate-200"></div>
+                                <div className="p-3 sm:p-4">
+                                    <div className="h-4 bg-slate-200 rounded mb-2"></div>
+                                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !products || products.length === 0) {
         return <EmptyState title={content.title} />;
     }
 
@@ -307,19 +394,45 @@ export const RecentProductsCarousel = ({
 // Products 3: Large Cards
 export const RecentProductsLarge = ({
     content,
-    products,
+    products: passedProducts,
     view_all_link,
+    isEditor = false,
 }: {
     content: { title: string };
-    products: ProductType[];
+    products?: ProductType[];
     view_all_link: string;
+    isEditor?: boolean;
 }) => {
+    const { products: fetchedProducts, loading, error } = useProducts(!isEditor);
     const navigate = useNavigate();
     const { storeSettings } = useStoreSettingsStore();
     const { addItem, items } = useCartStore();
     const isRestaurant = storeSettings.type === "restaurant";
 
-    if (!products || products.length === 0) {
+    // Use passed products in editor mode, fetched products in production
+    const products = isEditor ? (passedProducts || []) : fetchedProducts;
+
+    if (loading && !isEditor) {
+        return (
+            <div className="container mx-auto px-4 py-12">
+                <SectionHeader title={content.title} viewAllLink={view_all_link} />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[...Array(6)].map((_, index) => (
+                        <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden animate-pulse">
+                            <div className="aspect-square bg-slate-200"></div>
+                            <div className="p-6">
+                                <div className="h-6 bg-slate-200 rounded mb-3"></div>
+                                <div className="h-4 bg-slate-200 rounded mb-4"></div>
+                                <div className="h-6 bg-slate-200 rounded w-3/4"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !products || products.length === 0) {
         return <EmptyState title={content.title} />;
     }
 
@@ -358,19 +471,44 @@ export const RecentProductsLarge = ({
 // Products 4: Compact Grid
 export const RecentProductsCompact = ({
     content,
-    products,
+    products: passedProducts,
     view_all_link,
+    isEditor = false,
 }: {
     content: { title: string };
-    products: ProductType[];
+    products?: ProductType[];
     view_all_link: string;
+    isEditor?: boolean;
 }) => {
+    const { products: fetchedProducts, loading, error } = useProducts(!isEditor);
     const navigate = useNavigate();
     const { storeSettings } = useStoreSettingsStore();
     const { addItem, items } = useCartStore();
     const isRestaurant = storeSettings.type === "restaurant";
 
-    if (!products || products.length === 0) {
+    // Use passed products in editor mode, fetched products in production
+    const products = isEditor ? (passedProducts || []) : fetchedProducts;
+
+    if (loading && !isEditor) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <SectionHeader title={content.title} viewAllLink={view_all_link} titleSize="text-2xl" />
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                    {[...Array(10)].map((_, index) => (
+                        <div key={index} className="bg-white rounded-lg shadow-sm overflow-hidden animate-pulse">
+                            <div className="aspect-square bg-slate-200"></div>
+                            <div className="p-2">
+                                <div className="h-3 bg-slate-200 rounded mb-1"></div>
+                                <div className="h-3 bg-slate-200 rounded w-2/3"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !products || products.length === 0) {
         return <EmptyState title={content.title} />;
     }
 
@@ -409,19 +547,45 @@ export const RecentProductsCompact = ({
 // Products 5: List View
 export const RecentProductsList = ({
     content,
-    products,
+    products: passedProducts,
     view_all_link,
+    isEditor = false,
 }: {
     content: { title: string };
-    products: ProductType[];
+    products?: ProductType[];
     view_all_link: string;
+    isEditor?: boolean;
 }) => {
+    const { products: fetchedProducts, loading, error } = useProducts(!isEditor);
     const navigate = useNavigate();
     const { storeSettings } = useStoreSettingsStore();
     const { addItem, items } = useCartStore();
     const isRestaurant = storeSettings.type === "restaurant";
 
-    if (!products || products.length === 0) {
+    // Use passed products in editor mode, fetched products in production
+    const products = isEditor ? (passedProducts || []) : fetchedProducts;
+
+    if (loading && !isEditor) {
+        return (
+            <div className="container mx-auto px-4 py-8">
+                <SectionHeader title={content.title} viewAllLink={view_all_link} titleSize="text-2xl" />
+                <div className="space-y-3">
+                    {[...Array(5)].map((_, index) => (
+                        <div key={index} className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-sm animate-pulse">
+                            <div className="w-24 h-24 rounded-lg bg-slate-200 shrink-0"></div>
+                            <div className="flex-1 min-w-0">
+                                <div className="h-5 bg-slate-200 rounded mb-2 w-3/4"></div>
+                                <div className="h-4 bg-slate-200 rounded mb-2"></div>
+                                <div className="h-5 bg-slate-200 rounded w-1/2"></div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+
+    if (error || !products || products.length === 0) {
         return <EmptyState title={content.title} />;
     }
 
