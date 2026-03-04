@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useStoreSettingsStore } from "../../../shared/store/editor/store-settings";
 import { useCartStore } from "../../../shared/store/cart";
 import { ProductType } from "../../types";
 import { ArrowLeft, ShoppingCart, Plus, Minus } from "lucide-react";
-import { mockProducts } from "@templates/home/sections/products";
 
 const ProductDetailPage = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -12,19 +11,60 @@ const ProductDetailPage = () => {
   const { storeSettings } = useStoreSettingsStore();
   const { addItem, items } = useCartStore();
   const [quantity, setQuantity] = React.useState(1);
+  const [product, setProduct] = useState<ProductType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Find product from mock data (in real app, this would come from API/store)
-  const product: ProductType | undefined = mockProducts.find(
-    (p) => p.id === productId
-  );
+  // Fetch product from API
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!productId) {
+        setError('Product ID is required');
+        setLoading(false);
+        return;
+      }
 
-  if (!product) {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/product/${productId}`);
+        if (!response.ok) {
+          throw new Error('Product not found');
+        }
+        const data = await response.json();
+        setProduct(data);
+      } catch (err) {
+        setError('Failed to load product');
+        console.error('Error fetching product:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-100" dir="rtl">
+        <div className="animate-pulse text-center">
+          <div className="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-4"></div>
+          <div className="h-8 bg-slate-200 rounded w-3/4 mx-auto mb-2"></div>
+          <div className="h-4 bg-slate-200 rounded w-1/2 mx-auto"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100" dir="rtl">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-slate-800 mb-4">
             المنتج غير موجود
           </h1>
+          <p className="text-slate-600 mb-6">
+            {error || 'المنتج الذي تبحث عنه غير متوفر'}
+          </p>
           <button
             onClick={() => navigate(-1)}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

@@ -1,6 +1,39 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShoppingCart, Heart, Star, Minus, Plus, Truck, Shield, RefreshCw, Zap, Award, ChevronLeft, ChevronRight, Share2, Eye } from "lucide-react";
+import { ProductType } from "@/shared/types";
+import { useParams } from "react-router-dom";
+import { fetchProduct } from "@shared-data";
 import { usePageStore } from "@/shared/store/editor/page";
+
+// Custom hook for fetching individual product
+const useProduct = (productId: string) => {
+  const [product, setProduct] = useState<ProductType | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchProduct(productId);
+        setProduct(data);
+      } catch (err) {
+        setError('Failed to fetch product');
+        console.error('Error fetching product:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (productId) {
+      loadProduct();
+    } else {
+      setLoading(false);
+    }
+  }, [productId]);
+
+  return { product, loading, error };
+};
 
 const useEditorData = (id?: string) => {
   if (!id) return { sectionData: null, sectionContent: {}, photos: [], getContentValue: (name: string) => '' };
@@ -52,24 +85,70 @@ export const ProductInfo1 = ({
   isEditor?: boolean;
 }) => {
   const { getContentValue, photos: editorPhotos } = useEditorData(isEditor ? id : undefined);
+  const params = useParams();
+  const { product: fetchedProduct, loading, error } = useProduct(params.id || '');
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
 
   const finalPhotos = isEditor ? editorPhotos : photos || [];
   // Use high-quality sample images if no photos provided
-  const displayPhotos = finalPhotos.length > 0 ? finalPhotos : [
+  const displayPhotos = finalPhotos.length > 0 ? finalPhotos : fetchedProduct?.photos || [
     { url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop' },
     { url: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&h=800&fit=crop' },
     { url: 'https://images.unsplash.com/photo-1524678606372-56527bb42c43?w=800&h=800&fit=crop' },
     { url: 'https://images.unsplash.com/photo-1572569028738-411a197b8367?w=800&h=800&fit=crop' },
   ];
-  const finalName = getContentValue('product_name') || product_name || 'اسم المنتج';
-  const finalPrice = getContentValue('product_price') || product_price || '99.99';
-  const finalDescription = getContentValue('product_description') || product_description || 'وصف المنتج يظهر هنا';
-  const finalRating = getContentValue('product_rating') || product_rating || '4.5';
-  const finalReviewsCount = getContentValue('product_reviews_count') || product_reviews_count || '128';
+
+  const finalName = isEditor
+    ? getContentValue('product_name') || product_name || 'اسم المنتج'
+    : fetchedProduct?.name || product_name || 'اسم المنتج';
+  const finalPrice = isEditor
+    ? getContentValue('product_price') || product_price || '99.99'
+    : fetchedProduct?.price?.toString() || product_price || '99.99';
+  const finalDescription = isEditor
+    ? getContentValue('product_description') || product_description || 'وصف المنتج يظهر هنا'
+    : fetchedProduct?.description || product_description || 'وصف المنتج يظهر هنا';
+  const finalRating = isEditor
+    ? getContentValue('product_rating') || product_rating || '4.5'
+    : fetchedProduct?.rating?.toString() || product_rating || '4.5';
+  const finalReviewsCount = isEditor
+    ? getContentValue('product_reviews_count') || product_reviews_count || '128'
+    : fetchedProduct?.reviews_count?.toString() || product_reviews_count || '128';
 
   const mainImage = displayPhotos[selectedImage] || displayPhotos[0];
+
+  if (loading && !isEditor) {
+    return (
+      <section className="bg-gradient-to-br from-slate-50 via-white to-blue-50/30 min-h-screen">
+        <div className="container mx-auto px-4 py-8 md:py-12">
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
+              <div className="aspect-square rounded-2xl bg-slate-200"></div>
+              <div className="space-y-6">
+                <div className="h-8 bg-slate-200 rounded w-3/4"></div>
+                <div className="h-12 bg-slate-200 rounded"></div>
+                <div className="h-4 bg-slate-200 rounded"></div>
+                <div className="h-6 bg-slate-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error && !isEditor) {
+    return (
+      <section className="bg-gradient-to-br from-slate-50 via-white to-blue-50/30 min-h-screen">
+        <div className="container mx-auto px-4 py-8 md:py-12">
+          <div className="text-center text-slate-500 py-12">
+            <h2 className="text-2xl font-bold mb-4">Product not found</h2>
+            <p>The product you're looking for could not be loaded.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const handlePrevImage = () => {
     setSelectedImage((prev) => (prev === 0 ? displayPhotos.length - 1 : prev - 1));
@@ -322,23 +401,69 @@ export const ProductInfo2 = ({
   isEditor?: boolean;
 }) => {
   const { getContentValue, photos: editorPhotos } = useEditorData(isEditor ? id : undefined);
+  const params = useParams();
+  const { product: fetchedProduct, loading, error } = useProduct(params.id || '');
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [activeTab, setActiveTab] = useState('description');
 
   const finalPhotos = isEditor ? editorPhotos : photos || [];
-  const displayPhotos = finalPhotos.length > 0 ? finalPhotos : [
+  const displayPhotos = finalPhotos.length > 0 ? finalPhotos : fetchedProduct?.photos || [
     { url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop' },
     { url: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&h=800&fit=crop' },
     { url: 'https://images.unsplash.com/photo-1524678606372-56527bb42c43?w=800&h=800&fit=crop' },
   ];
-  const finalName = getContentValue('product_name') || product_name || 'سماعات لاسلكية فاخرة';
-  const finalPrice = getContentValue('product_price') || product_price || '299.99';
-  const finalDescription = getContentValue('product_description') || product_description || 'استمتع بصوت نقي وعالي الجودة مع سماعاتنا اللاسلكية الفاخرة. تتميز بخاصية إلغاء الضوضاء النشطة، وبطارية تدوم 30 ساعة، ومقاعد أذن مريحة للاستخدام طوال اليوم.';
-  const finalRating = getContentValue('product_rating') || product_rating || '4.8';
-  const finalReviewsCount = getContentValue('product_reviews_count') || product_reviews_count || '2,847';
+
+  const finalName = isEditor
+    ? getContentValue('product_name') || product_name || 'سماعات لاسلكية فاخرة'
+    : fetchedProduct?.name || product_name || 'سماعات لاسلكية فاخرة';
+  const finalPrice = isEditor
+    ? getContentValue('product_price') || product_price || '299.99'
+    : fetchedProduct?.price?.toString() || product_price || '299.99';
+  const finalDescription = isEditor
+    ? getContentValue('product_description') || product_description || 'استمتع بصوت نقي وعالي الجودة مع سماعاتنا اللاسلكية الفاخرة. تتميز بخاصية إلغاء الضوضاء النشطة، وبطارية تدوم 30 ساعة، ومقاعد أذن مريحة للاستخدام طوال اليوم.'
+    : fetchedProduct?.description || product_description || 'استمتع بصوت نقي وعالي الجودة مع سماعاتنا اللاسلكية الفاخرة. تتميز بخاصية إلغاء الضوضاء النشطة، وبطارية تدوم 30 ساعة، ومقاعد أذن مريحة للاستخدام طوال اليوم.';
+  const finalRating = isEditor
+    ? getContentValue('product_rating') || product_rating || '4.8'
+    : fetchedProduct?.rating?.toString() || product_rating || '4.8';
+  const finalReviewsCount = isEditor
+    ? getContentValue('product_reviews_count') || product_reviews_count || '2,847'
+    : fetchedProduct?.reviews_count?.toString() || product_reviews_count || '2,847';
 
   const mainImage = displayPhotos[selectedImage] || displayPhotos[0];
+
+  if (loading && !isEditor) {
+    return (
+      <section className="bg-white">
+        <div className="container mx-auto px-4 py-8 md:py-16">
+          <div className="animate-pulse">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              <div className="lg:col-span-7 aspect-square rounded-3xl bg-slate-200"></div>
+              <div className="lg:col-span-5 space-y-6">
+                <div className="h-8 bg-slate-200 rounded w-3/4"></div>
+                <div className="h-12 bg-slate-200 rounded"></div>
+                <div className="h-4 bg-slate-200 rounded"></div>
+                <div className="h-6 bg-slate-200 rounded w-1/2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error && !isEditor) {
+    return (
+      <section className="bg-white">
+        <div className="container mx-auto px-4 py-8 md:py-16">
+          <div className="text-center text-slate-500 py-12">
+            <h2 className="text-2xl font-bold mb-4">Product not found</h2>
+            <p>The product you're looking for could not be loaded.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-white">

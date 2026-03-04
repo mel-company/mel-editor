@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { ProductType, SectionOptionType } from "../../../../../../shared/types";
-import { mockProducts } from "@templates/home/sections/products";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { Check } from "lucide-react";
 import classNames from "classnames";
@@ -13,7 +12,7 @@ const ProductSelector = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const [products, setProducts] = useState<ProductType[]>(mockProducts)
+  const [products, setProducts] = useState<ProductType[]>([])
 
   const fetchProducts = async () => {
     try {
@@ -22,7 +21,7 @@ const ProductSelector = () => {
       console.log(result)
       console.log("productsx")
       console.log(result?.data)
-      setProducts(result?.data)
+      setProducts(result?.data || [])
     } catch (error) {
       console.error("Failed to fetch products:", error)
     }
@@ -32,6 +31,20 @@ const ProductSelector = () => {
   useEffect(() => {
     fetchProducts()
   }, [])
+
+  // Auto-select first 10 products if no products are currently selected
+  useEffect(() => {
+    if (products.length > 0 && (!option.products || option.products.length === 0)) {
+      const first10Products = products.slice(0, 10);
+      const newOptions = section.options?.map((op: SectionOptionType) => {
+        if (op.id === section.section_id) {
+          return { ...op, products: first10Products };
+        }
+        return op;
+      });
+      setSection({ ...section, options: newOptions });
+    }
+  }, [products, option.products, section]);
 
   if (!section || !option) return null;
 

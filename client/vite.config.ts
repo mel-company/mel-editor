@@ -12,6 +12,7 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, './src'),
             '@templates': path.resolve(__dirname, '../templates/ecommerce/retail-v1'),
+            '@shared-data': path.resolve(__dirname, '../templates/shared'),
         },
         extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json'],
     },

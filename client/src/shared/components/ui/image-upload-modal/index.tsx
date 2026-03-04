@@ -2,8 +2,114 @@ import { useState } from "react";
 import { X, Upload, Image as ImageIcon } from "lucide-react";
 import { FileType, ProductType, CategoryType } from "../../../types";
 import { useR2Upload } from "../../../hooks/use-r2-upload";
-import { mockProducts } from "@templates/home/sections/products";
-import { mockCategories } from "@templates/home/sections/categories";
+
+// Sample data for image upload modal
+const sampleProducts = [
+  {
+    id: "1",
+    name: "قميص قطني كلاسيكي",
+    price: 150,
+    discount: 20,
+    stock: 25,
+    category: "ملابس",
+    description: "قميص قطني عالي الجودة، مريح ومناسب للارتداء اليومي",
+    photos: [
+      {
+        name: "قميص قطني كلاسيكي",
+        url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+      },
+    ],
+    thumbnail: {
+      name: "قميص قطني كلاسيكي",
+      url: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+    },
+  },
+  {
+    id: "2",
+    name: "حذاء رياضي مريح",
+    price: 299,
+    discount: 15,
+    stock: 18,
+    category: "أحذية",
+    description: "حذاء رياضي متين ومريح للمشي والجري، مناسب للاستخدام اليومي",
+    photos: [
+      {
+        name: "حذاء رياضي مريح",
+        url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
+      },
+    ],
+    thumbnail: {
+      name: "حذاء رياضي مريح",
+      url: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
+    },
+  },
+  {
+    id: "3",
+    name: "ساعة ذكية حديثة",
+    price: 599,
+    discount: 0,
+    stock: 12,
+    category: "إلكترونيات",
+    description: "ساعة ذكية متطورة مع شاشة كبيرة وميزات صحية متعددة",
+    photos: [
+      {
+        name: "ساعة ذكية حديثة",
+        url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
+      },
+    ],
+    thumbnail: {
+      name: "ساعة ذكية حديثة",
+      url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
+    },
+  },
+];
+
+const sampleCategories = [
+  {
+    id: "1",
+    name: "ملابس",
+    thumbnail: {
+      id: "cat1-thumb",
+      name: "ملابس",
+      url: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=500",
+      base64Content: "",
+      type: "image"
+    }
+  },
+  {
+    id: "2",
+    name: "أحذية",
+    thumbnail: {
+      id: "cat2-thumb",
+      name: "أحذية",
+      url: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
+      base64Content: "",
+      type: "image"
+    }
+  },
+  {
+    id: "3",
+    name: "إلكترونيات",
+    thumbnail: {
+      id: "cat3-thumb",
+      name: "إلكترونيات",
+      url: "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=500",
+      base64Content: "",
+      type: "image"
+    }
+  },
+  {
+    id: "4",
+    name: "إكسسوارات",
+    thumbnail: {
+      id: "cat4-thumb",
+      name: "إكسسوارات",
+      url: "https://images.unsplash.com/photo-1524863479829-916d8e77f114?w=500",
+      base64Content: "",
+      type: "image"
+    }
+  },
+];
 
 interface ImageUploadModalProps {
   isOpen: boolean;
@@ -30,11 +136,11 @@ const ImageUploadModal = ({
 
   const displayImage = uploadState.file?.url;
 
-  // Get categories from store settings or use mock
-  const categories = mockCategories || [];
+  // Get categories from store settings or use sample data
+  const categories = sampleCategories || [];
   const products = selectedCategory
-    ? mockProducts.filter((p) => p.category === selectedCategory.name)
-    : mockProducts;
+    ? sampleProducts.filter((p) => p.category === selectedCategory.name)
+    : sampleProducts;
 
   const handleNext = () => {
     if (step === "upload" && displayImage) {

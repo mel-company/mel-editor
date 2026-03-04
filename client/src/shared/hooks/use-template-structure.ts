@@ -3,12 +3,11 @@ import { usePageStore, restoreSectionComponents } from "../store/editor/page";
 import { useStoreSettingsStore } from "../store/editor/store-settings";
 import { usePageTemplateStore } from "../store/editor/page-template";
 import { mockTemplate } from "@templates/home/sections/template";
-// import { Navigation1 } from "@templates/sections/template/sections/navigation";
-// import { footer_sections } from "@templates/sections/template/sections/footer";
 import { getSectionProps } from "../utils/section-props";
 import { SectionType, NavigationFooterType, HydratedSection } from "../types";
 import { resolveComponent } from "../utils/component-registry";
 import { useSSRProducts, useSSRCategories, useSSRData } from "../context/ssr-data-context";
+import { fetchAPI } from "../api/fetchy";
 
 
 
@@ -28,15 +27,14 @@ export const useTemplateStructure = (isEditor = false) => {
     useEffect(() => {
         if (!isSSR) {
             const fetchGlobalData = async () => {
-                const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
-
                 try {
+                    // Use fetchAPI with the same endpoints as shared functions
                     const [pRes, cRes] = await Promise.all([
-                        fetch(`${url}/products`).then(res => res.json()),
-                        fetch(`${url}/categories`).then(res => res.json())
+                        fetchAPI({ endPoint: "/product/by-store-domain/cursor?store=azyaa&limit=20" }),
+                        fetchAPI({ endPoint: "/category/public" })
                     ]);
-                    if (pRes?.data) setClientProducts(pRes.data);
-                    if (cRes?.data) setClientCategories(cRes.data);
+                    setClientProducts(pRes?.data || []);
+                    setClientCategories(cRes?.data || []);
                 } catch (e) {
                     console.error("Hook fetch error", e);
                 }
