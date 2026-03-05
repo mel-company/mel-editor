@@ -9,14 +9,14 @@ export class TemplatesService {
 
   resolveStore(host: string): string {
     // Extract subdomain from host or return default
-    if (!host) return 'demo';
+    if (!host) return 'azyaa';
 
     const parts = host.split('.');
     if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'localhost') {
       return parts[0];
     }
 
-    return 'demo';
+    return 'azyaa';
   }
 
   async findAll() {

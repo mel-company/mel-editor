@@ -6,27 +6,27 @@ import { Express } from 'express';
 export class UploadService {
   resolveStore(host: string): string {
     // Extract subdomain from host or return default
-    if (!host) return 'demo';
-    
+    if (!host) return 'azyaa';
+
     const parts = host.split('.');
     if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'localhost') {
       return parts[0];
     }
-    
-    return 'demo';
+
+    return 'azyaa';
   }
 
   async processUpload(file: Express.Multer.File, storeId: string): Promise<string> {
     const fileBuffer = await fs.readFile(file.path);
-    
+
     // For now, always return local path
     // In the future, this could integrate with R2 like the original server
     const fileUrl = `/uploads/${file.filename}`;
     console.log('📁 File saved locally:', fileUrl);
-    
+
     // Clean up temp file after processing
     await fs.unlink(file.path);
-    
+
     return fileUrl;
   }
 

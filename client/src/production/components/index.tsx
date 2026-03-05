@@ -171,20 +171,32 @@ const StoreView = ({
       </div> */}
 
       {/* Footer - Single footer for all pages */}
-      {storeSettings.type !== "restaurant" && !hideFooter && (
-        <Footer
-          footer={storeSettings.footer || { text: "", links: [] }}
-          logo={storeSettings.logo}
-          navigationLinks={storeSettings.header?.navigationLinks}
-          footerVariant={storeSettings.footer?.footerVariant || "1"}
-          onLinkClick={(pageId) => {
-            if (pageId && onPageChange) {
-              onPageChange(pageId);
-              window.scrollTo({ top: 0, behavior: "smooth" });
-            }
-          }}
-        />
-      )}
+      {(() => {
+        const shouldShowFooter = storeSettings.type !== "restaurant" && !hideFooter;
+        console.log('🔍 Footer rendering check:', {
+          storeType: storeSettings.type,
+          hideFooter,
+          shouldShowFooter,
+          hasFooterData: !!storeSettings.footer,
+          footerVariant: storeSettings.footer?.footerVariant,
+          showFooter: storeSettings.footer?.showFooter,
+        });
+
+        return shouldShowFooter ? (
+          <Footer
+            footer={storeSettings.footer || { text: "", links: [] }}
+            logo={storeSettings.logo}
+            navigationLinks={storeSettings.header?.navigationLinks}
+            footerVariant={storeSettings.footer?.footerVariant || "1"}
+            onLinkClick={(pageId) => {
+              if (pageId && onPageChange) {
+                onPageChange(pageId);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+          />
+        ) : null;
+      })()}
     </div>
   );
 };
@@ -351,10 +363,10 @@ const Footer = ({
 }) => {
   // Use selected footer variant component
   const variantIndex = footerVariant ? parseInt(footerVariant) - 1 : 0;
-  const FooterComponent =
-    footer_sections[variantIndex]?.component || footer_sections[0]?.component;
+  const FooterComponent = (footer_sections[variantIndex]?.component || footer_sections[0]?.component) as React.ComponentType<any>;
 
   if (!FooterComponent) {
+    console.log('❌ No footer component found for variant:', footerVariant);
     return null;
   }
 

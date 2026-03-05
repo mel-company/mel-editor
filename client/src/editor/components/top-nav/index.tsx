@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { UploadCloud, Undo, Redo } from "lucide-react";
 import { usePageStore } from "../../../shared/store/editor/page";
+import { useStoreSettingsStore } from "../../../shared/store/editor/store-settings";
 import { useZundoHistory } from "../../../shared/hooks/use-zundo-history";
 import { publishStore, generateStyles } from "@/shared/api/production";
 import classNames from "classnames";
 
 
 const PublishButton = () => {
+    const { pages } = usePageStore();
+    const { storeSettings } = useStoreSettingsStore();
     const [isPublishing, setIsPublishing] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -24,7 +27,7 @@ const PublishButton = () => {
         setStatus("idle");
 
         try {
-            await publishStore();
+            await publishStore(pages, storeSettings);
             setStatus("success");
             setTimeout(() => setStatus("idle"), 3000);
         } catch (error) {

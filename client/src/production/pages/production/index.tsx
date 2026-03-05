@@ -17,6 +17,7 @@ const ProductionPage = () => {
 
         const fetchData = async () => {
             try {
+                console.log('🔍 Fetching published store data...');
                 const [pagesResult, settingsResult, productsResult, categoriesResult] = await Promise.all([
                     fetchPublishedStoreData("editor-pages-storage"),
                     fetchPublishedStoreData("editor-store-settings-storage"),
@@ -24,31 +25,66 @@ const ProductionPage = () => {
                     fetch(`${url}/categories`).then(res => res.json())
                 ]);
 
-                // Parse the Zustand persist structure
-                // structure is { state: { pages: [...] }, version: 0 }
+                console.log('📦 Raw fetch results:', {
+                    pagesResult: pagesResult ? 'exists' : 'null',
+                    pagesType: typeof pagesResult,
+                    pagesValue: pagesResult,
+                    settingsResult: settingsResult ? 'exists' : 'null',
+                    settingsType: typeof settingsResult,
+                    settingsValue: settingsResult,
+                });
+
+                // Parse the data - handle both raw format (from publish) and Zustand persist format
                 let pagesData = null;
-                if (pagesResult && typeof pagesResult === 'string') {
-                    try {
-                        const parsed = JSON.parse(pagesResult);
-                        pagesData = parsed.state?.pages;
-                    } catch (e) {
-                        console.error("Failed to parse pages", e);
+                if (pagesResult) {
+                    if (typeof pagesResult === 'string') {
+                        try {
+                            const parsed = JSON.parse(pagesResult);
+                            pagesData = parsed.state?.pages || parsed;
+                        } catch (e) {
+                            console.error("Failed to parse pages", e);
+                        }
+                    } else if (Array.isArray(pagesResult)) {
+                        // Raw array format from publish endpoint
+                        console.log('✅ Using raw array format for pages');
+                        pagesData = pagesResult;
+                    } else if (pagesResult.state) {
+                        // Zustand persist format
+                        console.log('✅ Using Zustand persist format for pages');
+                        pagesData = pagesResult.state.pages;
                     }
-                } else if (pagesResult && pagesResult.state) {
-                    pagesData = pagesResult.state.pages;
                 }
 
                 let settingsData = null;
-                if (settingsResult && typeof settingsResult === 'string') {
-                    try {
-                        const parsed = JSON.parse(settingsResult);
-                        settingsData = parsed.state?.storeSettings;
-                    } catch (e) {
-                        console.error("Failed to parse settings", e);
+                if (settingsResult) {
+                    if (typeof settingsResult === 'string') {
+                        try {
+                            const parsed = JSON.parse(settingsResult);
+                            settingsData = parsed.state?.storeSettings || parsed;
+                        } catch (e) {
+                            console.error("Failed to parse settings", e);
+                        }
+                    } else if (settingsResult.name || settingsResult.colors) {
+                        // Raw settings object format from publish endpoint
+                        console.log('✅ Using raw object format for settings');
+                        settingsData = settingsResult;
+                    } else if (settingsResult.state) {
+                        // Zustand persist format
+                        console.log('✅ Using Zustand persist format for settings');
+                        settingsData = settingsResult.state.storeSettings;
                     }
-                } else if (settingsResult && settingsResult.state) {
-                    settingsData = settingsResult.state.storeSettings;
                 }
+
+                console.log('📊 Parsed data:', {
+                    pagesData: pagesData ? `${Array.isArray(pagesData) ? pagesData.length : 'not array'} pages` : 'null',
+                    settingsData: settingsData ? 'exists' : 'null',
+                });
+
+                console.log('🔍 Store settings footer:', {
+                    hasFooter: !!settingsData?.footer,
+                    showFooter: settingsData?.footer?.showFooter,
+                    footerData: settingsData?.footer,
+                });
 
                 if (pagesData && Array.isArray(pagesData)) {
                     // Restore components (hydrate) just like in the editor but with published data

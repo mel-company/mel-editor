@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { usePageStore } from "../../../shared/store/editor/page";
 import { useStoreSettingsStore } from "../../../shared/store/editor/store-settings";
@@ -16,18 +15,22 @@ const Dashboard = () => {
   const [publishStatus, setPublishStatus] = useState<"idle" | "success" | "error">("idle");
 
   const handlePublish = async () => {
+    console.log('🔘 Publish button clicked, showConfirm:', showConfirm);
+
     if (!showConfirm) {
+      console.log('⏳ Showing confirmation, click again to publish');
       setShowConfirm(true);
       setTimeout(() => setShowConfirm(false), 3000);
       return;
     }
 
+    console.log('✅ Confirmed, starting publish...');
     setIsPublishing(true);
     setShowConfirm(false);
     setPublishStatus("idle");
 
     try {
-      await publishStore();
+      await publishStore(pages, storeSettings);
       setPublishStatus("success");
       setTimeout(() => setPublishStatus("idle"), 3000);
     } catch (error) {

@@ -4,6 +4,7 @@ import TemplateJsonWrapper from "../../components/render/json-wrapper";
 import EditorSideNav from "../../components/side-nav";
 import { Loader2, Save, UploadCloud, Monitor, X } from "lucide-react";
 import { usePageStore } from "../../../shared/store/editor/page";
+import { useStoreSettingsStore } from "../../../shared/store/editor/store-settings";
 import { publishStore, generateStyles } from "@/shared/api/production";
 import RenderTemplate from "@/editor/components/render";
 import EditorTopNav from "@/editor/components/top-nav";
@@ -12,6 +13,8 @@ import { useAutoSaveHistory } from "../../../shared/hooks/use-auto-save-history"
 
 
 const PublishButton = () => {
+  const { pages } = usePageStore();
+  const { storeSettings } = useStoreSettingsStore();
   const [isPublishing, setIsPublishing] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -29,7 +32,7 @@ const PublishButton = () => {
     setStatus("idle");
 
     try {
-      await publishStore();
+      await publishStore(pages, storeSettings);
       setStatus("success");
       setTimeout(() => setStatus("idle"), 3000);
     } catch (error) {

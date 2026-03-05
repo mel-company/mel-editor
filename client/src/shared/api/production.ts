@@ -33,19 +33,46 @@ export const fetchPublishedStoreData = async (key: string) => {
     }
 };
 
-export const publishStore = async () => {
+export const publishStore = async (pages: any, storeSettings: any) => {
     const url = import.meta.env.VITE_EDITOR_API_URL || 'http://localhost:4000/api/v1'
 
     try {
+        console.log('📤 Starting publish process...');
+        console.log('API URL:', url);
+
+        if (!pages || !storeSettings) {
+            throw new Error('No store data found to publish');
+        }
+
+        const payload = {
+            pages,
+            storeSettings,
+        };
+
+        console.log('Publishing payload:', {
+            pagesCount: Array.isArray(payload.pages) ? payload.pages.length : 'not an array',
+            hasSettings: !!payload.storeSettings,
+        });
+
         const response = await fetch(`${url}/publish`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
         });
+
+        console.log('Response status:', response.status);
+
         if (!response.ok) {
             throw new Error('Failed to publish store');
         }
-        return await response.json();
+
+        const result = await response.json();
+        console.log('✅ Publish successful:', result);
+        return result;
     } catch (error) {
-        console.error('Error publishing store:', error);
+        console.error('❌ Error publishing store:', error);
         throw error;
     }
 };
