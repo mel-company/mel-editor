@@ -1,6 +1,7 @@
 import { CategoryType } from "@/shared/types";
 import { useState, useEffect } from "react";
 import { fetchCategories } from "@shared-data";
+import { imageLink } from "@/shared/api/imageLink";
 
 // Extended type to handle both old template structure and new API structure
 type ExtendedCategoryType = CategoryType & {
@@ -88,10 +89,7 @@ export const CategoriesSection = ({
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
                 {categories.map((category, index) => {
                     // Handle both old thumbnail structure and new image structure
-                    const imageUrl = category.thumbnail?.base64Content ||
-                        category.thumbnail?.url ||
-                        category.image ||
-                        "";
+                    const imageUrl = imageLink(category.image as string)
 
                     return (
                         <div

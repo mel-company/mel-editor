@@ -1,5 +1,4 @@
 import SectionImageList from "./image-list";
-import EditorProductList from "./product-list";
 import ProductSelector from "./product-selector";
 import CategorySelector from "./category-selector";
 import SectionContent from "./content";
@@ -16,8 +15,14 @@ import { useMemo } from "react";
 const EditorSectionDetails = () => {
   const { option, section } = useSectionDetails();
   const { activeElementType, activeSectionId } = useSectionStore();
-  const isProductSection = option?.products !== undefined;
-  const isCategorySection = option?.categories !== undefined;
+
+  // Check section type to determine if it should have product/category selectors
+  const isProductSection = section?.type === "recent-products" ||
+    section?.type === "recentProducts" ||
+    section?.type === "products" ||
+    section?.type === "productGrid";
+  const isCategorySection = section?.type === "categories" ||
+    section?.type === "categoryGrid";
 
   // Better content check - ensure it's an array with items or a truthy object
   const hasContent = useMemo(() => {
@@ -74,9 +79,7 @@ const EditorSectionDetails = () => {
 
         {hasContent && <SectionContent />}
         {hasImages && <SectionImageList detectedImages={detectedImages} />}
-        {isProductSection && (
-          isProductSection ? <ProductSelector /> : <EditorProductList />
-        )}
+        {isProductSection && <ProductSelector />}
         {isCategorySection && <CategorySelector />}
         {/* {activeTab === "styles" && <SectionStyles />} */}
       </ActiveSectionWrapper>

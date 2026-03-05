@@ -1,10 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { CategoryType, FileType, SectionOptionType } from "../../../../../../shared/types";
-import { mockCategories } from "@templates/home/sections/categories";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { Check, X, Search, Tag } from "lucide-react";
 import classNames from "classnames";
 import FileUploadBar from "../../../../../../shared/components/ui/file-upload/bar";
+import { fetchAPI } from "../../../../../../shared/api/fetchy";
+import { imageLink } from "@/shared/api/imageLink";
 
 const CategorySelector = () => {
   const { section, option, setSection } = useSectionDetails();
@@ -13,6 +14,21 @@ const CategorySelector = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryImage, setNewCategoryImage] = useState<FileType | undefined>(undefined);
+  const [categories, setCategories] = useState<CategoryType[]>([]);
+
+  const fetchCategories = async () => {
+    try {
+      const result = await fetchAPI({ endPoint: "/category/public" });
+      console.log("Categories fetched:", result);
+      setCategories(result?.data || []);
+    } catch (error) {
+      console.error("Failed to fetch categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   if (!section || !option) return null;
 
@@ -21,12 +37,12 @@ const CategorySelector = () => {
 
   // Filter categories based on search
   const filteredCategories = useMemo(() => {
-    if (!searchTerm) return mockCategories;
+    if (!searchTerm) return categories;
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    return mockCategories.filter(
+    return categories.filter(
       (c) => c.name.toLowerCase().includes(lowerCaseSearchTerm)
     );
-  }, [searchTerm]);
+  }, [searchTerm, categories]);
 
 
 
@@ -48,7 +64,11 @@ const CategorySelector = () => {
       return op;
     });
 
-    setSection({ ...section, options: newOptions });
+    setSection({
+      ...section,
+      options: newOptions,
+      target_id: section.target_id || section.id || section.section_id
+    });
   };
 
   const handleAddCategory = () => {
@@ -74,7 +94,11 @@ const CategorySelector = () => {
       return op;
     });
 
-    setSection({ ...section, options: newOptions });
+    setSection({
+      ...section,
+      options: newOptions,
+      target_id: section.target_id || section.id || section.section_id
+    });
     setNewCategoryName("");
     setNewCategoryImage(undefined);
     setShowAddModal(false);
@@ -87,7 +111,11 @@ const CategorySelector = () => {
       }
       return op;
     });
-    setSection({ ...section, options: newOptions });
+    setSection({
+      ...section,
+      options: newOptions,
+      target_id: section.target_id || section.id || section.section_id
+    });
   };
 
   return (
@@ -141,14 +169,7 @@ const CategorySelector = () => {
 
       {showSelector && (
         <div className="border border-slate-200 rounded-lg p-3 bg-white">
-          {/* Add New Category Button */}
-          {/* <button
-            onClick={() => setShowAddModal(true)}
-            className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-2 bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 rounded-lg transition-colors text-sm font-medium"
-          >
-            <Plus size={16} />
-            <span>إضافة تصنيف جديد</span>
-          </button> */}
+
 
           {/* Search Bar */}
           <div className="relative mb-4">
@@ -163,7 +184,7 @@ const CategorySelector = () => {
           </div>
 
           {/* Category List */}
-          <div className="max-h-64 overflow-y-auto space-y-2">
+          <div className="max-h-64 overflow-y-auto ">
             {filteredCategories.length === 0 ? (
               <p className="text-xs text-slate-500 text-center py-4">
                 لا توجد تصنيفات
@@ -176,17 +197,17 @@ const CategorySelector = () => {
                     key={category.id}
                     onClick={() => toggleCategory(category)}
                     className={classNames(
-                      "flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all border-2",
+                      "flex items-center gap-1.5 py-2 cursor-pointer transition-all border-b",
                       {
                         "bg-blue-50 border-blue-400 shadow-sm": isSelected,
                         "bg-white border-slate-200 hover:border-blue-300 hover:bg-blue-50": !isSelected,
                       }
                     )}
                   >
-                    <div className="w-16 h-16 border-2 border-slate-200 bg-slate-100 rounded-lg overflow-hidden shrink-0">
-                      {category.thumbnail?.url || category.thumbnail?.base64Content ? (
+                    <div className="w-8 h-8 border border-slate-200 bg-slate-100 rounded-lg overflow-hidden shrink-0">
+                      {category?.image ? (
                         <img
-                          src={category.thumbnail.url || category.thumbnail.base64Content}
+                          src={imageLink(category.image)}
                           alt={category.name}
                           className="w-full h-full object-cover"
                         />
@@ -197,20 +218,20 @@ const CategorySelector = () => {
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 mb-1 truncate">
+                      <p className="text-xs text-slate-900 mb-1 truncate">
                         {category.name}
                       </p>
                     </div>
                     <div
                       className={classNames(
-                        "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0",
+                        "w-4 h-4 rounded border flex items-center justify-center shrink-0",
                         {
                           "bg-blue-600 border-blue-600": isSelected,
-                          "border-slate-300": !isSelected,
+                          "border-slate-200": !isSelected,
                         }
                       )}
                     >
-                      {isSelected && <Check size={12} className="text-white" />}
+                      {isSelected && <Check size={10} strokeWidth={3} className="text-white" />}
                     </div>
                   </div>
                 );
@@ -230,9 +251,9 @@ const CategorySelector = () => {
               className="flex items-center gap-2 p-2 bg-slate-50 rounded-md border border-slate-200"
             >
               <div className="w-8 h-8 border border-slate-200 bg-slate-100 rounded overflow-hidden shrink-0">
-                {category.thumbnail?.url || category.thumbnail?.base64Content ? (
+                {category?.image ? (
                   <img
-                    src={category.thumbnail.url || category.thumbnail.base64Content}
+                    src={imageLink(category.image)}
                     alt={category.name}
                     className="w-full h-full object-cover"
                   />

@@ -42,7 +42,11 @@ const ProductSelector = () => {
         }
         return op;
       });
-      setSection({ ...section, options: newOptions });
+      setSection({
+        ...section,
+        options: newOptions,
+        target_id: section.target_id || section.id || section.section_id
+      });
     }
   }, [products, option.products, section]);
 
@@ -91,13 +95,32 @@ const ProductSelector = () => {
       return op;
     });
 
-    setSection({ ...section, options: newOptions });
+    setSection({
+      ...section,
+      options: newOptions,
+      target_id: section.target_id || section.id || section.section_id
+    });
   };
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Header */}
-      <h3 className="text-sm font-semibold text-slate-700">المنتجات</h3>
+      {/* Header with Toggle Button */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-slate-700">المنتجات</h3>
+        <button
+          onClick={() => setShowSelector(!showSelector)}
+          className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+        >
+          {showSelector ? "إخفاء" : "تعديل"}
+        </button>
+      </div>
+
+      {/* Selected Products Count */}
+      {!showSelector && (
+        <p className="text-xs text-slate-500">
+          {selectedProducts.length} منتج محدد
+        </p>
+      )}
 
       {/* Selected Products List - Pill Style */}
       {!showSelector && <div className="flex flex-col gap-2">
@@ -300,7 +323,11 @@ const ProductSelector = () => {
                       }
                       return op;
                     });
-                    setSection({ ...section, options: newOptions });
+                    setSection({
+                      ...section,
+                      options: newOptions,
+                      target_id: section.target_id || section.id || section.section_id
+                    });
                   }}
                   className="text-xs text-red-600 hover:text-red-700 font-medium"
                 >
@@ -311,13 +338,6 @@ const ProductSelector = () => {
           </div>
         </div>
       )}
-      <button
-        onClick={() => setShowSelector(!showSelector)}
-        className="w-full py-2.5 text-sm font-medium text-blue-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors"
-      >
-        {showSelector ? "حفظ المنتجات" : "تعديل المنتجات"}
-
-      </button>
 
     </div>
   );
