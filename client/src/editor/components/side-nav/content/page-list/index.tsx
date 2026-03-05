@@ -14,6 +14,8 @@ const PageList = () => {
     checkout: "صفحة الدفع",
   };
 
+  console.log('📄 PageList - pages:', pages, 'length:', pages?.length, 'currentPageId:', currentPageId);
+
   if (pages.length === 0) {
     return (
       <div className="h-full flex flex-col gap-4 mb-4">

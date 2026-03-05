@@ -149,8 +149,12 @@ type Store = {
 export const usePageStore = create<Store>()(
   persist(
     (set, get) => ({
-      pages: [],
-      currentPageId: "",
+      pages: mockTemplate.pages && mockTemplate.pages.length > 0
+        ? restoreSectionComponents(mockTemplate.pages)
+        : [],
+      currentPageId: mockTemplate.pages && mockTemplate.pages.length > 0
+        ? mockTemplate.pages[0].id
+        : "",
       setPages: (pages) => set(() => ({ pages })),
       setCurrentPageId: (id) => set(() => ({ currentPageId: id })),
       addPage: (page) => {
@@ -223,9 +227,17 @@ export const usePageStore = create<Store>()(
         return createDbStorage();
       }),
       onRehydrateStorage: () => (state) => {
+        console.log('🔄 Page store rehydration started', { state, hasState: !!state });
         if (state) {
           const mockPages = mockTemplate.pages || [];
           const storedPagesCount = state.pages?.length || 0;
+
+          console.log('📄 Rehydration check:', {
+            mockPagesCount: mockPages.length,
+            storedPagesCount,
+            hasMockTemplate: !!mockTemplate,
+            mockTemplateKeys: Object.keys(mockTemplate),
+          });
 
           // If mockTemplate has more pages than storage, use mockTemplate pages
           // This ensures new multi-page templates are loaded even when old single-page data exists
@@ -235,13 +247,18 @@ export const usePageStore = create<Store>()(
             state.currentPageId = mockPages[0].id;
           } else if (state.pages && state.pages.length > 0) {
             // Restore components for stored pages
+            console.log('📄 Restoring components for stored pages:', state.pages.length);
             state.pages = restoreSectionComponents(state.pages);
           } else if (mockPages.length > 0) {
             // No pages in storage, use mockTemplate
             console.log("📄 No cached pages found, loading default pages from mockTemplate");
             state.pages = restoreSectionComponents(mockPages);
             state.currentPageId = mockPages[0].id;
+          } else {
+            console.warn('⚠️ No pages found in storage or mockTemplate!');
           }
+
+          console.log('✅ Rehydration complete, pages count:', state.pages?.length);
         }
       },
     }
