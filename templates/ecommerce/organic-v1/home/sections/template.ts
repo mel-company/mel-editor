@@ -4,6 +4,8 @@ import { hero_sections } from "./hero/data";
 import { features_sections } from "./features/data";
 import { products_sections } from "./products/data";
 import { about_sections } from "./about/data";
+import { inspired_sections } from "./inspired/data";
+import { quiz_sections } from "./quiz/data";
 import { testimonials_sections } from "./testimonials/data";
 import { newsletter_sections } from "./newsletter/data";
 import { footer_sections } from "./footer/data";
@@ -26,12 +28,12 @@ const homePage: PageType = {
   sections: [
     createSection("home-nav", "1", "navigation", navigation_sections, false),
     createSection("home-hero", "1", "hero", hero_sections, true),
-    createSection("home-inspired", "1", "inspired", [], true),
+    createSection("home-inspired", "1", "inspired", inspired_sections, true),
     createSection("home-features", "1", "features", features_sections, true),
     createSection("home-products", "1", "products", products_sections, true),
     createSection("home-about", "1", "about", about_sections, true),
     createSection("home-products-2", "2", "products", products_sections, true),
-    createSection("home-quiz", "1", "quiz", [], true),
+    createSection("home-quiz", "1", "quiz", quiz_sections, true),
     createSection("home-testimonials", "1", "testimonials", testimonials_sections, true),
     createSection("home-newsletter", "1", "newsletter", newsletter_sections, true),
     createSection("home-footer", "1", "footer", footer_sections, false),
@@ -179,13 +181,21 @@ export const mockTemplate: TemplateType = {
     {
       id: "2",
       section_id: "1",
+      type: "inspired",
+      view_all_link: "",
+      editable: true,
+      options: inspired_sections,
+    },
+    {
+      id: "3",
+      section_id: "1",
       type: "features",
       view_all_link: "",
       editable: true,
       options: features_sections,
     },
     {
-      id: "3",
+      id: "4",
       section_id: "1",
       type: "products",
       view_all_link: "",
@@ -193,7 +203,7 @@ export const mockTemplate: TemplateType = {
       options: products_sections,
     },
     {
-      id: "4",
+      id: "5",
       section_id: "1",
       type: "about",
       view_all_link: "",
@@ -201,7 +211,23 @@ export const mockTemplate: TemplateType = {
       options: about_sections,
     },
     {
-      id: "5",
+      id: "6",
+      section_id: "2",
+      type: "products",
+      view_all_link: "",
+      editable: true,
+      options: products_sections,
+    },
+    {
+      id: "7",
+      section_id: "1",
+      type: "quiz",
+      view_all_link: "",
+      editable: true,
+      options: quiz_sections,
+    },
+    {
+      id: "8",
       section_id: "1",
       type: "testimonials",
       view_all_link: "",
@@ -209,7 +235,7 @@ export const mockTemplate: TemplateType = {
       options: testimonials_sections,
     },
     {
-      id: "6",
+      id: "9",
       section_id: "1",
       type: "newsletter",
       view_all_link: "",
@@ -217,7 +243,7 @@ export const mockTemplate: TemplateType = {
       options: newsletter_sections,
     },
     {
-      id: "7",
+      id: "10",
       section_id: "1",
       type: "footer",
       editable: false,

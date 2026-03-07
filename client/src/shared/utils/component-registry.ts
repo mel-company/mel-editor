@@ -25,7 +25,7 @@ const registry: ComponentRegistryType = {};
 
 // Navigation
 registry["navigation:1"] = {
-    component: lazy(() => import("@templates/home/sections/navbar/components").then(m => ({ default: m.Navigation1 }))),
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/navbar/components").then(m => ({ default: m.NavigationOrganic1 }))),
     defaultOptions: navigation_sections.find(s => s.id === "1")
 };
 

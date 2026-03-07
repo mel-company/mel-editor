@@ -9,8 +9,16 @@ import { recent_products_sections } from "@templates/home/sections/recent-produc
 import { our_story_sections } from "@templates/home/sections/our-story/data";
 import { contact_sections } from "@templates/home/sections/contact/data";
 import { resolveComponent } from "../../../utils/component-registry";
-import { footer_sections } from "@templates/home/sections/footer/data";
-import { mockTemplate } from "@templates/home/sections/template";
+import { footer_sections } from "../../../../../../templates/ecommerce/organic-v1/home/sections/footer/data";
+import { mockTemplate } from "../../../../../../templates/ecommerce/organic-v1/home/sections/template";
+// Import organic section data
+import { inspired_sections } from "../../../../../../templates/ecommerce/organic-v1/home/sections/inspired/data";
+import { features_sections } from "../../../../../../templates/ecommerce/organic-v1/home/sections/features/data";
+import { products_sections } from "../../../../../../templates/ecommerce/organic-v1/home/sections/products/data";
+import { about_sections } from "../../../../../../templates/ecommerce/organic-v1/home/sections/about/data";
+import { quiz_sections } from "../../../../../../templates/ecommerce/organic-v1/home/sections/quiz/data";
+import { testimonials_sections } from "../../../../../../templates/ecommerce/organic-v1/home/sections/testimonials/data";
+import { newsletter_sections } from "../../../../../../templates/ecommerce/organic-v1/home/sections/newsletter/data";
 
 // Map section types to their section definitions
 const sectionTypesMap: Record<string, any[]> = {
@@ -33,6 +41,14 @@ const sectionTypesMap: Record<string, any[]> = {
   contactInfo: contact_sections,
   contact: contact_sections,
   footer: footer_sections,
+  // Organic template section types
+  inspired: inspired_sections,
+  features: features_sections,
+  products: products_sections,
+  about: about_sections,
+  quiz: quiz_sections,
+  testimonials: testimonials_sections,
+  newsletter: newsletter_sections,
 };
 
 // Function to restore components in sections after loading from localStorage

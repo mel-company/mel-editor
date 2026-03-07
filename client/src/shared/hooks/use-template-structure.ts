@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from "react";
 import { usePageStore, restoreSectionComponents } from "../store/editor/page";
 import { useStoreSettingsStore } from "../store/editor/store-settings";
 import { usePageTemplateStore } from "../store/editor/page-template";
-import { mockTemplate } from "@templates/home/sections/template";
+import { mockTemplate } from "../../../../templates/ecommerce/organic-v1/home/sections/template";
 import { getSectionProps } from "../utils/section-props";
 import { SectionType, NavigationFooterType, HydratedSection } from "../types";
 import { resolveComponent } from "../utils/component-registry";

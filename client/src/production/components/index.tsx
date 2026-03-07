@@ -1,8 +1,7 @@
 import React from "react";
 
 import { PageType, SectionType, StoreType, ProductType, CategoryType } from "../../shared/types";
-import { Navigation1 } from "@templates/home/sections/navbar/components";
-import { footer_sections } from "@templates/home/sections/footer/data";
+import { resolveComponent } from "../../shared/utils/component-registry";
 
 interface StoreViewProps {
   pages: PageType[];
@@ -55,28 +54,38 @@ const StoreView = ({
       }
     >
       {/* Navigation Bar - Main Header (only for e-commerce) */}
-      {storeSettings.type !== "restaurant" && (
-        <div
-          className="sticky top-0 z-40"
-          style={{
-            backgroundColor: storeSettings.header?.styles?.backgroundColor,
-            color: storeSettings.header?.styles?.textColor,
-          }}
-        >
-          <Navigation1
-            logo={storeSettings.logo}
-            navigationLinks={storeSettings.header?.navigationLinks}
-            primaryColor={storeSettings.colors?.primary}
-            onLinkClick={(pageId) => {
-              if (pageId && onPageChange) {
-                onPageChange(pageId);
-                // Scroll to top
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }
+      {storeSettings.type !== "restaurant" && (() => {
+        const navRegistryEntry = resolveComponent("navigation", "1");
+        const NavigationComponent = navRegistryEntry?.component as React.ComponentType<any>;
+
+        if (!NavigationComponent) {
+          console.log('❌ No navigation component found');
+          return null;
+        }
+
+        return (
+          <div
+            className="sticky top-0 z-40"
+            style={{
+              backgroundColor: storeSettings.header?.styles?.backgroundColor,
+              color: storeSettings.header?.styles?.textColor,
             }}
-          />
-        </div>
-      )}
+          >
+            <NavigationComponent
+              logo={storeSettings.logo}
+              navigationLinks={storeSettings.header?.navigationLinks}
+              primaryColor={storeSettings.colors?.primary}
+              onLinkClick={(pageId) => {
+                if (pageId && onPageChange) {
+                  onPageChange(pageId);
+                  // Scroll to top
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
+            />
+          </div>
+        );
+      })()}
 
       {/* Page Content */}
       <main className="flex-1">
@@ -339,31 +348,21 @@ const Footer = ({
     description?: string;
     contactInfo?: {
       email?: string;
-      phone?: string;
-      address?: string;
     };
-    links?: any[];
-    socialLinks?: Array<{ id: string; platform: string; url: string }>;
-    styles?: {
-      backgroundColor?: string;
-      textColor?: string;
-      padding?: string;
-      margin?: string;
-    };
+    socialLinks?: any;
+    styles?: any;
   };
-  logo: any;
-  navigationLinks?: Array<{
-    id: string;
-    label: string;
+  logo?: any;
+  navigationLinks?: {
     url: string;
     pageId?: string;
-  }>;
+  }[];
   footerVariant?: string;
   onLinkClick?: (pageId?: string) => void;
 }) => {
-  // Use selected footer variant component
-  const variantIndex = footerVariant ? parseInt(footerVariant) - 1 : 0;
-  const FooterComponent = (footer_sections[variantIndex]?.component || footer_sections[0]?.component) as React.ComponentType<any>;
+  // Use component registry to resolve footer component
+  const registryEntry = resolveComponent("footer", footerVariant || "1");
+  const FooterComponent = registryEntry?.component as React.ComponentType<any>;
 
   if (!FooterComponent) {
     console.log('❌ No footer component found for variant:', footerVariant);
