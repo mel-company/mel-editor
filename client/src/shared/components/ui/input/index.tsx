@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import { useState, useEffect, useRef } from "react";
 
 const TextInput = ({
@@ -47,25 +46,16 @@ const TextInput = ({
     onChange(e);
   };
 
+
   return (
     <div className="flex flex-col gap-1">
       <label className="sub-title">{label}</label>
-      {lg ? (
-        <textarea
-          className="w-full rounded-xl p-2 text-sm h-full resize-none outline-none border border-slate-200"
-          placeholder={placeholder}
-          value={localValue}
-          onChange={handleChange}
-        />
-      ) : (
-        <input
-          type="text"
-          className="w-full rounded-lg p-2 text-sm h-full outline-none border border-slate-200"
-          placeholder={placeholder}
-          value={localValue}
-          onChange={handleChange}
-        />
-      )}
+      <textarea
+        className={`w-full rounded-lg p-2 text-sm h-full outline-none border border-slate-200 ${lg ? 'min-h-[120px] resize-none' : 'resize-none'}`}
+        placeholder={placeholder}
+        value={localValue}
+        onChange={handleChange}
+      />
     </div>
   );
 };

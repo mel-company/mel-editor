@@ -1,0 +1,10 @@
+export { NavigationOrganic1 } from "./navbar/components";
+export { HeroOrganic1, HeroOrganic2 } from "./hero/components";
+export { FeaturesOrganic1 } from "./features/components";
+export { ProductsOrganic1, ProductsOrganic2 } from "./products/components";
+export { AboutOrganic1 } from "./about/components";
+export { InspiredByOrganic1 } from "./inspired/components";
+export { SkinQuizOrganic1 } from "./quiz/components";
+export { TestimonialsOrganic1 } from "./testimonials/components";
+export { NewsletterOrganic1 } from "./newsletter/components";
+export { FooterOrganic1 } from "./footer/components";

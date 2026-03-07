@@ -180,7 +180,7 @@ export type SectionType = {
 export type CategoryType = {
   id: string;
   name: string;
-  thumbnail: FileType;
+  image?: string;
 };
 
 export type TemplateType = {

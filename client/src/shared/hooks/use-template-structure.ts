@@ -8,6 +8,7 @@ import { SectionType, NavigationFooterType, HydratedSection } from "../types";
 import { resolveComponent } from "../utils/component-registry";
 import { useSSRProducts, useSSRCategories, useSSRData } from "../context/ssr-data-context";
 import { fetchAPI } from "../api/fetchy";
+import { preloadFonts } from "../utils/font-loader";
 
 
 
@@ -70,6 +71,15 @@ export const useTemplateStructure = (isEditor = false) => {
         };
     }, []);
 
+    // Load fonts when store settings change
+    useEffect(() => {
+        if (storeStoreSettings?.fonts) {
+            const fontsToLoad = [storeStoreSettings.fonts.heading, storeStoreSettings.fonts.body].filter(Boolean);
+            if (fontsToLoad.length > 0) {
+                preloadFonts(fontsToLoad);
+            }
+        }
+    }, [storeStoreSettings?.fonts]);
 
 
     // Determine source of truth: SSR/injected config vs Client Store

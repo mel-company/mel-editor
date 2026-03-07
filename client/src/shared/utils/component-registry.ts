@@ -1,6 +1,5 @@
 import { categories_sections } from "@templates/home/sections/categories/data";
 import { recent_products_sections } from "@templates/home/sections/recent-products/data";
-import { footer_sections } from "@templates/home/sections/footer/data";
 import { navigation_sections } from "@templates/home/sections/navbar/data";
 import { hero_sections } from "@templates/home/sections/hero/data";
 import { product_info_sections } from "@templates/product-detail/sections/product-info/data";
@@ -30,7 +29,15 @@ registry["navigation:1"] = {
     defaultOptions: navigation_sections.find(s => s.id === "1")
 };
 
-// Hero Sections
+// Hero Sections - Organic (new natural design)
+registry["hero:organic1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/hero/components").then(m => ({ default: m.HeroOrganic1 }))),
+};
+registry["hero:organic2"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/hero/components").then(m => ({ default: m.HeroOrganic2 }))),
+};
+
+// Keep retail hero sections as defaults
 registry["hero:1"] = {
     component: lazy(() => import("@templates/home/sections/hero/components").then(m => ({ default: m.HeroSection1 }))),
     defaultOptions: hero_sections.find(s => s.id === "1")
@@ -103,18 +110,58 @@ registry["recentProducts:3"] = registry["recent-products:3"];
 registry["recentProducts:4"] = registry["recent-products:4"];
 registry["recentProducts:5"] = registry["recent-products:5"];
 
-// Footer Sections
+// ===== ORGANIC TEMPLATE COMPONENTS =====
+// These are unique components for the organic/natural skincare template
+
+// Hero Sections - Organic (unique natural design)
+registry["hero:1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/hero/components").then(m => ({ default: m.HeroOrganic1 }))),
+};
+registry["hero:2"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/hero/components").then(m => ({ default: m.HeroOrganic2 }))),
+};
+
+// Features Sections - Organic (unique natural values)
+registry["features:1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/features/components").then(m => ({ default: m.FeaturesOrganic1 }))),
+};
+
+// Products Sections - Organic (unique product grids)
+registry["products:1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/products/components").then(m => ({ default: m.ProductsOrganic1 }))),
+};
+registry["products:2"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/products/components").then(m => ({ default: m.ProductsOrganic2 }))),
+};
+
+// About Sections - Organic (unique brand story)
+registry["about:1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/about/components").then(m => ({ default: m.AboutOrganic1 }))),
+};
+
+// Inspired By Sections - Organic (traditional knowledge)
+registry["inspired:1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/inspired/components").then(m => ({ default: m.InspiredByOrganic1 }))),
+};
+
+// Skin Quiz Sections - Organic (3 minute quiz)
+registry["quiz:1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/quiz/components").then(m => ({ default: m.SkinQuizOrganic1 }))),
+};
+
+// Testimonials Sections - Organic (unique reviews)
+registry["testimonials:1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/testimonials/components").then(m => ({ default: m.TestimonialsOrganic1 }))),
+};
+
+// Newsletter Sections - Organic (unique subscribe)
+registry["newsletter:1"] = {
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/newsletter/components").then(m => ({ default: m.NewsletterOrganic1 }))),
+};
+
+// Footer Sections - Organic (unique natural footer)
 registry["footer:1"] = {
-    component: lazy(() => import("@templates/home/sections/footer/components").then(m => ({ default: m.Footer1 }))),
-    defaultOptions: footer_sections.find(s => s.id === "1")
-};
-registry["footer:2"] = {
-    component: lazy(() => import("@templates/home/sections/footer/components").then(m => ({ default: m.Footer2 }))),
-    defaultOptions: footer_sections.find(s => s.id === "2")
-};
-registry["footer:3"] = {
-    component: lazy(() => import("@templates/home/sections/footer/components").then(m => ({ default: m.Footer3 }))),
-    defaultOptions: footer_sections.find(s => s.id === "3")
+    component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/footer/components").then(m => ({ default: m.FooterOrganic1 }))),
 };
 
 // Contact Sections

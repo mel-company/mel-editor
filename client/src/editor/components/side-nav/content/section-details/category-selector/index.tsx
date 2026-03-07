@@ -1,9 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
-import { CategoryType, FileType, SectionOptionType } from "../../../../../../shared/types";
+import { CategoryType, SectionOptionType } from "../../../../../../shared/types";
 import useSectionDetails from "../../../../../hooks/editor-section-details";
 import { Check, X, Search, Tag } from "lucide-react";
 import classNames from "classnames";
-import FileUploadBar from "../../../../../../shared/components/ui/file-upload/bar";
 import { fetchAPI } from "../../../../../../shared/api/fetchy";
 import { imageLink } from "@/shared/api/imageLink";
 
@@ -11,9 +10,7 @@ const CategorySelector = () => {
   const { section, option, setSection } = useSectionDetails();
   const [showSelector, setShowSelector] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [newCategoryImage, setNewCategoryImage] = useState<FileType | undefined>(undefined);
+
   const [categories, setCategories] = useState<CategoryType[]>([]);
 
   const fetchCategories = async () => {
@@ -71,38 +68,6 @@ const CategorySelector = () => {
     });
   };
 
-  const handleAddCategory = () => {
-    if (!newCategoryName.trim()) return;
-
-    const currentCategories: CategoryType[] = option.categories || [];
-    const newCategory: CategoryType = {
-      id: `custom-${currentCategories.length}`,
-      name: newCategoryName,
-      thumbnail: newCategoryImage
-        ? {
-          url: newCategoryImage.url || "",
-          base64Content: newCategoryImage.base64Content || "",
-        }
-        : undefined as any,
-    };
-    const newCategories = [...currentCategories, newCategory];
-
-    const newOptions = section.options?.map((op: SectionOptionType) => {
-      if (op.id === section.section_id) {
-        return { ...op, categories: newCategories };
-      }
-      return op;
-    });
-
-    setSection({
-      ...section,
-      options: newOptions,
-      target_id: section.target_id || section.id || section.section_id
-    });
-    setNewCategoryName("");
-    setNewCategoryImage(undefined);
-    setShowAddModal(false);
-  };
 
   const clearAllSelectedCategories = () => {
     const newOptions = section.options?.map((op: SectionOptionType) => {
@@ -276,72 +241,7 @@ const CategorySelector = () => {
         </div>
       )}
 
-      {/* Add Category Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-            <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h2 className="text-xl font-bold text-slate-900">إضافة تصنيف جديد</h2>
-              <button
-                onClick={() => {
-                  setShowAddModal(false);
-                  setNewCategoryName("");
-                  setNewCategoryImage(undefined);
-                }}
-                className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5 text-slate-600" />
-              </button>
-            </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  اسم التصنيف
-                </label>
-                <input
-                  type="text"
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  placeholder="أدخل اسم التصنيف"
-                  className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
-                  صورة التصنيف (اختياري)
-                </label>
-                <FileUploadBar
-                  label="رفع صورة"
-                  value={newCategoryImage}
-                  onChange={(file) => setNewCategoryImage(file)}
-                />
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setNewCategoryName("");
-                    setNewCategoryImage(undefined);
-                  }}
-                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 px-6 rounded-lg transition-colors"
-                >
-                  إلغاء
-                </button>
-                <button
-                  onClick={handleAddCategory}
-                  disabled={!newCategoryName.trim()}
-                  className={`flex-1 font-medium py-3 px-6 rounded-lg transition-colors ${newCategoryName.trim()
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                    }`}
-                >
-                  إضافة
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 };

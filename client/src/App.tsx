@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import TemplateSelector from './editor/pages/template-selector'
+import TemplatesPage from './editor/pages/templates'
 import EditorPage from "./editor/pages/editor";
 import StoreViewPage from "./production/pages/store-view";
 import Dashboard from "./editor/pages/dashboard";
@@ -19,6 +20,7 @@ function App() {
         <Routes>
             <Route path="/" element={<ProductionPage />} />
             <Route path="/templates" element={<TemplateSelector />} />
+            <Route path="/templates-gallery" element={<TemplatesPage />} />
             <Route path="/editor" element={<EditorPage />} />
             <Route path="/store-view" element={<StoreViewPage />} />
             <Route path="/cart" element={<StoreViewPage />} />

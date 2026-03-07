@@ -1,1 +1,1 @@
-export const fontList = ["Arial", "Times New Roman", "Courier New"]
+export const fontList = ["IBM Plex Sans Arabic", "Bergman Arabic", "Arial", "Times New Roman", "Courier New"];

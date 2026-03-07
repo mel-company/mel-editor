@@ -159,7 +159,9 @@ const useSectionDetails = () => {
           } else if (dataType === "image") {
             targetElement.setAttribute("src", value);
           } else {
+            // For text content, preserve new lines by setting white-space CSS property
             targetElement.textContent = value;
+            (targetElement as HTMLElement).style.whiteSpace = 'pre-line';
           }
         } else {
           console.warn(`No element found with data-name="${name}"`);

@@ -1,0 +1,17 @@
+/* Bergman Arabic Font - Lazy Loaded via CSS */
+
+@font-face {
+  font-family: 'Bergman Arabic';
+  src: url('/assets/fonts/Bergman/BergmanArabicTrial-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Bergman Arabic';
+  src: url('/assets/fonts/Bergman/BergmanArabicTrial-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
