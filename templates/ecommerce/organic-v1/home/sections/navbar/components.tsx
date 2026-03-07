@@ -19,6 +19,7 @@ export const NavigationOrganic1 = ({ isEditor = false }: NavigationOrganic1Props
           <div className="flex items-center">
             <div
               className="text-2xl font-light text-[#2d3a2d]"
+              style={{ fontFamily: 'var(--heading-font)' }}
               {...(isEditor && { "data-type": "text", "data-name": "logo", "data-title": "الشعار" })}
             >
               Organic Beauty
@@ -32,6 +33,7 @@ export const NavigationOrganic1 = ({ isEditor = false }: NavigationOrganic1Props
                 key={index}
                 href="#"
                 className="text-[#2d3a2d] hover:text-[#5a6b4e] transition-colors font-light"
+                style={{ fontFamily: 'var(--body-font)' }}
                 {...(isEditor && { "data-type": "text", "data-name": `nav-${index}`, "data-title": `قائمة ${index + 1}` })}
               >
                 {item}
@@ -39,6 +41,7 @@ export const NavigationOrganic1 = ({ isEditor = false }: NavigationOrganic1Props
             ))}
             <button
               className="bg-[#5a6b4e] text-white px-4 py-2 rounded-sm hover:bg-[#4a5b3e] transition-colors"
+              style={{ fontFamily: 'var(--body-font)' }}
               {...(isEditor && { "data-type": "text", "data-name": "cta-button", "data-title": "زر الدعوة" })}
             >
               تسوق الآن
@@ -64,6 +67,7 @@ export const NavigationOrganic1 = ({ isEditor = false }: NavigationOrganic1Props
                 key={index}
                 href="#"
                 className="block py-2 text-[#2d3a2d] hover:text-[#5a6b4e] transition-colors font-light"
+                style={{ fontFamily: 'var(--body-font)' }}
                 {...(isEditor && { "data-type": "text", "data-name": `mobile-nav-${index}`, "data-title": `قائمة موبايل ${index + 1}` })}
               >
                 {item}
@@ -71,6 +75,7 @@ export const NavigationOrganic1 = ({ isEditor = false }: NavigationOrganic1Props
             ))}
             <button
               className="mt-4 w-full bg-[#5a6b4e] text-white px-4 py-2 rounded-sm hover:bg-[#4a5b3e] transition-colors"
+              style={{ fontFamily: 'var(--body-font)' }}
               {...(isEditor && { "data-type": "text", "data-name": "mobile-cta", "data-title": "زر دعوة موبايل" })}
             >
               تسوق الآن

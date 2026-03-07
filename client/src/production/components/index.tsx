@@ -1,7 +1,7 @@
 import React from "react";
 
 import { PageType, SectionType, StoreType, ProductType, CategoryType } from "../../shared/types";
-import { resolveComponent } from "../../shared/utils/component-registry";
+import { resolveComponent, COMPONENT_REGISTRY } from "../../shared/utils/component-registry";
 
 interface StoreViewProps {
   pages: PageType[];
@@ -23,6 +23,23 @@ const StoreView = ({
   hideFooter = false,
 }: StoreViewProps) => {
   const currentPage = pages.find((p) => p.id === currentPageId);
+
+  // Determine if this is an organic template by checking for organic section IDs
+  const isOrganicTemplate = currentPage?.sections?.some(section =>
+    section.section_id === "organic1"
+  ) || false;
+
+  // Additional debug: Log all section IDs to help diagnose
+  console.log('🔍 Template detection debug:', {
+    currentPageId,
+    hasCurrentPage: !!currentPage,
+    sectionsCount: currentPage?.sections?.length || 0,
+    allSectionIds: currentPage?.sections?.map(s => ({ id: s.id, section_id: s.section_id, type: s.type })) || [],
+    hasOrganicSection: isOrganicTemplate,
+    navigationSection: currentPage?.sections?.find(s => s.type === "navigation"),
+    footerSection: currentPage?.sections?.find(s => s.type === "footer")
+  });
+
   // Filter out navigation and footer sections as they're rendered separately
   const sections =
     currentPage?.sections.filter(
@@ -36,6 +53,16 @@ const StoreView = ({
     secondary: "#ACBA12",
     text: "#1D293D",
   };
+
+  // Debug: Log font settings
+  console.log('🎨 Production font settings:', {
+    hasStoreSettings: !!storeSettings,
+    fonts: storeSettings.fonts,
+    appliedFonts: fonts,
+    storeSettingsKeys: storeSettings ? Object.keys(storeSettings) : 'none',
+    isOrganicTemplate,
+    currentPageId
+  });
 
   return (
     <div
@@ -55,11 +82,14 @@ const StoreView = ({
     >
       {/* Navigation Bar - Main Header (only for e-commerce) */}
       {storeSettings.type !== "restaurant" && (() => {
-        const navRegistryEntry = resolveComponent("navigation", "1");
+        const navVariant = isOrganicTemplate ? "organic1" : "1";
+        const navRegistryEntry = resolveComponent("navigation", navVariant);
         const NavigationComponent = navRegistryEntry?.component as React.ComponentType<any>;
 
+        console.log('🔍 Navigation resolution:', { isOrganicTemplate, navVariant, hasComponent: !!NavigationComponent });
+
         if (!NavigationComponent) {
-          console.log('❌ No navigation component found');
+          console.log('❌ No navigation component found for variant:', navVariant);
           return null;
         }
 
@@ -197,6 +227,7 @@ const StoreView = ({
             logo={storeSettings.logo}
             navigationLinks={storeSettings.header?.navigationLinks}
             footerVariant={storeSettings.footer?.footerVariant || "1"}
+            isOrganicTemplate={isOrganicTemplate}
             onLinkClick={(pageId) => {
               if (pageId && onPageChange) {
                 onPageChange(pageId);
@@ -224,7 +255,57 @@ const Section = ({
   const selected_options = section.options?.find(
     (option) => option.id === section.section_id
   );
-  const Component = selected_options?.component as any;
+  let Component = selected_options?.component as any;
+
+  console.log('🎯 Section resolution debug:', {
+    sectionType: section.type,
+    sectionId: section.section_id,
+    hasOptions: !!section.options,
+    optionsCount: section.options?.length || 0,
+    selectedOption: !!selected_options,
+    hasComponent: !!Component,
+    allOptionIds: section.options?.map(o => ({ id: o.id, hasComponent: !!o.component })),
+    sectionData: {
+      id: section.id,
+      target_id: section.target_id,
+      type: section.type,
+      section_id: section.section_id
+    },
+    detailedOptions: section.options?.map(o => ({
+      id: o.id,
+      title: o.title,
+      hasComponent: !!o.component,
+      componentType: typeof o.component
+    }))
+  });
+
+  // If no component is hydrated, try to resolve it from the registry
+  if (!Component) {
+    console.log('🔄 Attempting registry resolution for:', section.type, section.section_id);
+    console.log('🔍 Available registry keys for', section.type, ':', Object.keys(COMPONENT_REGISTRY).filter(k => k.startsWith(section.type + ':')));
+
+    try {
+      const registryEntry = resolveComponent(section.type, section.section_id);
+      if (!registryEntry) {
+        const registryEntryFallback = resolveComponent(section.type, 'default');
+        Component = registryEntryFallback?.component;
+        console.log('🎯 Registry resolution result (fallback):', {
+          hasRegistryEntry: !!registryEntryFallback,
+          hasComponent: !!Component,
+          registryKey: `${section.type}:default`
+        });
+      } else {
+        Component = registryEntry?.component;
+        console.log('🎯 Registry resolution result:', {
+          hasRegistryEntry: !!registryEntry,
+          hasComponent: !!Component,
+          registryKey: `${section.type}:${section.section_id}`
+        });
+      }
+    } catch (error) {
+      console.error('❌ Registry resolution failed:', error);
+    }
+  }
 
   if (!Component) return null;
 
@@ -339,6 +420,7 @@ const Footer = ({
   logo,
   navigationLinks,
   footerVariant,
+  isOrganicTemplate,
   onLinkClick,
 }: {
   footer: {
@@ -358,14 +440,18 @@ const Footer = ({
     pageId?: string;
   }[];
   footerVariant?: string;
+  isOrganicTemplate?: boolean;
   onLinkClick?: (pageId?: string) => void;
 }) => {
   // Use component registry to resolve footer component
-  const registryEntry = resolveComponent("footer", footerVariant || "1");
+  const footerVariantKey = isOrganicTemplate ? "organic1" : (footerVariant || "1");
+  const registryEntry = resolveComponent("footer", footerVariantKey);
   const FooterComponent = registryEntry?.component as React.ComponentType<any>;
 
+  console.log('🔍 Footer resolution:', { isOrganicTemplate, footerVariantKey, hasComponent: !!FooterComponent });
+
   if (!FooterComponent) {
-    console.log('❌ No footer component found for variant:', footerVariant);
+    console.log('❌ No footer component found for variant:', footerVariantKey);
     return null;
   }
 

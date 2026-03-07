@@ -32,6 +32,9 @@ const ProductionPage = () => {
                     settingsResult: settingsResult ? 'exists' : 'null',
                     settingsType: typeof settingsResult,
                     settingsValue: settingsResult,
+                    // Log parsed pages data
+                    parsedPages: pagesResult ? (typeof pagesResult === 'string' ? JSON.parse(pagesResult) : pagesResult) : null,
+                    firstPageSections: pagesResult ? (typeof pagesResult === 'string' ? JSON.parse(pagesResult) : pagesResult)?.pages?.[0]?.sections?.slice(0, 3) : null
                 });
 
                 // Parse the data - handle both raw format (from publish) and Zustand persist format

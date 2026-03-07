@@ -52,6 +52,13 @@ export const publishStore = async (pages: any, storeSettings: any) => {
         console.log('Publishing payload:', {
             pagesCount: Array.isArray(payload.pages) ? payload.pages.length : 'not an array',
             hasSettings: !!payload.storeSettings,
+            settingsKeys: payload.storeSettings ? Object.keys(payload.storeSettings) : 'none',
+            fonts: payload.storeSettings?.fonts,
+            storeSettings: payload.storeSettings,
+            // Log first few pages to see what's being published
+            firstPage: payload.pages?.[0],
+            firstPageSections: payload.pages?.[0]?.sections?.slice(0, 3),
+            allPageIds: payload.pages?.map(p => ({ id: p.id, name: p.name, sectionsCount: p.sections?.length || 0 }))
         });
 
         const response = await fetch(`${url}/publish`, {

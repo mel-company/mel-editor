@@ -143,13 +143,24 @@ export const useTemplateStructure = (isEditor = false) => {
             }
         }
 
+        // Determine if this is an organic template (same logic as production)
+        const isOrganicTemplate = currentPage?.sections?.some(section =>
+            section.section_id === "organic1"
+        ) || false;
+
+        console.log('🔍 Editor template detection:', { isOrganicTemplate, currentPageId });
+
         // 1. Navigation
         let navigation: NavigationFooterType | null = null;
         // Prioritize SSR settings if available
         const activeSettings = (isSSR && templateConfig?.storeSettings) ? templateConfig.storeSettings : storeSettings;
 
         if (activeSettings.type !== "restaurant") {
-            const navEntry = resolveComponent("navigation", "1");
+            const navVariant = isOrganicTemplate ? "organic1" : "1";
+            const navEntry = resolveComponent("navigation", navVariant);
+
+            console.log('🔍 Editor navigation resolution:', { isOrganicTemplate, navVariant, hasComponent: !!navEntry });
+
             if (navEntry) {
                 navigation = {
                     id: "navigation",
@@ -310,8 +321,11 @@ export const useTemplateStructure = (isEditor = false) => {
         const footerSection = currentPage?.sections.find((s: any) => s.type === "footer");
 
         if (footerSection) {
-            const footerVariant = footerSection.section_id || "1";
+            // Use template detection to determine footer variant
+            const footerVariant = isOrganicTemplate ? "organic1" : (footerSection.section_id || "1");
             const registryEntry = resolveComponent("footer", footerVariant);
+
+            console.log('🔍 Editor footer resolution (section):', { isOrganicTemplate, footerVariant, hasComponent: !!registryEntry });
 
             if (registryEntry) {
                 // hydration logic for footer section content
@@ -346,10 +360,12 @@ export const useTemplateStructure = (isEditor = false) => {
             storeSettings.type !== "restaurant" &&
             storeSettings.footer?.showFooter !== false
         ) {
-            const footerVariant = storeSettings.footer?.footerVariant || "1";
+            const footerVariant = isOrganicTemplate ? "organic1" : (storeSettings.footer?.footerVariant || "1");
             // const variantIndex = footerVariant ? parseInt(footerVariant) - 1 : 0;
             // Use resolveComponent instead of array index
             const registryEntry = resolveComponent("footer", footerVariant);
+
+            console.log('🔍 Editor footer resolution (fallback):', { isOrganicTemplate, footerVariant, hasComponent: !!registryEntry });
 
             if (registryEntry) {
                 footer = {

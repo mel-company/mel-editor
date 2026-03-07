@@ -49,9 +49,9 @@ export const FooterOrganic1 = ({ isEditor = false }: FooterOrganic1Props) => {
               <div className="w-10 h-10 bg-[#5a6b4e] rounded-full flex items-center justify-center">
                 <Leaf className="w-5 h-5 text-white" />
               </div>
-              <span className="text-2xl font-serif">Nature Care</span>
+              <span className="text-2xl font-serif" style={{ fontFamily: 'var(--heading-font)' }}>Nature Care</span>
             </div>
-            <p className="text-white/70 mb-6 max-w-sm">
+            <p className="text-white/70 mb-6 max-w-sm" style={{ fontFamily: 'var(--body-font)' }}>
               عناية نقية وعضوية بالبشرة. نحافظ على بشرتك بأرقى المكونات الطبيعية منذ 2016.
             </p>
             {/* Social Links */}
@@ -70,11 +70,11 @@ export const FooterOrganic1 = ({ isEditor = false }: FooterOrganic1Props) => {
 
           {/* Shop Links */}
           <div>
-            <h4 className="font-semibold mb-4">المتجر</h4>
+            <h4 className="font-semibold mb-4" style={{ fontFamily: 'var(--heading-font)' }}>المتجر</h4>
             <ul className="space-y-3">
               {footerLinks.shop.map((link) => (
                 <li key={link}>
-                  <a href="#" className="text-white/70 hover:text-white transition-colors text-sm">{link}</a>
+                  <a href="#" className="text-white/70 hover:text-white transition-colors text-sm" style={{ fontFamily: 'var(--body-font)' }}>{link}</a>
                 </li>
               ))}
             </ul>
@@ -82,11 +82,11 @@ export const FooterOrganic1 = ({ isEditor = false }: FooterOrganic1Props) => {
 
           {/* About Links */}
           <div>
-            <h4 className="font-semibold mb-4">من نحن</h4>
+            <h4 className="font-semibold mb-4" style={{ fontFamily: 'var(--heading-font)' }}>من نحن</h4>
             <ul className="space-y-3">
               {footerLinks.about.map((link) => (
                 <li key={link}>
-                  <a href="#" className="text-white/70 hover:text-white transition-colors text-sm">{link}</a>
+                  <a href="#" className="text-white/70 hover:text-white transition-colors text-sm" style={{ fontFamily: 'var(--body-font)' }}>{link}</a>
                 </li>
               ))}
             </ul>
@@ -94,11 +94,11 @@ export const FooterOrganic1 = ({ isEditor = false }: FooterOrganic1Props) => {
 
           {/* Help Links */}
           <div>
-            <h4 className="font-semibold mb-4">المساعدة</h4>
+            <h4 className="font-semibold mb-4" style={{ fontFamily: 'var(--heading-font)' }}>المساعدة</h4>
             <ul className="space-y-3">
               {footerLinks.help.map((link) => (
                 <li key={link}>
-                  <a href="#" className="text-white/70 hover:text-white transition-colors text-sm">{link}</a>
+                  <a href="#" className="text-white/70 hover:text-white transition-colors text-sm" style={{ fontFamily: 'var(--body-font)' }}>{link}</a>
                 </li>
               ))}
             </ul>
@@ -110,10 +110,10 @@ export const FooterOrganic1 = ({ isEditor = false }: FooterOrganic1Props) => {
       <div className="border-t border-white/10">
         <div className="container mx-auto px-6 lg:px-12 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-white/60 text-sm">© 2026 Nature Care. جميع الحقوق محفوظة.</p>
+            <p className="text-white/60 text-sm" style={{ fontFamily: 'var(--body-font)' }}>© 2026 Nature Care. جميع الحقوق محفوظة.</p>
             <div className="flex gap-6 text-sm">
-              <a href="#" className="text-white/60 hover:text-white transition-colors">سياسة الخصوصية</a>
-              <a href="#" className="text-white/60 hover:text-white transition-colors">شروط الخدمة</a>
+              <a href="#" className="text-white/60 hover:text-white transition-colors" style={{ fontFamily: 'var(--body-font)' }}>سياسة الخصوصية</a>
+              <a href="#" className="text-white/60 hover:text-white transition-colors" style={{ fontFamily: 'var(--body-font)' }}>شروط الخدمة</a>
             </div>
           </div>
         </div>

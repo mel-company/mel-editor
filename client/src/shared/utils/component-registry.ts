@@ -2,6 +2,7 @@ import { categories_sections } from "@templates/home/sections/categories/data";
 import { recent_products_sections } from "@templates/home/sections/recent-products/data";
 import { navigation_sections } from "@templates/home/sections/navbar/data";
 import { hero_sections } from "@templates/home/sections/hero/data";
+import { footer_sections } from "@templates/home/sections/footer/data";
 import { product_info_sections } from "@templates/product-detail/sections/product-info/data";
 import { checkout_form_sections } from "@templates/checkout/sections/checkout-form/data";
 import { lazy } from "react";
@@ -23,8 +24,14 @@ const registry: ComponentRegistryType = {};
 
 // --- Lazy Load Registrations ---
 
-// Navigation
+// Navigation - Retail (default)
 registry["navigation:1"] = {
+    component: lazy(() => import("@templates/home/sections/navbar/components").then(m => ({ default: m.Navigation1 }))),
+    defaultOptions: navigation_sections.find(s => s.id === "1")
+};
+
+// Navigation - Organic
+registry["navigation:organic1"] = {
     component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/navbar/components").then(m => ({ default: m.NavigationOrganic1 }))),
     defaultOptions: navigation_sections.find(s => s.id === "1")
 };
@@ -159,9 +166,16 @@ registry["newsletter:1"] = {
     component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/newsletter/components").then(m => ({ default: m.NewsletterOrganic1 }))),
 };
 
-// Footer Sections - Organic (unique natural footer)
+// Footer Sections - Retail (default)
 registry["footer:1"] = {
+    component: lazy(() => import("@templates/home/sections/footer/components").then(m => ({ default: m.Footer1 }))),
+    defaultOptions: footer_sections.find(s => s.id === "1")
+};
+
+// Footer Sections - Organic (unique natural footer)
+registry["footer:organic1"] = {
     component: lazy(() => import("../../../../templates/ecommerce/organic-v1/home/sections/footer/components").then(m => ({ default: m.FooterOrganic1 }))),
+    defaultOptions: footer_sections.find(s => s.id === "1")
 };
 
 // Contact Sections

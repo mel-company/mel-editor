@@ -35,6 +35,7 @@ export const HeroOrganic1 = ({ isEditor = false }: HeroOrganic1Props) => {
           <FadeIn direction="right" delay={400} className="text-white text-center lg:text-right order-1 lg:order-2">
             <h1
               className="text-4xl lg:text-5xl font-light leading-relaxed mb-8"
+              style={{ fontFamily: 'var(--heading-font)' }}
               {...(isEditor && { "data-type": "text", "data-name": "title", "data-title": "العنوان" })}
             >
               دع الطبيعة<br />تهتم بجسدك<br />وروحك
@@ -42,6 +43,7 @@ export const HeroOrganic1 = ({ isEditor = false }: HeroOrganic1Props) => {
 
             <button
               className="px-10 py-3 bg-white text-[#5a6b4e] rounded-full text-sm font-medium hover:bg-white/90 transition-colors"
+              style={{ fontFamily: 'var(--body-font)' }}
               {...(isEditor && { "data-type": "text", "data-name": "cta_text", "data-title": "نص الزر" })}
             >
               تسوق الآن
@@ -61,18 +63,21 @@ export const HeroOrganic2 = ({ isEditor = false }: HeroOrganic1Props) => {
         <div className="text-center max-w-2xl mx-auto">
           <p
             className="text-[#5a6b4e] text-sm tracking-widest mb-4"
+            style={{ fontFamily: 'var(--body-font)' }}
             {...(isEditor && { "data-type": "text", "data-name": "tagline", "data-title": "العنوان الفرعي" })}
           >
             نقي وعضوي
           </p>
           <h2
             className="text-3xl lg:text-4xl text-[#2d3a2d] leading-relaxed mb-6"
+            style={{ fontFamily: 'var(--heading-font)' }}
             {...(isEditor && { "data-type": "text", "data-name": "title", "data-title": "العنوان" })}
           >
             جمال نقي مستوحى من الطبيعة
           </h2>
           <button
             className="px-8 py-3 border-2 border-[#5a6b4e] text-[#5a6b4e] rounded-full text-sm hover:bg-[#5a6b4e] hover:text-white transition-colors"
+            style={{ fontFamily: 'var(--body-font)' }}
             {...(isEditor && { "data-type": "text", "data-name": "cta_text", "data-title": "نص الزر" })}
           >
             اكتشف المزيد

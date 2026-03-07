@@ -26,8 +26,8 @@ const homePage: PageType = {
   name: "الصفحة الرئيسية",
   type: "home",
   sections: [
-    createSection("home-nav", "1", "navigation", navigation_sections, false),
-    createSection("home-hero", "1", "hero", hero_sections, true),
+    createSection("home-nav", "organic1", "navigation", navigation_sections, false),
+    createSection("home-hero", "organic1", "hero", hero_sections, true),
     createSection("home-inspired", "1", "inspired", inspired_sections, true),
     createSection("home-features", "1", "features", features_sections, true),
     createSection("home-products", "1", "products", products_sections, true),
@@ -36,7 +36,7 @@ const homePage: PageType = {
     createSection("home-quiz", "1", "quiz", quiz_sections, true),
     createSection("home-testimonials", "1", "testimonials", testimonials_sections, true),
     createSection("home-newsletter", "1", "newsletter", newsletter_sections, true),
-    createSection("home-footer", "1", "footer", footer_sections, false),
+    createSection("home-footer", "organic1", "footer", footer_sections, false),
   ],
 };
 
@@ -165,7 +165,7 @@ export const mockTemplate: TemplateType = {
   sections: [
     {
       id: "0",
-      section_id: "1",
+      section_id: "organic1",
       type: "navigation",
       editable: false,
       options: navigation_sections,
@@ -244,7 +244,7 @@ export const mockTemplate: TemplateType = {
     },
     {
       id: "10",
-      section_id: "1",
+      section_id: "organic1",
       type: "footer",
       editable: false,
       options: footer_sections,
